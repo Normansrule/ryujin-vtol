@@ -26,3 +26,21 @@ for (const slug of V.order) {
     assert.ok(v.length_mm >= 810);
   });
 }
+
+// V20: two standalone variants (the mini at real size, the full-scale aircraft at 1:10) and the page data
+for (const slug of V.order20 || []) {
+  test(`V20 variant ${slug} is complete`, () => {
+    const v = V.variants[slug];
+    assert.ok(v.standalone, 'standalone');
+    assert.ok(existsSync(join(root, 'site/models', `${slug}.glb`)), 'glb');
+    assert.ok(v.new.length > 20, 'parts');
+    assert.ok(v.eval.passes, 'gates');
+    assert.ok(Math.abs(v.eval.cg_mm[0] - v.eval.rotor_centroid_x_mm) < 3, 'CG on the fan centre (display mm)');
+    assert.ok(v.eye_mm && v.eye_mm.length === 3, 'pilot eye');
+  });
+}
+test('V20 page data', () => {
+  const D = j('site/data/v20.json');
+  for (const k of ['mini', 'full']) assert.ok(D[k].corridor.every((r) => r.forward_ok && r.hover_ok), `${k} corridor`);
+  assert.ok(D.bom.length > 10 && D.pinmap.length >= 12 && D.trade.length > 0);
+});

@@ -353,3 +353,4 @@ input[type="number"], input[type="text"], select { padding: 0.32rem 0.5rem; bord
 .hud text { fill: currentColor; font: 500 11px var(--font-num); }
 .hud-cap { position: absolute; left: 1rem; bottom: 1rem; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(8, 14, 20, 0.55); }
 .hud-tip { position: absolute; right: 1rem; bottom: 1rem; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(8, 14, 20, 0.55); color: #DDE6EE; }
+.v20chart { width: 100%; height: auto; color: var(--ink, currentColor); margin: 4px 0 2px; }

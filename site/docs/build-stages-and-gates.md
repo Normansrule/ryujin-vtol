@@ -126,3 +126,17 @@ gates. If you build V19-W instead, use the stabiliser and fin rows in place of t
 | Crest elevator +/-20 deg (V19-W: elevator) | no contact, servo centres within 1 deg | rubs: trim the fin tops or the hinge gap | binds, or the slim servo stalls |
 | FPV image through the canopy | horizon and nose clear, no glare at your flying sun angles | glare: matt-black seat and frame, tilt the camera | image unusable: cut a windscreen aperture |
 | Weighed CG | within 5 mm of the model (V19_VARIANTS.md) | 5-15 mm: move the pack in the bay or add nose ballast | > 15 mm |
+
+## V20 mini additions (before the first hover)
+
+From [V20_FALCON_JET.md](V20_FALCON_JET.md#build-the-mini):
+
+| Gate | PASS | FIX | STOP |
+|---|---|---|---|
+| Thrust stand: one ducted 6-inch prop on its motor, 4S, full throttle | >= 0.98 kg | 0.8-0.98 kg: other KV or prop pitch | < 0.8 kg |
+| Print coupons: LW-PLA skin areal density | <= 0.34 kg/m2 | 0.34-0.45: thinner wall or more foaming | > 0.45 (the mini gets too heavy) |
+| Weigh and balance with the pack in place | CG within 3 mm of x 456 mm | 3-8 mm: move the pack | > 8 mm |
+| Duct tip gap, strake flexed by hand | about 1.7 mm all round, no rub | rub: sand the duct | prop strikes the duct |
+| Exit vanes, props off | both sides reach 15 deg aft, move freely, differential works | binding: ease the hinges | vane hits a prop |
+| Tethered hover | throttle 40-50 %, no oscillation, current < 25 A | oscillation: lower the rate gains | cannot hold attitude |
+| Transitions, steps of 2 m/s | each step holds level, current < 76 A | stop at the last good step and tune | any loss of control |

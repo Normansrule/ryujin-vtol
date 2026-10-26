@@ -233,6 +233,51 @@ def check_v19() -> None:
         fails.append("docs/V19_VARIANTS.md missing or stale - run python3 tools/v19/report.py")
 
 
+def check_v20() -> None:
+    """V20: both scales sized, built and checked; the mini print set fits the P1S; the web data is current."""
+    sf, gf = ROOT / "analysis" / "v20_sizing.json", ROOT / "analysis" / "v20_geometry.json"
+    if not (sf.exists() and gf.exists()):
+        flags.append("analysis/v20_*.json missing - run make v20")
+        return
+    sz, geo = json.loads(sf.read_text()), json.loads(gf.read_text())
+    m, f = sz["mini"], sz["full"]
+    if abs(m["cg_offset_mm"]) > 3.0:
+        fails.append(f"V20 mini: CG {m['cg_offset_mm']:+.1f} mm from the centre of the four fans (gate 3 mm)")
+    for key, r in (("mini", m), ("full", f)):
+        if r["aero"]["sm_blocked25_pct"] < 5.0:
+            fails.append(f"V20 {key}: static margin {r['aero']['sm_blocked25_pct']:.1f} % at 25 % duct blockage (gate 5 %)")
+        bad = [c["V"] for c in r["corridor"] if not (c["forward_ok"] and c["hover_ok"])]
+        if bad:
+            fails.append(f"V20 {key}: no level-flight solution at {bad} m/s")
+        if geo[key]["checks"]["status"] != "PASS":
+            fails.append(f"V20 {key}: geometry checks {geo[key]['checks']['status']} (cad/v20/{key}/checks.json)")
+    if not f.get("converged"):
+        fails.append("V20 full: the sizing loop did not close")
+    if f.get("hybrid") and f["hybrid"]["turbine_out_power_frac"] < 1.0:
+        flags.append(f"V20 full: turbine out in a low hover leaves {100 * f['hybrid']['turbine_out_power_frac']:.0f} % of hover power "
+                     "(height-velocity avoid region) - open safety item")
+    pf = ROOT / "config" / "ardupilot" / "skyforge_v20_mini_BENCH_ONLY.param"
+    if pf.exists():
+        txt = pf.read_text()
+        for line in ("Q_M_PWM_TYPE,5", f"AIRSPEED_MIN,{m['airspeeds']['AIRSPEED_MIN']}", f"BATT_CAPACITY,{m['battery']['ah'] * 1000:.0f}"):
+            if line not in txt:
+                fails.append(f"{pf.relative_to(ROOT)}: expected '{line}' (regenerate with python3 tools/v20/report.py)")
+    if m["thrust_to_weight_lift"] < 2.0:
+        flags.append(f"V20 mini: lift thrust/weight {m['thrust_to_weight_lift']:.2f} (want 2.0+ for control margin)")
+    nf = [n for n, v in geo["mini"]["checks"].get("P1S", {}).items() if not v["fits"]]
+    if nf:
+        fails.append(f"V20 mini print pieces do not fit the P1S: {nf}")
+    for p in (f"cad/v20/mini/v20_mini_print_set.3mf", "site/models/v20_mini.glb", "site/models/v20_full.glb", "docs/V20_FALCON_JET.md",
+              "config/ardupilot/skyforge_v20_mini_BENCH_ONLY.param", "site/data/v20.json"):
+        if not (ROOT / p).exists():
+            fails.append(f"{p} missing - run make v20")
+    if (ROOT / "site" / "data" / "v20.json").exists():
+        w = j("site/data/v20.json")
+        if abs(w["mini"]["cg_offset_mm"] - m["cg_offset_mm"]) > 0.01 or abs(w["full"]["mtow_kg"] - f["mtow_kg"]) > 0.01:
+            fails.append("site/data/v20.json is stale - run python3 tools/export_web.py")
+    flags.append(f"V20 full scale is a concept study (MTOW {f['mtow_kg']:.0f} kg, hover {f['hover_kw']:.0f} kW): not a build package")
+
+
 def main() -> int:
     parts = j("cad/v18/parts.json")
     names = {p["name"] for p in parts["parts"]}
@@ -242,6 +287,7 @@ def main() -> int:
     check_analysis()
     check_generated()
     check_v19()
+    check_v20()
     for f in flags:
         print("FLAG ", f)
     for f in fails:

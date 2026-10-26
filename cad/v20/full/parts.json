@@ -1,0 +1,947 @@
+[
+ {
+  "name": "fuselage",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   9950.0,
+   1010.0,
+   809.9
+  ],
+  "centroid_mm": [
+   5354.9,
+   0.0,
+   -21.6
+  ]
+ },
+ {
+  "name": "canopy",
+  "layer": "glass",
+  "note": "",
+  "bbox_mm": [
+   2700.0,
+   679.8,
+   598.5
+  ],
+  "centroid_mm": [
+   3343.9,
+   -0.0,
+   480.0
+  ]
+ },
+ {
+  "name": "wing_R",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   6350.0,
+   3550.0,
+   349.3
+  ],
+  "centroid_mm": [
+   5071.4,
+   1205.2,
+   -0.0
+  ]
+ },
+ {
+  "name": "wing_L",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   6350.0,
+   3550.0,
+   349.3
+  ],
+  "centroid_mm": [
+   5071.4,
+   -1205.2,
+   -0.0
+  ]
+ },
+ {
+  "name": "elevon_R",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1311.6,
+   1100.0,
+   121.0
+  ],
+  "centroid_mm": [
+   6968.9,
+   2709.7,
+   0.0
+  ]
+ },
+ {
+  "name": "elevon_L",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1311.6,
+   1100.0,
+   121.0
+  ],
+  "centroid_mm": [
+   6968.9,
+   -2709.7,
+   0.0
+  ]
+ },
+ {
+  "name": "stabilator_R",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   2305.0,
+   2900.0,
+   89.9
+  ],
+  "centroid_mm": [
+   9430.0,
+   1312.8,
+   -50.0
+  ]
+ },
+ {
+  "name": "stabilator_L",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   2305.0,
+   2900.0,
+   89.9
+  ],
+  "centroid_mm": [
+   9430.0,
+   -1312.8,
+   -50.0
+  ]
+ },
+ {
+  "name": "fin_R",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   1564.0,
+   503.1,
+   1142.0
+  ],
+  "centroid_mm": [
+   8362.2,
+   520.4,
+   647.6
+  ]
+ },
+ {
+  "name": "fin_L",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   1564.0,
+   503.1,
+   1142.0
+  ],
+  "centroid_mm": [
+   8362.2,
+   -520.4,
+   647.6
+  ]
+ },
+ {
+  "name": "rudder_R",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   657.2,
+   483.0,
+   1133.9
+  ],
+  "centroid_mm": [
+   8936.6,
+   523.2,
+   654.5
+  ]
+ },
+ {
+  "name": "rudder_L",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   657.2,
+   483.0,
+   1133.9
+  ],
+  "centroid_mm": [
+   8936.6,
+   -523.2,
+   654.5
+  ]
+ },
+ {
+  "name": "intake_R",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   902.4,
+   275.0,
+   250.0
+  ],
+  "centroid_mm": [
+   5803.2,
+   523.7,
+   -264.0
+  ]
+ },
+ {
+  "name": "intake_L",
+  "layer": "skin",
+  "note": "",
+  "bbox_mm": [
+   902.4,
+   275.0,
+   250.0
+  ],
+  "centroid_mm": [
+   5803.2,
+   -523.7,
+   -264.0
+  ]
+ },
+ {
+  "name": "nozzle",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   650.0,
+   660.0,
+   660.0
+  ],
+  "centroid_mm": [
+   9755.7,
+   -0.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "nozzle_cone",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   480.0,
+   243.0,
+   243.0
+  ],
+  "centroid_mm": [
+   9740.0,
+   0.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "duct_front_R",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   1680.0,
+   1680.0,
+   242.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   1390.0,
+   -4.5
+  ]
+ },
+ {
+  "name": "vanes_front_R",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1029.2,
+   1491.6,
+   12.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   1390.0,
+   -154.0
+  ]
+ },
+ {
+  "name": "duct_front_L",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   1680.0,
+   1680.0,
+   242.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -1390.0,
+   -4.5
+  ]
+ },
+ {
+  "name": "vanes_front_L",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1029.2,
+   1491.6,
+   12.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -1390.0,
+   -154.0
+  ]
+ },
+ {
+  "name": "duct_rear_R",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   1680.0,
+   1680.0,
+   242.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   1390.0,
+   -4.5
+  ]
+ },
+ {
+  "name": "vanes_rear_R",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1029.2,
+   1491.6,
+   12.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   1390.0,
+   -154.0
+  ]
+ },
+ {
+  "name": "duct_rear_L",
+  "layer": "propulsion",
+  "note": "",
+  "bbox_mm": [
+   1680.0,
+   1680.0,
+   242.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   -1390.0,
+   -4.5
+  ]
+ },
+ {
+  "name": "vanes_rear_L",
+  "layer": "controls",
+  "note": "",
+  "bbox_mm": [
+   1029.2,
+   1491.6,
+   12.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   -1390.0,
+   -154.0
+  ]
+ },
+ {
+  "name": "fan_hub_front_R",
+  "layer": "hardware",
+  "note": "hub and motor",
+  "bbox_mm": [
+   412.1,
+   412.1,
+   180.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   1390.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "fan_stators_front_R",
+  "layer": "hardware",
+  "note": "4 stator vanes",
+  "bbox_mm": [
+   1117.2,
+   1117.2,
+   50.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   1390.0,
+   -75.0
+  ]
+ },
+ {
+  "name": "fan_blades_front_R",
+  "layer": "props",
+  "note": "2 x 5-blade rotors (contra-rotating)",
+  "bbox_mm": [
+   1524.0,
+   1473.2,
+   146.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   1390.0,
+   7.5
+  ]
+ },
+ {
+  "name": "fan_hub_front_L",
+  "layer": "hardware",
+  "note": "hub and motor",
+  "bbox_mm": [
+   412.1,
+   412.1,
+   180.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -1390.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "fan_stators_front_L",
+  "layer": "hardware",
+  "note": "4 stator vanes",
+  "bbox_mm": [
+   1117.2,
+   1117.2,
+   50.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -1390.0,
+   -75.0
+  ]
+ },
+ {
+  "name": "fan_blades_front_L",
+  "layer": "props",
+  "note": "2 x 5-blade rotors (contra-rotating)",
+  "bbox_mm": [
+   1524.0,
+   1473.2,
+   146.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -1390.0,
+   7.5
+  ]
+ },
+ {
+  "name": "fan_hub_rear_R",
+  "layer": "hardware",
+  "note": "hub and motor",
+  "bbox_mm": [
+   412.1,
+   412.1,
+   180.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   1390.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "fan_stators_rear_R",
+  "layer": "hardware",
+  "note": "4 stator vanes",
+  "bbox_mm": [
+   1117.2,
+   1117.2,
+   50.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   1390.0,
+   -75.0
+  ]
+ },
+ {
+  "name": "fan_blades_rear_R",
+  "layer": "props",
+  "note": "2 x 5-blade rotors (contra-rotating)",
+  "bbox_mm": [
+   1524.0,
+   1473.2,
+   146.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   1390.0,
+   7.5
+  ]
+ },
+ {
+  "name": "fan_hub_rear_L",
+  "layer": "hardware",
+  "note": "hub and motor",
+  "bbox_mm": [
+   412.1,
+   412.1,
+   180.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   -1390.0,
+   -10.0
+  ]
+ },
+ {
+  "name": "fan_stators_rear_L",
+  "layer": "hardware",
+  "note": "4 stator vanes",
+  "bbox_mm": [
+   1117.2,
+   1117.2,
+   50.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   -1390.0,
+   -75.0
+  ]
+ },
+ {
+  "name": "fan_blades_rear_L",
+  "layer": "props",
+  "note": "2 x 5-blade rotors (contra-rotating)",
+  "bbox_mm": [
+   1524.0,
+   1473.2,
+   146.0
+  ],
+  "centroid_mm": [
+   5460.0,
+   -1390.0,
+   7.5
+  ]
+ },
+ {
+  "name": "pilot_torso",
+  "layer": "payload",
+  "note": "seated pilot envelope",
+  "bbox_mm": [
+   300.0,
+   420.0,
+   620.0
+  ],
+  "centroid_mm": [
+   3520.0,
+   0.0,
+   10.0
+  ]
+ },
+ {
+  "name": "pilot_head",
+  "layer": "payload",
+  "note": "seated pilot envelope",
+  "bbox_mm": [
+   240.0,
+   240.0,
+   240.0
+  ],
+  "centroid_mm": [
+   3500.0,
+   -0.0,
+   480.0
+  ]
+ },
+ {
+  "name": "pilot_legs",
+  "layer": "payload",
+  "note": "seated pilot envelope",
+  "bbox_mm": [
+   1000.0,
+   340.0,
+   220.0
+  ],
+  "centroid_mm": [
+   3000.0,
+   0.0,
+   -210.0
+  ]
+ },
+ {
+  "name": "seat",
+  "layer": "payload",
+  "note": "seated pilot envelope",
+  "bbox_mm": [
+   320.0,
+   520.0,
+   780.0
+  ],
+  "centroid_mm": [
+   3610.0,
+   0.0,
+   30.0
+  ]
+ },
+ {
+  "name": "battery_pack_nose",
+  "layer": "systems",
+  "note": "28 kWh of the 28 kWh pack: conformal modules in the nose bay ahead of the pilot's feet (x 1.97-2.42 m, 100 % of the volume asked for)",
+  "bbox_mm": [
+   450.0,
+   593.3,
+   509.7
+  ],
+  "centroid_mm": [
+   2204.7,
+   -0.0,
+   -7.5
+  ]
+ },
+ {
+  "name": "fuel_tank_R",
+  "layer": "systems",
+  "note": "wing tank, 99 L (needs 60 L)",
+  "bbox_mm": [
+   2126.3,
+   500.0,
+   130.0
+  ],
+  "centroid_mm": [
+   4646.6,
+   2523.2,
+   0.0
+  ]
+ },
+ {
+  "name": "fuel_tank_L",
+  "layer": "systems",
+  "note": "wing tank, 99 L (needs 60 L)",
+  "bbox_mm": [
+   2126.3,
+   500.0,
+   130.0
+  ],
+  "centroid_mm": [
+   4646.6,
+   -2523.2,
+   0.0
+  ]
+ },
+ {
+  "name": "turbogenerator",
+  "layer": "propulsion",
+  "note": "397 kW turboshaft generator (series hybrid) behind the pilot: flush inlet on the spine, exhaust in two pipes either side of the cruise fan into its thrust tube and out of the jet nozzle",
+  "bbox_mm": [
+   680.0,
+   420.0,
+   420.0
+  ],
+  "centroid_mm": [
+   4140.0,
+   0.0,
+   50.0
+  ]
+ },
+ {
+  "name": "turbine_exhaust_R",
+  "layer": "propulsion",
+  "note": "insulated exhaust pipe, joins the thrust tube",
+  "bbox_mm": [
+   2763.7,
+   328.2,
+   169.9
+  ],
+  "centroid_mm": [
+   5826.4,
+   314.4,
+   108.4
+  ]
+ },
+ {
+  "name": "turbine_exhaust_L",
+  "layer": "propulsion",
+  "note": "insulated exhaust pipe, joins the thrust tube",
+  "bbox_mm": [
+   2763.7,
+   328.2,
+   169.9
+  ],
+  "centroid_mm": [
+   5826.4,
+   -314.4,
+   108.4
+  ]
+ },
+ {
+  "name": "flight_computers",
+  "layer": "systems",
+  "note": "triplex flight-control computers, air data, radios: behind the instrument panel",
+  "bbox_mm": [
+   300.0,
+   400.0,
+   150.0
+  ],
+  "centroid_mm": [
+   2650.0,
+   0.0,
+   75.0
+  ]
+ },
+ {
+  "name": "parachute",
+  "layer": "systems",
+  "note": "ballistic recovery parachute, fires upward",
+  "bbox_mm": [
+   550.0,
+   280.0,
+   280.0
+  ],
+  "centroid_mm": [
+   5075.0,
+   0.0,
+   200.0
+  ]
+ },
+ {
+  "name": "cruise_fan",
+  "layer": "propulsion",
+  "note": "ducted cruise fan, electric, at the intake throat",
+  "bbox_mm": [
+   500.0,
+   640.0,
+   640.0
+  ],
+  "centroid_mm": [
+   5700.0,
+   0.0,
+   -30.0
+  ]
+ },
+ {
+  "name": "thrust_tube",
+  "layer": "propulsion",
+  "note": "thrust tube from the cruise fan to the nozzle; the turbine exhaust joins it",
+  "bbox_mm": [
+   3491.5,
+   540.0,
+   550.0
+  ],
+  "centroid_mm": [
+   7705.0,
+   -0.0,
+   -25.0
+  ]
+ },
+ {
+  "name": "inverter_front_R",
+  "layer": "systems",
+  "note": "two inverters (one per rotor)",
+  "bbox_mm": [
+   300.0,
+   100.0,
+   150.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   380.0,
+   -25.0
+  ]
+ },
+ {
+  "name": "inverter_front_L",
+  "layer": "systems",
+  "note": "two inverters (one per rotor)",
+  "bbox_mm": [
+   300.0,
+   100.0,
+   150.0
+  ],
+  "centroid_mm": [
+   3660.0,
+   -380.0,
+   -25.0
+  ]
+ },
+ {
+  "name": "inverter_rear_R",
+  "layer": "systems",
+  "note": "two inverters (one per rotor)",
+  "bbox_mm": [
+   300.0,
+   300.0,
+   120.0
+  ],
+  "centroid_mm": [
+   6700.0,
+   800.0,
+   0.0
+  ]
+ },
+ {
+  "name": "inverter_rear_L",
+  "layer": "systems",
+  "note": "two inverters (one per rotor)",
+  "bbox_mm": [
+   300.0,
+   300.0,
+   120.0
+  ],
+  "centroid_mm": [
+   6700.0,
+   -800.0,
+   0.0
+  ]
+ },
+ {
+  "name": "spar_main_R",
+  "layer": "structure",
+  "note": "carbon box-spar line (schematic)",
+  "bbox_mm": [
+   90.0,
+   2250.0,
+   90.0
+  ],
+  "centroid_mm": [
+   6450.0,
+   1625.0,
+   0.0
+  ]
+ },
+ {
+  "name": "spar_main_L",
+  "layer": "structure",
+  "note": "carbon box-spar line (schematic)",
+  "bbox_mm": [
+   90.0,
+   2250.0,
+   90.0
+  ],
+  "centroid_mm": [
+   6450.0,
+   -1625.0,
+   0.0
+  ]
+ },
+ {
+  "name": "spar_centre",
+  "layer": "structure",
+  "note": "carbon box-spar line (schematic)",
+  "bbox_mm": [
+   100.0,
+   4400.0,
+   100.0
+  ],
+  "centroid_mm": [
+   4560.0,
+   0.0,
+   0.0
+  ]
+ },
+ {
+  "name": "gear_nose_leg",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   70.0,
+   70.0,
+   530.0
+  ],
+  "centroid_mm": [
+   1900.0,
+   0.0,
+   -581.7
+  ]
+ },
+ {
+  "name": "gear_nose_wheel",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   280.0,
+   120.0,
+   280.0
+  ],
+  "centroid_mm": [
+   1900.0,
+   0.0,
+   -846.7
+  ]
+ },
+ {
+  "name": "gear_main_leg_R",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   79.7,
+   441.3,
+   508.0
+  ],
+  "centroid_mm": [
+   6410.0,
+   610.0,
+   -578.2
+  ]
+ },
+ {
+  "name": "gear_main_wheel_R",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   360.0,
+   140.0,
+   360.0
+  ],
+  "centroid_mm": [
+   6410.0,
+   800.0,
+   -806.7
+  ]
+ },
+ {
+  "name": "gear_main_leg_L",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   79.7,
+   441.3,
+   508.0
+  ],
+  "centroid_mm": [
+   6410.0,
+   -610.0,
+   -578.2
+  ]
+ },
+ {
+  "name": "gear_main_wheel_L",
+  "layer": "gear",
+  "note": "",
+  "bbox_mm": [
+   360.0,
+   140.0,
+   360.0
+  ],
+  "centroid_mm": [
+   6410.0,
+   -800.0,
+   -806.7
+  ]
+ }
+]

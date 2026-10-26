@@ -3,7 +3,7 @@ SHELL := /bin/bash
 PY    ?= $(if $(wildcard .venv/bin/python3),.venv/bin/python3,python3)
 PORT  ?= 8080
 
-.PHONY: help setup setup-desktop serve open check test budget v18 v19 web models shots desktop desktop-build publish bundle clean
+.PHONY: help setup setup-desktop serve open check test budget v18 v19 web models shots desktop desktop-build publish bundle clean v20
 
 help: ## list the targets
 	@grep -E '^[a-z0-9-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-14s %s\n", $$1, $$2}'
@@ -50,6 +50,12 @@ v19: ## V19 search, geometry, document and web data (about 10 minutes)
 	$(PY) tools/v19/report.py
 	$(MAKE) web
 
+v20: ## V20 Falcon Jet: sizing at both scales, geometry + mini print set, document, web data (about 5 minutes)
+	$(PY) tools/v20/sizing.py
+	$(PY) tools/v20/geometry.py
+	$(PY) tools/v20/report.py
+	$(MAKE) web
+
 web: ## site data, compressed models and the offline cache list
 	$(PY) tools/export_web.py
 	npm run models
@@ -65,7 +71,7 @@ desktop: ## run the desktop app in development mode
 desktop-build: ## build desktop installers for this OS (desktop/src-tauri/target/release/bundle)
 	cd desktop && npm install && npx tauri build
 
-publish: ## create/push the GitHub repo, enable Pages; TAG=v0.6.0 also builds the desktop release
+publish: ## create/push the GitHub repo, enable Pages; TAG=v0.7.0 also builds the desktop release
 	./scripts/publish_github.sh $(if $(TAG),--tag $(TAG),)
 
 bundle: ## one-file git bundle of the whole history (for moving the repo without GitHub)

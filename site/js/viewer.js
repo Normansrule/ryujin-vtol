@@ -249,6 +249,12 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
   let spanX = 810;
   // pilot's eye: just ahead of the FPV camera envelope, wherever the current variant puts it
   function cockpitPose() {
+    const sv = state.variant && variants[state.variant];
+    if (sv?.eye_mm) {
+      const [x, y, z] = sv.eye_mm;
+      return { pos: new THREE.Vector3(x - 4, y, z).applyMatrix4(root.matrixWorld),
+        target: new THREE.Vector3(x - 5, y, z - 0.1).applyMatrix4(root.matrixWorld) };
+    }
     const e = objects.get('KEEP_OUT_CAMERA_19mm');
     const c = e ? e.centroid.clone().add(e.offset) : new THREE.Vector3(103, 0, 40);
     const eye = new THREE.Vector3(c.x - 11, c.y, c.z).applyMatrix4(root.matrixWorld);
@@ -256,7 +262,7 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
     return { pos: eye, target: look };
   }
   // in the pilot's seat a real camera sees through the clear canopy, not the envelopes around it
-  const PILOT_HIDE = /canopy_clear|cockpit_camera_seat|^CAM_19mm_cradle$/;
+  const PILOT_HIDE = /canopy_clear|cockpit_camera_seat|^CAM_19mm_cradle$|^canopy$|^pilot_|^fpv_camera|^gps_m10$/;
   let pilot = false;
   function setLens(cockpit) {
     if (cockpit !== pilot) {
@@ -450,7 +456,7 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
         show = e.variant === slug;
         if (show && e.kind === 'mod' && moves[e.name]) to.set(...moves[e.name]);
       } else {
-        show = !hidden.has(e.name);
+        show = !hidden.has(e.name) && !v?.standalone;    // a standalone variant (V20) replaces V18 entirely
         if (moves[e.name]) to.set(...moves[e.name]);
       }
       e.from.copy(e.offset);

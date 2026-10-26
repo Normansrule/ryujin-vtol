@@ -23,18 +23,19 @@ SHOTS = [("view_v18", "#aircraft", None), ("view_v19a_long_nose", "#v19/v19a_lon
          ("view_v19s_cockpit", "#v19/v19s_stoop_crest", "cockpit"), ("view_v19g_gyr_crest", "#v19/v19g_gyr_crest", None),
          ("view_v19g_top", "#v19/v19g_gyr_crest", "top"), ("view_v19f_swift_stoop", "#v19/v19f_swift_stoop", None),
          ("view_v19f_top", "#v19/v19f_swift_stoop", "top"), ("view_v19f_side", "#v19/v19f_swift_stoop", "side"),
-         ("view_v19f_cockpit", "#v19/v19f_swift_stoop", "cockpit")]
+         ("view_v19f_cockpit", "#v19/v19f_swift_stoop", "cockpit"), ("view_v20_mini", "#v20/mini", None),
+         ("view_v20_mini_top", "#v20/mini", "top"), ("view_v20_full", "#v20/full", None), ("view_v20_full_side", "#v20/full", "side")]
 HIDE = ".variant-pills, .viewport-hint { display: none !important; }"
 
 
-async def main(url: str) -> None:
+async def main(url: str, only: str = "") -> None:
     async with async_playwright() as p:
         b = await p.chromium.launch(args=["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"])
         pg = await b.new_page(viewport={"width": 1500, "height": 860}, device_scale_factor=1)
         await pg.goto(url + "#aircraft", wait_until="domcontentloaded")
         await pg.add_style_tag(content=HIDE)
         await pg.wait_for_timeout(6000)
-        for name, h, view in SHOTS:
+        for name, h, view in [x for x in SHOTS if x[0].startswith(only)]:
             await pg.evaluate("window.__viewer && window.__viewer.pilot && window.__viewer.frame('three-quarter', 0); document.getElementById('viewport').classList.remove('pilot')")
             await pg.evaluate(f"location.hash = '{h}'")
             await pg.wait_for_timeout(4500)
@@ -52,4 +53,6 @@ async def main(url: str) -> None:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--url", default="http://localhost:8765/")
-    asyncio.run(main(ap.parse_args().url))
+    ap.add_argument("--only", default="", help="render only the shots whose name starts with this (e.g. view_v20)")
+    a = ap.parse_args()
+    asyncio.run(main(a.url, a.only))

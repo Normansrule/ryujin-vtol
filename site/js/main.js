@@ -7,7 +7,7 @@ import * as views from './views.js';
 
 const files = ['parts', 'bom', 'mass_model', 'mass_cg', 'aero', 'geom_checks', 'harness', 'balance_study', 'power', 'materials',
   'measurements', 'pinmap', 'carbon_cut_list', 'interface_parts', 'docs_index', 'stages', 'synthetic_measurements'];
-const optional = ['variants'];
+const optional = ['variants', 'v20'];
 
 async function getData() {
   const get = async (f, must) => {
@@ -39,8 +39,9 @@ const ctx = {
       const e = v.eval;
       const band = [e.np_closed_x_mm, e.np_open_x_mm];
       const win = [band[0] - 0.12 * e.mac_mm, band[0] - 0.05 * e.mac_mm];
-      drawRuler(this.els.ruler, { cgX: e.cg_mm[0], rotorX: e.rotor_centroid_x_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], npBand: band, window: win, length: Math.ceil(v.length_mm / 100) * 100 });
-      this.viewer?.setMarkers({ cg: e.cg_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], np: band });
+      drawRuler(this.els.ruler, { cgX: e.cg_mm[0], rotorX: e.rotor_centroid_x_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], npBand: band, window: win,
+        length: Math.ceil(v.length_mm / 100) * 100, unit: v.unit || 'mm', unitScale: v.unit === 'm' ? 0.01 : 1 });
+      this.viewer?.setMarkers({ cg: e.cg_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], motorY: v.motor_y_mm || 220, np: band });
       return;
     }
     const b = this.balance;
@@ -60,7 +61,9 @@ const ctx = {
     if (on) {
       const v = this.variant && this.data.variants?.variants[this.variant];
       const cam = v?.moves?.KEEP_OUT_CAMERA_19mm ? 103 + v.moves.KEEP_OUT_CAMERA_19mm[0] : 103;
-      hud.querySelector('.hud-cap').textContent = `FPV · 19 mm camera at x ${Math.round(cam)} mm${v ? ` · ${v.short}` : ' · V18'}`;
+      hud.querySelector('.hud-cap').textContent = v?.eye_mm
+        ? (v.unit === 'm' ? `Pilot's eye at x ${(v.eye_mm[0] / 100).toFixed(2)} m · ${v.short}` : `FPV · 19 mm camera at x ${Math.round(v.eye_mm[0])} mm · ${v.short}`)
+        : `FPV · 19 mm camera at x ${Math.round(cam)} mm${v ? ` · ${v.short}` : ' · V18'}`;
     }
   },
   setVariant(slug, { rerender = true } = {}) {
@@ -73,7 +76,7 @@ const ctx = {
     pills();
     this.updateRuler();
     if (this.viewer?.pilot) this.setPilot(true);
-    if (rerender && (current === 'aircraft' || current === 'v19')) render(true);
+    if (rerender && (current === 'aircraft' || current === 'v19' || current === 'v20')) render(true);
   },
 };
 
@@ -83,7 +86,8 @@ function pills() {
   const V = ctx.data?.variants;
   if (!host || !V) return;
   host.hidden = current === 'balance';
-  const items = [['', 'V18'], ...V.order.map((s) => [s, V.variants[s].short])];
+  const items = current === 'v20' ? (V.order20 || []).map((s) => [s, V.variants[s].short])
+    : [['', 'V18'], ...V.order.map((s) => [s, V.variants[s].short])];
   host.innerHTML = items.map(([s, label]) => {
     const on = (ctx.variant || '') === s;
     const ok = s ? V.variants[s].eval.passes : V.v18.passes;
@@ -91,18 +95,19 @@ function pills() {
   }).join('');
   $$(host, 'button').forEach((b) => b.addEventListener('click', () => {
     if (current === 'v19') location.hash = b.dataset.v ? `#v19/${b.dataset.v}` : '#v19/v18';
+    else if (current === 'v20') location.hash = `#v20/${b.dataset.v.replace('v20_', '')}`;
     else ctx.setVariant(b.dataset.v || null);
   }));
 }
 
-const PANEL_TABS = new Set(['aircraft', 'v19', 'balance']);
+const PANEL_TABS = new Set(['aircraft', 'v19', 'v20', 'balance']);
 let current = null;
 let currentSub = null;
 
 function render(force = false) {
   const parts = location.hash.replace('#', '').split('/');
   const tab = parts[0] || 'aircraft';
-  const TABS = ['aircraft', 'v19', 'balance', 'budget', 'bom', 'bench', 'wiring', 'stages', 'docs'];
+  const TABS = ['aircraft', 'v19', 'v20', 'balance', 'budget', 'bom', 'bench', 'wiring', 'stages', 'docs'];
   const name = TABS.includes(tab) ? tab : 'aircraft';
   const sub = parts.slice(1).join('/');
   for (const a of $$(document, '.tabs a')) { if (a.dataset.tab === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }

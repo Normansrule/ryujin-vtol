@@ -1,0 +1,239 @@
+{
+ "internal_collisions": [],
+ "inside_fuselage_fraction": {
+  "battery_4S2P_21700": 1.0,
+  "fc_speedybee_f405_wing": 1.0,
+  "esc_4in1": 1.0,
+  "fpv_camera_19mm": 1.0,
+  "gps_m10": 1.0,
+  "edf_esc_60a": 1.0,
+  "servo_elevon_R": 1.0,
+  "servo_elevon_L": 1.0,
+  "servo_stab_R": 1.0,
+  "servo_stab_L": 1.0,
+  "servo_rudders": 1.0,
+  "servo_vanes_R": 1.0,
+  "servo_vanes_L": 1.0
+ },
+ "prop_tip_gap_mm": 1.7,
+ "watertight": {
+  "fuselage": true,
+  "canopy": true,
+  "wing_R": true,
+  "wing_L": true,
+  "elevon_R": true,
+  "elevon_L": true,
+  "stabilator_R": true,
+  "stabilator_L": true,
+  "fin_R": true,
+  "fin_L": true,
+  "rudder_R": true,
+  "rudder_L": true,
+  "intake_R": true,
+  "intake_L": true,
+  "nozzle": true,
+  "nozzle_cone": true,
+  "duct_front_R": true,
+  "vanes_front_R": true,
+  "duct_front_L": true,
+  "vanes_front_L": true,
+  "duct_rear_R": true,
+  "vanes_rear_R": true,
+  "duct_rear_L": true,
+  "vanes_rear_L": true,
+  "gear_nose_leg": true,
+  "gear_nose_wheel": true,
+  "gear_main_leg_R": true,
+  "gear_main_wheel_R": true,
+  "gear_main_leg_L": true,
+  "gear_main_wheel_L": true,
+  "battery_4S2P_21700": true,
+  "fc_speedybee_f405_wing": true,
+  "esc_4in1": true,
+  "edf_e7206": true,
+  "thrust_tube": true,
+  "fpv_camera_19mm": true,
+  "gps_m10": true,
+  "edf_esc_60a": true,
+  "servo_elevon_R": true,
+  "servo_elevon_L": true,
+  "servo_stab_R": true,
+  "servo_stab_L": true,
+  "servo_rudders": true,
+  "servo_vanes_R": true,
+  "servo_vanes_L": true,
+  "spar_main_6mm_R": true,
+  "spar_main_6mm_L": true,
+  "spar_centre_4mm": true,
+  "keel_6mm": true
+ },
+ "P1S": {
+  "fuselage_p1": {
+   "fits": true,
+   "footprint_mm": 83.1,
+   "height_mm": 249.5
+  },
+  "fuselage_p2": {
+   "fits": true,
+   "footprint_mm": 90.2,
+   "height_mm": 248.7
+  },
+  "fuselage_p3": {
+   "fits": true,
+   "footprint_mm": 90.8,
+   "height_mm": 248.7
+  },
+  "fuselage_p4": {
+   "fits": true,
+   "footprint_mm": 83.8,
+   "height_mm": 248.7
+  },
+  "canopy": {
+   "fits": true,
+   "footprint_mm": 200.5,
+   "height_mm": 68.0
+  },
+  "wing_R_p1": {
+   "fits": true,
+   "footprint_mm": 234.0,
+   "height_mm": 177.5
+  },
+  "wing_R_p2": {
+   "fits": true,
+   "footprint_mm": 235.5,
+   "height_mm": 177.5
+  },
+  "wing_R_p3": {
+   "fits": true,
+   "footprint_mm": 200.9,
+   "height_mm": 130.4
+  },
+  "wing_R_p4": {
+   "fits": true,
+   "footprint_mm": 236.1,
+   "height_mm": 162.2
+  },
+  "wing_L_p1": {
+   "fits": true,
+   "footprint_mm": 235.5,
+   "height_mm": 177.5
+  },
+  "wing_L_p2": {
+   "fits": true,
+   "footprint_mm": 234.0,
+   "height_mm": 177.5
+  },
+  "wing_L_p3": {
+   "fits": true,
+   "footprint_mm": 236.1,
+   "height_mm": 162.2
+  },
+  "wing_L_p4": {
+   "fits": true,
+   "footprint_mm": 200.9,
+   "height_mm": 130.4
+  },
+  "elevon_R": {
+   "fits": true,
+   "footprint_mm": 60.5,
+   "height_mm": 169.9
+  },
+  "elevon_L": {
+   "fits": true,
+   "footprint_mm": 60.5,
+   "height_mm": 169.9
+  },
+  "stabilator_R": {
+   "fits": true,
+   "footprint_mm": 222.8,
+   "height_mm": 200.0
+  },
+  "stabilator_L": {
+   "fits": true,
+   "footprint_mm": 222.8,
+   "height_mm": 200.0
+  },
+  "fin_R": {
+   "fits": true,
+   "footprint_mm": 58.8,
+   "height_mm": 196.2
+  },
+  "fin_L": {
+   "fits": true,
+   "footprint_mm": 58.8,
+   "height_mm": 196.2
+  },
+  "rudder_R": {
+   "fits": true,
+   "footprint_mm": 34.7,
+   "height_mm": 130.1
+  },
+  "rudder_L": {
+   "fits": true,
+   "footprint_mm": 34.7,
+   "height_mm": 130.1
+  },
+  "intake_R": {
+   "fits": true,
+   "footprint_mm": 27.5,
+   "height_mm": 90.2
+  },
+  "intake_L": {
+   "fits": true,
+   "footprint_mm": 27.5,
+   "height_mm": 90.2
+  },
+  "nozzle": {
+   "fits": true,
+   "footprint_mm": 66.0,
+   "height_mm": 66.0
+  },
+  "nozzle_cone": {
+   "fits": true,
+   "footprint_mm": 24.2,
+   "height_mm": 48.0
+  },
+  "duct_front_R": {
+   "fits": true,
+   "footprint_mm": 135.9,
+   "height_mm": 167.9
+  },
+  "vanes_front_R": {
+   "fits": true,
+   "footprint_mm": 73.6,
+   "height_mm": 149.2
+  },
+  "duct_front_L": {
+   "fits": true,
+   "footprint_mm": 135.9,
+   "height_mm": 167.9
+  },
+  "vanes_front_L": {
+   "fits": true,
+   "footprint_mm": 73.6,
+   "height_mm": 149.2
+  },
+  "duct_rear_R": {
+   "fits": true,
+   "footprint_mm": 135.9,
+   "height_mm": 167.9
+  },
+  "vanes_rear_R": {
+   "fits": true,
+   "footprint_mm": 73.6,
+   "height_mm": 149.2
+  },
+  "duct_rear_L": {
+   "fits": true,
+   "footprint_mm": 135.9,
+   "height_mm": 167.9
+  },
+  "vanes_rear_L": {
+   "fits": true,
+   "footprint_mm": 73.6,
+   "height_mm": 149.2
+  }
+ },
+ "watertight_print_pieces": true,
+ "status": "PASS"
+}

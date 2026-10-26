@@ -278,7 +278,8 @@ def main() -> int:
 
     docs = SITE / "docs"
     docs.mkdir(exist_ok=True)
-    order = [("README.md", "Overview"), ("BUILD_STATUS.md", "Build status"), ("docs/V19_VARIANTS.md", "V19 variants"), ("docs/BALANCE_AND_STABILITY.md", "Balance and stability"),
+    order = [("README.md", "Overview"), ("BUILD_STATUS.md", "Build status"), ("docs/V20_FALCON_JET.md", "V20 Falcon Jet"), ("docs/V19_VARIANTS.md", "V19 variants"),
+             ("docs/BALANCE_AND_STABILITY.md", "Balance and stability"),
              ("docs/V18_CHECKS.md", "V18 geometry checks"), ("docs/TEST_GATES.md", "Build stages and gates"),
              ("docs/BUDGET.md", "Budget"), ("docs/BOM.md", "Bill of materials"), ("docs/WIRING.md", "Wiring"),
              ("docs/HARNESS.md", "Harness cut list"), ("docs/CAD_PARTS.md", "CAD parts"), ("firmware/thrust_stand/README.md", "Thrust stand"),
@@ -304,8 +305,17 @@ def main() -> int:
         shutil.copy(src, imgs / src.name)
 
     vd = variants_data()
+    sys.path.insert(0, str(ROOT / "tools" / "v20"))
+    import web as v20web
     if vd:
+        v20 = v20web.variant_entries()
+        if v20:
+            vd["variants"].update(v20)
+            vd["order20"] = list(v20)
         dump("variants.json", vd)
+    pd = v20web.page_data()
+    if pd:
+        dump("v20.json", pd)
     build_glb()
     write_sw_manifest()
     print("site data written:", sorted(p.name for p in DATA.iterdir()))

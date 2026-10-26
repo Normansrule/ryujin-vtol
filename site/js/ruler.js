@@ -9,13 +9,15 @@ const el = (tag, attrs = {}, text) => {
   return e;
 };
 
-export function drawRuler(host, { cgX, rotorX, rotorRows, npBand, window: win, length = 810 }) {
+export function drawRuler(host, { cgX, rotorX, rotorRows, npBand, window: win, length = 810, unitScale = 1, unit = 'mm' }) {
+  // positions arrive in display mm; unitScale converts them to the labelled unit (V20 full: display 1:10, labelled in metres)
+  const lab = (x) => (unit === 'm' ? (x * unitScale).toFixed(2) : (x * unitScale).toFixed(0));
   const W = Math.max(host.clientWidth - 32, 320);
   const H = 92;
   const pad = 14;
   const sx = (x) => pad + ((W - 2 * pad) * x) / length;
   const y0 = 56;
-  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `CG at x ${cgX.toFixed(0)} mm, rotor centroid x ${rotorX.toFixed(0)} mm, neutral point x ${npBand[0].toFixed(0)} to ${npBand[1].toFixed(0)} mm` });
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `CG at x ${lab(cgX)} ${unit}, rotor centroid x ${lab(rotorX)} ${unit}, neutral point x ${lab(npBand[0])} to ${lab(npBand[1])} ${unit}` });
   const defs = el('defs');
   const mk = el('marker', { id: 'arrow', viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' });
   mk.append(el('path', { d: 'M0,0 L8,4 L0,8 z', fill: 'var(--stop)' }));
@@ -28,23 +30,24 @@ export function drawRuler(host, { cgX, rotorX, rotorRows, npBand, window: win, l
   for (let x = 0; x <= length; x += 100) {
     const g = el('g', { class: 'tick' });
     g.append(el('line', { class: 'axis', x1: sx(x), x2: sx(x), y1: y0, y2: y0 + 5 }));
-    g.append(el('text', { x: sx(x), y: y0 + 17, 'text-anchor': 'middle' }, x === 0 ? 'nose' : String(x)));
+    g.append(el('text', { x: sx(x), y: y0 + 17, 'text-anchor': 'middle' }, x === 0 ? 'nose' : (unit === 'm' ? String(Math.round(x * unitScale)) : String(x))));
     svg.append(g);
   }
   const narrow = W < 640;
-  if (!narrow) svg.append(el('text', { class: 'lbl', x: sx(length), y: y0 + 30, 'text-anchor': 'end' }, 'x mm, aft from the nose'));
+  if (!narrow) svg.append(el('text', { class: 'lbl', x: sx(length), y: y0 + 30, 'text-anchor': 'end' }, `x ${unit}, aft from the nose`));
   for (const r of rotorRows) svg.append(el('line', { class: 'rotor-row', x1: sx(r), x2: sx(r), y1: y0 - 30, y2: y0 }));
   svg.append(el('line', { class: 'rotor', x1: sx(rotorX), x2: sx(rotorX), y1: y0 - 34, y2: y0 + 4 }));
-  svg.append(el('text', { class: 'lbl rotor-lbl big', x: sx(rotorX), y: 14, 'text-anchor': 'middle' }, `rotor centre x${rotorX.toFixed(0)}`));
+  svg.append(el('text', { class: 'lbl rotor-lbl big', x: sx(rotorX), y: 14, 'text-anchor': 'middle' }, `rotor centre x${lab(rotorX)}`));
   svg.append(el('text', { class: 'lbl np-lbl', x: sx(npBand[0]), y: y0 + 30, 'text-anchor': 'start' }, win && !narrow ? 'neutral point band; flight CG window under it' : 'neutral point band'));
 
-  const target = win ? (win[0] + win[1]) / 2 : rotorX;
-  if (Math.abs(cgX - target) > 12) {
+  // inside the window there is no gap; outside it, the gap is to the nearest edge (not the middle)
+  const target = win ? Math.min(Math.max(cgX, Math.min(win[0], win[1])), Math.max(win[0], win[1])) : rotorX;
+  if (Math.abs(cgX - target) > (win ? 0.5 : 12)) {
     svg.append(el('line', { class: 'gap', x1: sx(cgX) - Math.sign(cgX - target) * 9, x2: sx(target) + Math.sign(cgX - target) * 3, y1: y0 - 12, y2: y0 - 12 }));
-    svg.append(el('text', { class: 'gap-lbl', x: sx(Math.max(cgX, target)) - 14, y: y0 - 17, 'text-anchor': 'end' }, narrow ? `${Math.abs(cgX - target).toFixed(0)} mm` : `${Math.abs(cgX - target).toFixed(0)} mm from the flight window`));
+    svg.append(el('text', { class: 'gap-lbl', x: sx(Math.max(cgX, target)) - 14, y: y0 - 17, 'text-anchor': 'end' }, narrow ? `${lab(Math.abs(cgX - target))} ${unit}` : `${lab(Math.abs(cgX - target))} ${unit} from the flight window`));
   }
   svg.append(el('path', { class: 'cg', d: `M${sx(cgX)},${y0 - 20} l9,9 l-9,9 l-9,-9 z` }));
   const close = Math.abs(sx(cgX) - sx(rotorX)) < 95;
-  svg.append(el('text', { class: 'lbl cg-lbl big', x: sx(cgX), y: close ? 28 : 14, 'text-anchor': close ? 'start' : 'middle', dx: close ? 12 : 0 }, `CG x${cgX.toFixed(0)}`));
+  svg.append(el('text', { class: 'lbl cg-lbl big', x: sx(cgX), y: close ? 28 : 14, 'text-anchor': close ? 'start' : 'middle', dx: close ? 12 : 0 }, `CG x${lab(cgX)}`));
   host.replaceChildren(svg);
 }

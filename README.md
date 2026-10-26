@@ -1,4 +1,4 @@
-# SKYFORGE Falcon: V18 workbench and V19 variants
+# SKYFORGE Falcon: V18 workbench, V19 variants and the V20 Falcon Jet
 
 An educational hybrid-VTOL RC aircraft with falcon / blended-wing styling: four 5-inch lift rotors, a rear 64 mm
 electric ducted fan (EDF), flaps and elevons, a steerable tricycle gear, one 4S system, ArduPilot QuadPlane on a
@@ -11,6 +11,35 @@ installers on the Releases page (same app, works offline). Steps: [docs/PUBLISHI
 
 > **Status: mechanical fitting / development prototype - not flight-ready.** Nothing here has been flown,
 > bench-tested or slicer-validated. Named parts are reference candidates until fitted and measured.
+
+## New: V20 "Falcon Jet" - one shape, two scales
+
+![V20 mini in the web workbench: four ducted lift fans, CG where their diagonals cross](analysis/view_v20_mini.png)
+
+A fighter-styled lift + cruise VTOL drawn once and built at two scales ([docs/V20_FALCON_JET.md](docs/V20_FALCON_JET.md)):
+
+| | V20 mini (1:10, printable) | V20 full scale (single seat, concept) |
+|---|---|---|
+| Size | 710 mm span, 995 mm long | 7.1 m span, 9.95 m long |
+| Lift | 4 ducted 6-inch props with exit vanes | 4 x 1.56 m ducts, 2 contra-rotating fans each (any one of 8 can fail), exit vanes |
+| Cruise | the 64 mm EDF | 0.64 m ducted fan (588 kW installed) |
+| Power | 4S2P Li-ion, 9 Ah, 90 A | series hybrid: 397 kW turbogenerator + 28 kWh battery |
+| Mass | 1,540 g | 1,540 kg (pilot 100 kg, fuel 96 kg) |
+| CG from the centre of the 4 fans | +0.0 mm | +0 mm |
+| Static margin at 25 % duct blockage (gate 5 %) | 5.5 % | 5.5 % |
+| Hover / fly forward at every speed (quasi-steady model) | yes, 0-23 m/s | yes, 0-64 m/s |
+| Status | print set (33 watertight pieces, all fit the P1S), parts list, port map; not yet built | engineering concept: sizing, packaging, safety and regulatory path; **not** a build package |
+
+The four lift ducts sit in the forward half of a cranked delta so the CG can be at their centre for hover *and*
+ahead of the neutral point for wing-borne flight; all-moving stabilators and twin canted fins finish it. An
+independent review of the first draft corrected its efficiencies, stall speed, reserve and battery current; with
+honest numbers the full-scale aircraft only closes with **bigger ducts (1.56 m) and a series-hybrid powertrain** -
+all-electric does not close with the 20-minute VFR reserve at any size in the trade study. It hovers on 503 kW and
+cruises at L/D 4.2: a fighter-shaped fan-in-wing aircraft is a jet-fuel aircraft, as the 1960s XV-5 was. Open items:
+turbine failure in a low hover (the battery alone gives 55 % of hover power) and yaw after a rotor failure. Open the
+**V20** tab in the app to switch between the scales. `make v20` regenerates everything.
+
+![V20 full scale, side view (shown 1:10 in the app): pilot, nose-bay battery, turbogenerator behind the seat](analysis/view_v20_full_side.png)
 
 ![V19-F, the recommended variant, with the hover frame between its four motors](analysis/view_v19f_swift_stoop.png)
 
@@ -81,6 +110,7 @@ variants (with an X-ray ghost of V18 for comparison) and lists every part that c
 | [`cad/v19/`](cad/v19/), [`config/v19/`](config/v19/) | V19 variants: configurations, new and modified parts (STL, 3MF print sets for C, R, W, S and F, DXF), collision and fit checks, mass inputs | EXPERIMENTAL |
 | [`cad/interface/`](cad/interface/) | Parametric parts for the joints V18 left open: crossing clamps, belly straps, EDF ear brackets, FC isolation pad, nose-steering collar | EXPERIMENTAL |
 | [`bom/bom.csv`](bom/bom.csv) -> [`docs/BOM.md`](docs/BOM.md) | V18 BOM rows plus added rows, with links, stages, purchase gates and V18 placements | PROTOTYPE-READY |
+| [`docs/V20_FALCON_JET.md`](docs/V20_FALCON_JET.md), [`tools/v20/`](tools/v20/), [`cad/v20/`](cad/v20/) | V20 Falcon Jet at both scales: sizing, corridor, vortex lattice, geometry, mini print set and parts, full-scale concept | EXPERIMENTAL / concept |
 | [`docs/V19_VARIANTS.md`](docs/V19_VARIANTS.md) | The V19 directions and V19-F: hover balance, numbers, changes, parts, checks, engine choice, V19-F build changes | results |
 | [`docs/BALANCE_AND_STABILITY.md`](docs/BALANCE_AND_STABILITY.md) | Why V18 does not balance | results |
 | [`docs/BUDGET.md`](docs/BUDGET.md) | Running cost, mass, CG, hover and stability gates | generated |
