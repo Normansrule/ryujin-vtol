@@ -43,21 +43,25 @@ SCALES = {
         # printed skin areal density per m2 of surface (both sides of a thin part count): LW-PLA foamed to about
         # 0.6 g/cm3, 0.45 mm single wall, +25 % for ribs and joints. Stage 1 coupons replace this.
         "areal_kg_m2": {"skin": 0.34, "controls": 0.20, "glass": 0.45, "propulsion": 0.40, "gear": 0.0},
+        # tail surfaces from 3 mm Depron foam sheet with a 2 mm carbon rod and printed roots (templates in cad/v20/mini/foam):
+        # half the mass of printed surfaces, and the tail is where the mini's balance is decided
+        "foam_kg_m2": 0.10, "foam_parts": ("stabilator", "fin_", "rudder"),
         "rotors_per_duct": 1,
         "fm": 0.48,                # small ducted 4-inch props at low Reynolds number: figure of merit vs ideal ducted
                                    # momentum theory (published small-duct tests run 0.4-0.55)
         "eta_drive": 0.80,         # motor x ESC at hover throttle
         "kappa_coax": 1.0,
-        "rotor_tmax_kg": 1.00,     # one 6-inch 3-blade prop on a 2207-class motor, 4S: about 75 % of open-prop data for that
-                                   # class (the thrust stand decides); the battery limit below usually binds first
+        "rotor_tmax_kg": 0.72,     # one 4-inch 3-blade prop, 2204-class motor, 4S: 75 % of a 965 g open-prop test (the
+                                   # thrust stand decides); the battery limit below can bind first
         "cruise_static_thrust_kg": 1.20,   # Freewing E7206 64 mm EDF on 4S (vendor figure)
         "cruise_jet_ms": 55.0,     # EDF exit velocity scale for the thrust lapse with speed
-        "eta_cruise": 0.30,        # a 64 mm EDF at 15-25 m/s: propulsive x fan x motor x ESC (an EDF is a fast-jet device)
+        "eta_fan_drive": 0.49,     # 64 mm EDF: fan x motor x ESC (its vendor 1.2 kg / 780 W static point gives 0.49)
         "cruise_max_w": 780.0,     # EDF electrical power at full throttle on 4S (vendor class figure, ~55 A)
         "alpha_max_deg": 14.0,
         "le_suction": 0.2,         # leading-edge suction recovered (0 = sharp edge, 1 = full); thin 5.5 % section, low Re
         "gear_cda_m2": 0.0012,     # fixed gear, drag area
-        "duct_hole_cd": 0.12,      # stopped prop in an open duct, per duct area
+        "duct_hole_cd": 0.12,      # louvres open (transition): per duct area
+        "louvre_cd": 0.02,         # louvres shut (cruise): slat gaps and steps, per duct area
         "vane_max_deg": 15.0,      # printed exit vanes, one servo per side (front + rear duct linked): they close the
                                    # 12-13 m/s gap where the EDF alone cannot beat the lift ducts' momentum drag
         # 4S2P Li-ion, 8 x 21700 (Molicel P45B class: 4.5 Ah, 45 A continuous each) -> 9 Ah, 90 A
@@ -76,8 +80,9 @@ SCALES = {
                                    # vortex early: half the suction (Raymer sec. 12.6 gives 0.85-0.95 for unswept, round LEs)
         "gear_cda_m2": 0.0,        # retracted in cruise
         "duct_hole_cd": 0.10,
+        "louvre_cd": 0.015,
         "vane_max_deg": 30.0,      # duct exit vanes (as on the XV-5) turn the efflux aft in transition
-        "eta_cruise": 0.55,        # ducted cruise fan at 40-60 m/s: propulsive x fan x motor x inverter
+        "eta_fan_drive": 0.78,     # 0.64 m ducted cruise fan: fan 0.86 x motor + inverter 0.91 (propulsive from momentum)
         "cruise_jet_ms": 110.0,
         "battery": {"wh_per_kg": 220.0, "usable": 0.80, "c_peak": 8.0},   # pack level (cells, structure, cooling); peak
                                                                          # discharge rate the pack must sustain in hover
@@ -148,9 +153,9 @@ _OML = None
 
 def oml():
     global _OML
-    if _OML is None:
-        _OML = GEO.build_oml(P.duct_centre_x() + P.GEAR["main_dx_behind_cg"])
-    return _OML
+    if _OML is None or _OML[0] != P.VARIANT:
+        _OML = (P.VARIANT, GEO.build_oml(P.duct_centre_x() + P.GEAR["main_dx_behind_cg"]))
+    return _OML[1]
 
 
 def exposed_area(name, mesh):
@@ -221,6 +226,8 @@ def mass_items(scale_key: str, extra: dict, s: float | None = None) -> list:
         if dens <= 0:
             continue
         a = exposed_area(name, m) * s * s
+        if name.startswith(cfg.get("foam_parts", ())):
+            dens = cfg["foam_kg_m2"]
         items.append((name, a * dens, tuple(centroid(m)), "airframe" if scale_key == "mini" else "structure"))
     for n, x, y, z, kg, grp in extra["items"]:
         items.append((n, kg, (x, y, z), grp))
@@ -231,28 +238,30 @@ def mini_components():
     """Mini hardware (kg) at full-scale-metre positions (positions are scaled with the airframe)."""
     it = []
     for n, x, y in P.duct_centres():
-        it.append((f"lift motor {n} (2207-class, 2400-2700 KV)", x, y, -0.02, 0.034, "propulsion"))
-        it.append((f"lift prop {n} (6-inch 3-blade)", x, y, 0.02, 0.007, "propulsion"))
+        it.append((f"lift motor {n} (2204-class, 2600-3200 KV)", x, y, -0.02, 0.028, "propulsion"))
+        it.append((f"lift prop {n} (4-inch 3-blade)", x, y, 0.02, 0.004, "propulsion"))
     xc = P.duct_centre_x()
     it += [
-        ("4-in-1 ESC (Hobbywing XRotor Micro 60A)", xc, 0.0, -0.20, 0.016, "propulsion"),
+        ("4-in-1 ESC (Hobbywing XRotor Micro 60A)", 2.60, 0.0, -0.29, 0.016, "propulsion"),
         ("EDF Freewing E7206 64 mm 4S", P.CRUISE_FAN_X_MINI, 0.0, -0.10, 0.142, "propulsion"),
-        ("EDF thrust tube + nozzle liner (0.2 mm PET film)", 8.0, 0.0, -0.05, 0.012, "propulsion"),
-        ("EDF ESC (Hobbywing Skywalker 60A V2)", 5.06, 0.0, -0.23, 0.040, "propulsion"),
-        ("flight controller SpeedyBee F405 WING", 4.28, 0.0, 0.10, 0.025, "avionics"),
-        ("GPS + compass (M10), under the camera", 3.23, 0.0, 0.32, 0.012, "avionics"),
+        ("EDF thrust tube + nozzle liner (0.2 mm PET film)", 6.96, 0.0, -0.05, 0.012, "propulsion"),
+        ("intake ducts (0.2 mm PET film, two)", 2.9, 0.0, -0.2, 0.006, "propulsion"),
+        ("EDF ESC (Hobbywing Skywalker 60A V2)", 2.72, 0.0, -0.15, 0.040, "propulsion"),
+        ("flight controller SpeedyBee F405 WING", 2.60, 0.0, 0.0, 0.025, "avionics"),
+        ("GPS + compass (M10), under the front of the canopy", 2.63, 0.0, 0.31, 0.012, "avionics"),
         ("ELRS receiver", 2.0, 0.0, 0.15, 0.003, "avionics"),
         ("FPV camera 19 mm (pilot's eye)", 3.22, 0.0, 0.45, 0.008, "avionics"),
         ("VTX 400 mW", 2.2, 0.0, 0.0, 0.006, "avionics"),
         ("airspeed sensor + pitot", 0.6, 0.0, 0.0, 0.006, "avionics"),
-        ("servo x2 elevons (5 g digital)", 5.60, 0.0, 0.0, 0.011, "controls"),
+        ("servo x2 elevons (5 g digital)", 5.20, 0.0, 0.0, 0.011, "controls"),
         ("servo x2 stabilators (5 g digital, short pushrods)", 7.20, 0.0, 0.0, 0.011, "controls"),
         ("servo x1 rudders (5 g, pull-pull to both rudders)", 6.80, -0.85, 0.0, 0.0055, "controls"),
-        ("servo x2 exit vanes (5 g, one per side, front + rear vanes linked)", 5.0, 0.0, 0.0, 0.011, "controls"),
+        ("servo x2 bottom louvres / exit vanes (5 g, one per side, front + rear linked)", 5.05, 0.0, 0.0, 0.011, "controls"),
+        ("top louvre hinge wires + elastic closers (suction-opened)", P.duct_centre_x(), 0.0, 0.14, 0.006, "controls"),
         ("linkages, horns, hinges", 7.0, 0.0, 0.0, 0.013, "controls"),
         ("wiring, XT60, connectors", xc, 0.0, -0.1, 0.030, "systems"),
-        ("carbon tubes: 6 mm main spar (2 halves), 4 mm centre spar, 6 mm keel", 5.4, 0.0, 0.0, 0.026, "airframe"),
-        ("fixed tricycle gear (wire legs, foam wheels)", P.duct_centre_x() + 0.8, 0.0, -0.6, 0.032, "gear"),
+        ("carbon tubes: 6 mm main spar (2 halves), 4 mm centre spar", 4.3, 0.0, 0.0, 0.024, "airframe"),
+        ("fixed tricycle gear (wire legs, foam wheels)", P.duct_centre_x() + 0.6, 0.0, -0.6, 0.032, "gear"),
         ("glue, screws, magnets", 5.0, 0.0, 0.0, 0.020, "systems"),
     ]
     return it
@@ -267,15 +276,15 @@ def battery_mini(cfg: dict) -> dict:
             "p_max_w": amps * b["v_load"] * b["margin"]}
 
 
-TURBO_X = 4.14              # turbogenerator station (full-scale m): right behind the pilot, under the aft canopy, close
-                            # to the CG; a flush inlet on the spine feeds it and two exhaust pipes pass either side of
-                            # the cruise fan into its thrust tube, so the exhaust leaves through the jet nozzle
-FUEL_X = 4.65               # wing tanks outboard of the ducts (y 2.3-2.8 m, from the generated tank solids): their centroid
-                            # sits 0.09 m behind the fan centre, so the CG creeps forward a little as fuel burns
-FULL_BAY = (1.60, 5.24)     # battery centroid limits: the nose bay (x 1.0-2.45) to a box behind the CG (x 5.05-5.43)
+TURBO_X = 1.325             # turboshaft + generator in the nose (where a fighter has its radar): the stability layout makes
+                            # the airframe tail-heavy, and the turbine is the heaviest thing that can go forward. It breathes
+                            # from the intake ducts; two insulated exhaust pipes run aft beside the cockpit into the thrust
+                            # tube, so the exhaust still leaves through the jet nozzle
+FUEL_X = 3.95               # wing tanks ahead of the main spar, outboard of the body (from the generated tank solids)
+FULL_BAY = (1.95, 2.30)     # battery centroid limits: the nose bay between the turbogenerator and the pilot's feet
 MINI_VMAX = 23.0            # top of the mini's corridor (m/s): above this the 64 mm EDF cannot beat the drag
-MINI_BAY = (1.90, 3.34)     # 4S2P pack centre (full-scale metres): the 140 mm two-block pack needs the nose width from
-                            # 1.90 and must end before the flight controller and keel tube at 4.10
+MINI_BAY = (1.66, 1.70)     # 4S2P pack centre (full-scale metres): the 141 mm two-block pack needs the nose width from
+                            # x 0.95 and must end before the avionics stack at 2.42
 
 
 def solve_cg(items, battery_kg, bay, target_x):
@@ -295,16 +304,25 @@ def solve_cg(items, battery_kg, bay, target_x):
 _AERO = {}
 
 
-def aero_at(scale: float, ducts: str = "open"):
-    if (scale, ducts) not in _AERO:
-        _AERO[(scale, ducts)] = A.derivatives(scale, ducts)
-    return _AERO[(scale, ducts)]
+def aero_at(scale: float, ducts: str = "cruise"):
+    """'cruise': louvres shut (the closed-duct lattice), carrying the open-duct set under key 'open' for the powered
+    part of the corridor; 'open' / 'closed' for either set alone."""
+    if ducts == "cruise":
+        d = dict(aero_at(scale, "closed"))
+        d["open"] = aero_at(scale, "open")
+        return d
+    key = (P.VARIANT, scale, ducts)
+    if key not in _AERO:
+        _AERO[key] = dict(A.derivatives(scale, ducts), ducts=ducts)
+    return _AERO[key]
 
 
 def cruise_polar(s: float, V: float, cfg: dict, d: dict):
     cd0S, rows = drag_buildup(s, V)
     S = d["geo"]["S_m2"]
-    holes = 4 * math.pi * (P.DUCT_ID * s / 2) ** 2 * cfg["duct_hole_cd"]
+    # louvres open (fans running or parked open): the holes' drag; louvres shut: only the slat gaps and steps
+    cd_duct = cfg["duct_hole_cd"] if d.get("ducts") == "open" else cfg["louvre_cd"]
+    holes = 4 * math.pi * (P.DUCT_ID * s / 2) ** 2 * cd_duct
     cd0S += holes + cfg["gear_cda_m2"]
     k = induced_k(cfg, d)
     return cd0S / S, k, rows
@@ -329,12 +347,25 @@ def usable_cl(d: dict, x_cg: float, cfg: dict, eta: float = 0.8) -> float:
     return d["CL0"] + d["CLa"] * a + eta * d["CLdp"] * de
 
 
+def cruise_fan_areas(cfg: dict):
+    """(jet area, intake mouth area) in m2 at this scale: the jet leaves the thrust tube at about 85 % of the fan's
+    swept area (the usual EDF rule); the intakes are measured from the generated outer mould line."""
+    s = cfg["scale"]
+    fsa = math.pi / 4 * (P.CRUISE_FAN_D * s) ** 2 * (1 - 0.39 ** 2)       # hub about 39 % of the diameter
+    return 0.85 * fsa, GEO.intake_mouth_area_m2() * s * s, fsa
+
+
 def edf_power_w(D: float, V: float, cfg: dict, T_avail: float, p_max: float | None) -> float:
-    """Cruise-fan electrical power for thrust D at speed V: the propulsive-efficiency estimate, but never less than the
-    fan's own throttle curve (power ~ thrust^1.5 at fixed geometry, full power at the thrust available)."""
+    """Cruise-fan electrical power for thrust D at speed V from momentum theory: the jet velocity follows from the
+    thrust and the jet area, power = thrust x (V + V_jet) / 2 / (fan x drive efficiency), less an intake penalty when the
+    mouths are smaller than 90 % of the fan's swept area. Never less than the fan's own throttle curve (power ~
+    thrust^1.5, full power at the thrust available)."""
     if D <= 0:
         return 0.0
-    p = D * V / cfg["eta_cruise"]
+    aj, ai, fsa = cruise_fan_areas(cfg)
+    vj = (V + math.sqrt(V * V + 4 * D / (RHO * aj))) / 2
+    k_int = min(1.0, ai / (0.9 * fsa)) ** 0.5
+    p = D * (V + vj) / 2 / (cfg["eta_fan_drive"] * k_int)
     if p_max and T_avail > 0:
         p = max(p, p_max * min(D / T_avail, 1.0) ** 1.5)
     return p
@@ -368,6 +399,9 @@ def corridor(M, s, cfg, d, x_cg, rotor_tmax_n, cruise_static_n, vmax, p_batt_max
     level-flight solution exists at this speed within the fans' thrust, the cruise fan's thrust, the usable wing CL
     and the battery's power limit (lift fans + cruise fan together). Quasi-steady: each speed is solved on its own,
     with no gusts, acceleration or pitch dynamics."""
+    # louvres: open whenever the fans run (open-duct lattice, hole drag), shut when the wing carries it all
+    dc = d
+    d = d.get("open", d)
     S, c = d["geo"]["S_m2"], d["geo"]["mac_m"]
     Ad = math.pi * (P.DUCT_ID * s / 2) ** 2
     xf, xr = P.DUCT_X["front"] * s, P.DUCT_X["rear"] * s
@@ -379,6 +413,10 @@ def corridor(M, s, cfg, d, x_cg, rotor_tmax_n, cruise_static_n, vmax, p_batt_max
     cma = d["Cma"] + d["CLa"] * xc
     cmd = eta * (d["Cmdp"] + d["CLdp"] * xc)
     cld = eta * d["CLdp"]
+    cm0c = dc["Cm0"] + dc["CL0"] * xc
+    cmac = dc["Cma"] + dc["CLa"] * xc
+    cmdc = eta * (dc["Cmdp"] + dc["CLdp"] * xc)
+    cldc = eta * dc["CLdp"]
 
     # Fans buried in a wing turn the air through 90 deg: the through-flow is set by the fan's own exit velocity,
     # v_e = sqrt(T / (rho A)), not by the flight speed (no translational lift is credited), and every kilogram of
@@ -394,6 +432,7 @@ def corridor(M, s, cfg, d, x_cg, rotor_tmax_n, cruise_static_n, vmax, p_batt_max
     for V in np.linspace(0.0, vmax, n):
         q = 0.5 * RHO * V * V
         CD0, k, _ = cruise_polar(s, max(V, 3.0), cfg, d)
+        CD0c, kc, _ = cruise_polar(s, max(V, 3.0), cfg, dc)
         T_avail = cruise_static_n * max(0.0, 1 - V / cfg["cruise_jet_ms"])
         best = None
         vanes = np.radians(np.arange(0.0, cfg.get("vane_max_deg", 0.0) + 0.1, 5.0))
@@ -431,11 +470,11 @@ def corridor(M, s, cfg, d, x_cg, rotor_tmax_n, cruise_static_n, vmax, p_batt_max
                 best = (tot, a, de, L / W, tf / duct_tmax, tr / duct_tmax, p_f, p_c, D, ram, T_avail, th)
         if q > 0:
             # fully wing-borne: alpha and pitch surfaces from the 2 x 2 trim equations, fans off
-            Mx = np.array([[d["CLa"], cld], [cma, cmd]])
-            a_w, de_w = np.linalg.solve(Mx, np.array([W / (q * S) - d["CL0"], -cm0]))
+            Mx = np.array([[dc["CLa"], cldc], [cmac, cmdc]])
+            a_w, de_w = np.linalg.solve(Mx, np.array([W / (q * S) - dc["CL0"], -cm0c]))
             CLw = W / (q * S)
             if (-0.035 <= a_w <= math.radians(cfg["alpha_max_deg"]) + 1e-9 and abs(de_w) <= math.radians(20) and CLw <= cl_use + 1e-9):
-                Dw = q * S * (CD0 + k * CLw * CLw)
+                Dw = q * S * (CD0c + kc * CLw * CLw)
                 if Dw <= T_avail:
                     pc = edf_power_w(Dw, V, cfg, T_avail, p_cruise_max)
                     if pc <= p_batt_max and (best is None or pc < best[0]):
@@ -459,10 +498,11 @@ def corridor(M, s, cfg, d, x_cg, rotor_tmax_n, cruise_static_n, vmax, p_batt_max
 
 # ---------------------------------------------------------------------------------------------------
 def size_mini():
+    GEO.set_variant("mini")
     cfg = SCALES["mini"]
     s = cfg["scale"]
     d = aero_at(s)
-    dc = aero_at(s, "closed")
+    dc = None
     items = mass_items("mini", {"items": mini_components()})
     xc = P.duct_centre_x()
     pk = battery_mini(cfg)
@@ -509,21 +549,24 @@ def size_mini():
 
 
 def aero_summary(d, x_cg, dc=None):
-    """Static margin with the ducts open (holes) and closed (covered) bound the real case: a stopped fan, its hub and
-    stators block part of the duct. The design gate is the margin at 25 % blockage (linear between the two)."""
-    sm_o = A.static_margin(d, x_cg)
-    sm_c = A.static_margin(dc, x_cg) if dc else sm_o
-    return {"sm_open_pct": sm_o, "sm_closed_pct": sm_c, "sm_blocked25_pct": 0.75 * sm_o + 0.25 * sm_c,
-            "x_np_closed_m": dc["x_np_m"] if dc else d["x_np_m"],"S_m2": d["geo"]["S_m2"], "span_m": d["geo"]["span_m"], "AR": d["geo"]["AR"], "mac_m": d["geo"]["mac_m"],
-            "x_np_m": d["x_np_m"], "x_np_wing_stab_m": d["x_np_wing_m"], "CLa": d["CLa"], "sm_pct": A.static_margin(d, x_cg),
-            "Cma_fus": d["Cma_fus"]}
+    """d: the cruise set (louvres shut, carrying 'open'). The gate is the static margin with the louvres shut - the
+    cruise case and the forward-most neutral point. With the louvres open (fans running, or stuck open) the neutral
+    point moves aft and the margin grows."""
+    do = d.get("open", d)
+    sm_c = A.static_margin(d, x_cg)
+    sm_o = A.static_margin(do, x_cg)
+    return {"sm_open_pct": sm_o, "sm_closed_pct": sm_c, "sm_gate_pct": sm_c, "x_np_closed_m": d["x_np_m"],
+            "x_np_open_m": do["x_np_m"], "S_m2": d["geo"]["S_m2"], "span_m": d["geo"]["span_m"], "AR": d["geo"]["AR"],
+            "mac_m": d["geo"]["mac_m"], "x_np_m": d["x_np_m"], "x_np_wing_stab_m": d["x_np_wing_m"], "CLa": d["CLa"],
+            "sm_pct": sm_c, "Cma_fus": d["Cma_fus"]}
 
 
 def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None = None, pilots: int = 1, verbose=False,
               with_corridor: bool = True, powertrain: str = "hybrid", probe_mass: float | None = None,
-              p_peak_kw: float = 0.0, t_static_min: float = 0.0):
+              p_peak_kw: float = 0.0, t_static_min: float = 0.0, variant: str = "full"):
     """k scales the whole aircraft (k = 1: 9.95 m long, 1.06 m ducts). powertrain: 'hybrid' (turbogenerator +
     battery, the baseline) or 'battery' (all-electric)."""
+    GEO.set_variant(variant)
     cfg = dict(SCALES["full"])
     hy = cfg["hybrid"]
     hybrid = powertrain == "hybrid"
@@ -533,7 +576,7 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
         cfg["battery"] = dict(cfg["battery"], wh_per_kg=wh_per_kg)
     s = k
     d = aero_at(s)
-    dc = aero_at(s, "closed")
+    dc = None
     cl_use = usable_cl(d, P.duct_centre_x() * s, cfg)
     pilot = 100.0 * pilots
     xc = P.duct_centre_x()
@@ -569,7 +612,7 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
         vv = np.linspace(1.1 * vst, 1.15 * v_cruise, 30)
         dd = np.array([cruise_power_w(M, s, v, cfg, d)[1] for v in vv])
         T_static = float(1.15 * np.max(dd / np.maximum(1 - vv / cfg["cruise_jet_ms"], 0.05)))
-        cruise_kw = float(1.15 * np.max(dd * vv)) / cfg["eta_cruise"] / 1000
+        cruise_kw = float(1.15 * np.max([edf_power_w(dx, vx, cfg, 0.0, None) for dx, vx in zip(dd, vv)])) / 1000
         if t_static_min > T_static:            # the transition (lift-duct momentum drag) needs more thrust than cruise
             cruise_kw *= t_static_min / T_static
             T_static = t_static_min
@@ -603,23 +646,25 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
         extra = [
             ("pilot (with clothing, headset)", 3.40, 0.0, -0.05, pilot, "payload"),
             ("seat, harness, controls, pedals", 3.55, 0.0, -0.20, 22.0, "systems"),
-            ("flight-control computers (triplex), air data, AHRS, radios, displays", 2.40, 0.0, -0.10, 18.0, "systems"),
-            ("ballistic recovery parachute", 5.08, 0.0, 0.20, 22.0, "systems"),
+            ("flight-control computers (triplex), air data, AHRS, radios, displays", 2.65, 0.0, 0.07, 18.0, "systems"),
+            ("ballistic recovery parachute", P.CRUISE_FAN_X - 0.45, 0.0, 0.25, 22.0, "systems"),
             ("HV harness, contactors, fuses", xc, 0.0, -0.25, 0.03 * b_sys + 8.0, "systems"),
-            ("battery thermal management", 5.0, 0.0, -0.30, 0.04 * b_sys + 6.0, "systems"),
+            ("battery thermal management", 2.2, 0.0, -0.1, 0.04 * b_sys + 6.0, "systems"),
             ("lift motors x8", xc, 0.0, 0.0, lift_motor_kg, "propulsion"),
-            ("lift inverters x8", xc, 0.0, -0.10, lift_inv_kg, "propulsion"),
+            ("lift inverters x8 (aft body behind the main spar)", P.DUCT_X["rear"] + P.DUCT_ID / 2 + P.DUCT_LIP + 0.50, 0.0, 0.0,
+             lift_inv_kg, "propulsion"),
             ("lift fans, hubs, pitch-fixed blades x8", xc, 0.0, 0.0, fans_kg, "propulsion"),
-            ("cruise fan, motor, inverter (at the intake throat)", P.CRUISE_FAN_X, 0.0, -0.02, cruise_kg, "propulsion"),
-            ("thrust tube to the nozzle (hot-section liner aft of the turbine exhaust)", (P.CRUISE_FAN_X + P.NOZZLE["x0"]) / 2, 0.0,
+            ("cruise fan, motor, inverter", P.CRUISE_FAN_X, 0.0, P.CRUISE_FAN_Z, cruise_kg, "propulsion"),
+            ("intake ducts (2)", 2.9, 0.0, -0.2, 12.0 * s * s, "structure"),
+            ("thrust tube to the nozzle (hot-section liner behind the turbine)", (P.CRUISE_FAN_X + P.NOZZLE["x0"]) / 2, 0.0,
              -0.02, 18.0 * s * s, "propulsion"),
             ("landing gear (retractable)", xc + 0.2, 0.0, -0.55, 0.035 * M, "structure"),
         ]
         if hybrid:
             extra += [
-                ("turbogenerator (turboshaft + generator + rectifier), behind the pilot", TURBO_X, 0.0, 0.05, hyb["generator_kg"], "propulsion"),
-                ("turbine exhaust pipes (2) either side of the cruise fan, insulated", 5.4, 0.0, 0.05, 2 * 2.0 * 1.2 * s, "propulsion"),
-                ("fuel (Jet A, wing tanks outboard of the ducts)", FUEL_X, 0.0, 0.0, hyb["fuel_kg"], "fuel"),
+                ("turbogenerator (turboshaft + generator + rectifier), in the nose", TURBO_X, 0.0, -0.05, hyb["generator_kg"], "propulsion"),
+                ("turbine exhaust pipes (2, insulated) beside the cockpit to the thrust tube", 3.2, 0.0, 0.10, 16.0 * s, "propulsion"),
+                ("fuel (Jet A, wing tanks)", FUEL_X, 0.0, 0.0, hyb["fuel_kg"], "fuel"),
                 ("fuel tanks, pumps, lines", FUEL_X, 0.0, 0.0, hy["fuel_system_frac"] * hyb["fuel_kg"] + 5.0, "systems"),
             ]
         items = mass_items("full", {"items": extra}, s)
@@ -673,7 +718,8 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
         "battery_kg": batt_kg, "battery_kwh": batt_kwh, "battery_x_m": xb_c, "battery_x_unclipped_m": xb,
         "cg_m": (cg * s).tolist(), "duct_centre_x_m": xc * s, "cg_offset_mm": (cg[0] - xc) * s * 1000,
         "disk_loading_kg_m2": M / A_disk, "hover_kw": p_h / 1000, "hover_kg_per_kw": M / (p_h / 1000),
-        "hover_c_rate": max(0.0, p_h / 1000 - (hyb["generator_kw"] if hybrid else 0.0)) / batt_kwh,   # the battery's share "battery_peak_kw": p_batt_max / 1000, "cl_usable": cl_use,
+        "hover_c_rate": max(0.0, p_h / 1000 - (hyb["generator_kw"] if hybrid else 0.0)) / batt_kwh,   # the battery's share
+        "battery_peak_kw": p_batt_max / 1000, "cl_usable": cl_use,
         "powertrain": powertrain, "hybrid": dict(hyb, turbine_out_power_frac=batt_kwh * cfg["battery"]["c_peak"] / (p_h / 1000),
                                                  cg_shift_fuel_burn_mm=1000 * ((cg[0] * s * M - hyb["fuel_kg"] * FUEL_X * s) / (M - hyb["fuel_kg"])
                                                                                - cg[0] * s))
@@ -688,13 +734,14 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
     }
 
 
-def size_full_with_corridor(mission: dict = MISSION, k: float = 1.0, powertrain: str = "hybrid", rounds: int = 4):
+def size_full_with_corridor(mission: dict = MISSION, k: float = 1.0, powertrain: str = "hybrid", rounds: int = 4,
+                            variant: str = "full"):
     """size_full, then size the cruise fan's thrust and the battery's power for the transition as well. Each round
     runs the corridor twice - with unlimited cruise-fan thrust (what thrust does the cheapest path need?) and with the
     real fan but unlimited battery power (what peak power?) - and re-sizes with both, until they stop moving."""
     peak, treq = 0.0, 0.0
     for _ in range(rounds):
-        r = size_full(mission, k=k, powertrain=powertrain, with_corridor=False, p_peak_kw=peak, t_static_min=treq)
+        r = size_full(mission, k=k, powertrain=powertrain, with_corridor=False, p_peak_kw=peak, t_static_min=treq, variant=variant)
         if not r["converged"]:
             break
         cfg = SCALES["full"]
@@ -706,7 +753,7 @@ def size_full_with_corridor(mission: dict = MISSION, k: float = 1.0, powertrain:
         peak, treq = max(peak, p_new), max(treq, t_new)
         if not moved:
             break
-    return size_full(mission, k=k, powertrain=powertrain, with_corridor=True, p_peak_kw=peak, t_static_min=treq)
+    return size_full(mission, k=k, powertrain=powertrain, with_corridor=True, p_peak_kw=peak, t_static_min=treq, variant=variant)
 
 
 def corridor_unlimited(r: dict, k: float, thrust: float | None = None) -> list:
@@ -718,28 +765,37 @@ def corridor_unlimited(r: dict, k: float, thrust: float | None = None) -> list:
 
 
 def trade_study():
-    """Full-scale closure across aircraft size k, mission distance and powertrain: the series hybrid (baseline), the
-    hybrid with the safe turbine-out rule (battery alone holds a 60 s hover), and all-electric at today's and a
-    future pack energy density. Every row carries the same 20-minute VFR reserve."""
+    """Full-scale closure: the mini's own proportions scaled up (the reason the full scale has bigger fans), then the
+    full-scale shape across mission distance and powertrain (series hybrid; hybrid whose battery alone can hold a 60 s
+    hover; all-electric at today's and a future pack energy density), and one size up. Every row carries the same
+    20-minute VFR reserve; hybrid rows also size the battery and cruise fan for the transition corridor."""
     rows = []
-    for k in (1.0, 1.2):
-        for km in (10.0, 20.0, 50.0):
-            for label, pt, wh, tout in (("hybrid", "hybrid", None, 0.0), ("hybrid, turbine-out hover on battery", "hybrid", None, 60.0),
-                                        ("battery 220 Wh/kg", "battery", 220.0, 0.0), ("battery 300 Wh/kg", "battery", 300.0, 0.0)):
-                SCALES["full"]["hybrid"]["turbine_out_hover_s"] = tout
-                try:
-                    if pt == "hybrid":      # battery power sized for the transition peak too, as for the baseline
-                        r = size_full_with_corridor(dict(MISSION, cruise_km=km), k=k, powertrain=pt)
-                    else:                   # all-electric rows: hover headroom only (they do not close even so)
-                        r = size_full(dict(MISSION, cruise_km=km), k=k, wh_per_kg=wh, with_corridor=False, powertrain=pt)
-                finally:
-                    SCALES["full"]["hybrid"]["turbine_out_hover_s"] = 0.0
-                ok = bool(r["converged"])
-                rows.append({"k": k, "length_m": P.FUS_LEN * k, "duct_m": P.DUCT_ID * k, "cruise_km": km, "powertrain": label,
-                             "mtow_kg": round(r["mtow_kg"]) if ok else None, "battery_kg": round(r["battery_kg"]) if ok else None,
-                             "fuel_kg": round(r["hybrid"].get("fuel_kg", 0.0)) if ok else None,
-                             "hover_kw": round(r["hover_kw"]) if ok else None, "closes": ok})
-                print("  trade", rows[-1], flush=True)
+    cases = [("mini proportions (1.06 m fans)", "mini", 1.0, 20.0, "hybrid", None, 0.0),
+             ("full shape", "full", 1.0, 10.0, "hybrid", None, 0.0),
+             ("full shape", "full", 1.0, 20.0, "hybrid", None, 0.0),
+             ("full shape", "full", 1.0, 50.0, "hybrid", None, 0.0),
+             ("full shape, battery alone holds a 60 s hover", "full", 1.0, 20.0, "hybrid", None, 60.0),
+             ("full shape", "full", 1.0, 20.0, "battery", 220.0, 0.0),
+             ("full shape", "full", 1.0, 20.0, "battery", 300.0, 0.0),
+             ("full shape, 1.2x larger", "full", 1.2, 20.0, "hybrid", None, 0.0)]
+    for label, var, k, km, pt, wh, tout in cases:
+        SCALES["full"]["hybrid"]["turbine_out_hover_s"] = tout
+        try:
+            if pt == "hybrid":
+                r = size_full_with_corridor(dict(MISSION, cruise_km=km), k=k, powertrain=pt, variant=var)
+            else:                   # all-electric rows: hover headroom only (they do not close even so)
+                r = size_full(dict(MISSION, cruise_km=km), k=k, wh_per_kg=wh, with_corridor=False, powertrain=pt, variant=var)
+        finally:
+            SCALES["full"]["hybrid"]["turbine_out_hover_s"] = 0.0
+        ok = bool(r["converged"])
+        GEO.set_variant(var)
+        rows.append({"case": label, "k": k, "length_m": P.FUS_LEN * k, "duct_m": P.DUCT_ID * k, "cruise_km": km,
+                     "powertrain": ("hybrid" if pt == "hybrid" else f"battery {wh:.0f} Wh/kg"),
+                     "mtow_kg": round(r["mtow_kg"]) if ok else None, "battery_kg": round(r["battery_kg"]) if ok else None,
+                     "fuel_kg": round(r["hybrid"].get("fuel_kg", 0.0)) if ok and r["hybrid"] else None,
+                     "hover_kw": round(r["hover_kw"]) if ok else None, "closes": ok})
+        print("  trade", rows[-1], flush=True)
+    GEO.set_variant("full")
     return rows
 
 
@@ -753,13 +809,13 @@ def main() -> int:
     (ROOT / "analysis" / "v20_sizing.json").write_text(json.dumps(out, indent=1, default=float))
     m, f = mini, full
     print(f"MINI  {m['mass_kg'] * 1000:.0f} g  CG offset {m['cg_offset_mm']:+.1f} mm  batt x {m['battery_x_m'] * 1000:.0f} mm "
-          f"(unclipped {m['battery_x_unclipped_m'] * 1000:.0f})  SM open/25%/closed {m['aero']['sm_open_pct']:.1f}/{m['aero']['sm_blocked25_pct']:.1f}/{m['aero']['sm_closed_pct']:.1f} %  T/W lift {m['thrust_to_weight_lift']:.2f}  "
+          f"(unclipped {m['battery_x_unclipped_m'] * 1000:.0f})  SM louvres shut (gate) {m['aero']['sm_closed_pct']:.1f} % open {m['aero']['sm_open_pct']:.1f} %  T/W lift {m['thrust_to_weight_lift']:.2f}  "
           f"hover {m['hover_w']:.0f} W ({m['hover_min']:.1f} min)  cruise {m['cruise']['v_best_range']:.1f} m/s {m['cruise']['power_w']:.0f} W "
           f"({m['cruise']['min']:.1f} min, {m['cruise']['range_km']:.1f} km)  stall {m['stall_ms']:.1f} m/s (CL {m['cl_usable']:.2f})  trim {m['trim_16ms']}  limit {m['rotor_tmax_limit']}  {m['airspeeds']}")
     print("      groups", {k: round(v * 1000) for k, v in m["groups_kg"].items()})
     print(f"FULL  MTOW {f['mtow_kg']:.0f} kg  battery {f['battery_kg']:.0f} kg / {f['battery_kwh']:.1f} kWh  hover {f['hover_kw']:.0f} kW "
           f"DL {f['disk_loading_kg_m2']:.0f} kg/m2  cruise {f['cruise']['v_kmh']:.0f} km/h {f['cruise']['power_kw']:.0f} kW L/D {f['cruise']['L_over_D']:.1f}  "
-          f"CG offset {f['cg_offset_mm']:+.0f} mm  batt x {f['battery_x_m']:.2f} (unclipped {f['battery_x_unclipped_m']:.2f})  SM open/25%/closed {f['aero']['sm_open_pct']:.1f}/{f['aero']['sm_blocked25_pct']:.1f}/{f['aero']['sm_closed_pct']:.1f} %  C {f['hover_c_rate']:.1f}  "
+          f"CG offset {f['cg_offset_mm']:+.0f} mm  batt x {f['battery_x_m']:.2f} (unclipped {f['battery_x_unclipped_m']:.2f})  SM shut {f['aero']['sm_closed_pct']:.1f} % open {f['aero']['sm_open_pct']:.1f} %  C {f['hover_c_rate']:.1f}  "
           f"stall {f['stall_ms']:.1f} m/s  trim {f['trim_cruise']}")
     print("      groups", {k: round(v) for k, v in f["groups_kg"].items()}, "energy", {k: round(v, 1) for k, v in f["energy_kwh"].items()})
     print("      hybrid", {k: (round(float(v), 2) if not isinstance(v, (str, dict)) else v) for k, v in f["hybrid"].items()})

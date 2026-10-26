@@ -1,27 +1,22 @@
-"""SKYFORGE V20 "Falcon Jet": one outer mould line, two scales.
+"""SKYFORGE V20 "Falcon Jet" (rev B): one layout, two scales.
 
 All master dimensions are full scale, in metres, in the aircraft frame:
     x aft from the nose tip, y to starboard, z up (wing reference plane z = 0).
-The mini is the same outer mould line at SCALE["mini"] = 0.1 (6-inch props in the lift ducts); what changes
-between the scales is what sits inside it (structure, motors, battery, payload), not the shape.
+The mini is this shape at SCALE["mini"] = 0.1 (4-inch props in the lift ducts). The person-carrying version keeps the
+layout and lines but widens the shoulders for bigger fans (FULL_VARIANT below, switched in with use("full")).
 
 Layout logic (lift + cruise), and why it looks the way it does:
-  * Four ducted lift fans in a 2 x 2 square. Their centre is the hover balance point, so the CG goes there
-    (the battery position is the trim variable). Every fan then lifts a quarter of the weight.
-  * For wing-borne flight the neutral point has to sit behind that same point. Ducts sunk in a wing sit at
-    about half the local chord, while a delta's neutral point sits at about a third of its mean chord - so the
-    ducts go into the forward half of a big delta (strakes beside the cockpit and the wing roots), the wing
-    carries on well behind them, and all-moving stabilators on the tail cone add the rest of the margin.
-    Earlier layouts with the ducts spread through the whole wing were 15-25 % unstable (docs/V20_FALCON_JET.md).
-  * One ducted cruise fan in the tail cone, fed by two fighter-style side intakes, exhausting through a round
-    nozzle at the tail - the "jet". Twin canted fins with rudders; elevons on the outer wing.
-  * The ducts stay open in cruise (fixed-pitch fans stopped and parked). Louvre doors would cut cruise drag but put
-    lift back over the front ducts and cost about 10 % static margin; they are not in this layout. A stopped fan
-    still blocks part of its duct, so the stability gate is the margin at 25 % blockage, between open and closed.
-  * Stabilators of 3.2 m semi-span keep that blocked-duct margin >= 5 %.
-  * Fan size is the full-scale design driver. With 1.06 m ducts (v0.7 draft) the disk loading was over 350 kg/m2 and
-    the full-scale aircraft did not close under honest assumptions; 1.56 m ducts (6-inch props on the mini) need
-    wider strakes and a closer duct spacing, and close as a series hybrid (docs/V20_FALCON_JET.md, trade study).
+  * Four ducted lift fans in a 2 x 2 square, hidden in the shoulders of a wide, blended F-35-style body beside the
+    cockpit. Their centre is the hover balance point, so the CG goes there (the battery is the trim weight).
+  * Louvres close the ducts top and bottom in cruise (rev A had open holes): the aircraft is then a clean jet, the
+    wing keeps its lift over the ducts and the hole drag is gone. The bottom louvres double as exit vanes that turn
+    the fan efflux aft in transition (as on the XV-5).
+  * With the louvres shut the neutral point moves forward (lift comes back over the front ducts), so the gate is the
+    static margin with the ducts closed. The fans therefore sit as far forward as the body allows - right beside the
+    pilot - and the trapezoidal outer wings and all-moving stabilators sit well aft.
+  * One jet: F-35-style side intakes under the chines feed the cruise fan, which sits close to the CG (the airframe is
+    tail-heavy; an aft engine would need a nose full of ballast); a light thrust tube carries its jet to the round
+    nozzle. Twin canted fins with rudders on the aft body, all-moving stabilators.
 """
 from __future__ import annotations
 
@@ -32,30 +27,32 @@ NOSE_SHIFT = 1.20             # the forebody ahead of the strakes (slender nose,
 
 # ---------------------------------------------------------------------------------------------------
 # lift ducts (full scale)
-DUCT_ID = 1.56                 # mini: 156 mm, a 6-inch (152.4 mm) prop with a 1.8 mm tip gap
+DUCT_ID = 1.06                 # mini: 106 mm, a 4-inch (101.6 mm) prop with a 2.2 mm tip gap
 DUCT_LIP = 0.06                # radial width of the bell-mouth lip (outer mould line)
-DUCT_DEPTH = 0.22              # duct depth at the fan plane (mini 22 mm)
-DUCT_Y = 1.39                  # duct centres at y = +/-1.39 (inner lip 0.045 m clear of the fuselage side)
-DUCT_X = {"front": 2.46 + NOSE_SHIFT, "rear": 4.26 + NOSE_SHIFT}   # 1.80 m apart: 0.12 m of strake between the lips
-                                                                   # (the centre spar runs through it)
+DUCT_DEPTH = 0.276             # duct depth (mini 27.6 mm): the full depth of the body shoulder, louvre to louvre
+BODY_Y = 1.95                  # the blended body's shoulders reach out to here; the thin outer wing starts outboard
+BODY_HALF_T = 0.15             # shoulder half-thickness (full scale m): holds the ducts and louvres
+DUCT_Y = 1.18                  # duct centres at y = +/-1.18 (inner lip 0.04 m clear of the fuselage side)
+DUCT_X = {"front": 2.71, "rear": 4.01}   # 1.30 m apart: 0.12 m of body between the lips (the centre spar runs through it)
 DUCT_MARGIN = 0.10             # minimum skin between the duct lip and any planform edge
 
 # ---------------------------------------------------------------------------------------------------
 # planform (half, starboard): strake/wing outline from the nose chine to the fuselage side at the trailing edge
-_OUT = [(0.70, 0.27), (1.40, 1.40), (1.90, 2.35), (4.55, 3.55), (5.50, 3.55), (7.05, 1.90), (7.05, 0.50)]
-OUTLINE = [(x + NOSE_SHIFT, y) for x, y in _OUT]
-ELEVON = {"y0": 2.35, "y1": 3.45, "chord_frac": 0.22}
+# planform (half, starboard, absolute x): chine, body shoulder, outer-wing leading edge to the tip, tip trailing edge,
+# forward-swept trailing edge back to the body, body trailing edge to the fuselage side
+OUTLINE = [(1.10, 0.30), (1.80, 1.05), (2.35, 1.90), (4.90, 3.80), (6.30, 3.80), (7.00, 1.95), (7.80, 1.25), (8.20, 0.55)]
+ELEVON = {"y0": 2.30, "y1": 3.62, "chord_frac": 0.25}
 
 # all-moving stabilators on the tail cone (fighter-style), just below the wing plane
-STAB = {"x_le_root": 7.05 + NOSE_SHIFT, "y_root": 0.42, "y_tip": 3.20, "c_root": 2.00, "c_tip": 0.70,
-        "le_sweep_deg": 30.0, "z": -0.05}
+STAB = {"x_le_root": 8.30, "y_root": 0.42, "y_tip": 3.40, "c_root": 2.50, "c_tip": 1.00,
+        "le_sweep_deg": 38.0, "z": -0.05}
 
 # ---------------------------------------------------------------------------------------------------
 # fuselage (half-width, z bottom, z top) at stations x
 FUS = [
     (0.00, 0.000, 0.000, 0.000),
-    (0.50, 0.110, -0.090, 0.100),
-    (1.30, 0.330, -0.300, 0.270),
+    (0.50, 0.160, -0.140, 0.140),
+    (1.30, 0.390, -0.350, 0.300),
     (2.20, 0.450, -0.400, 0.330),
     (3.10, 0.495, -0.440, 0.360),
     (4.20, 0.505, -0.450, 0.360),
@@ -71,25 +68,63 @@ CANOPY = {"x0": 2.05, "x1": 4.75, "z_top": 0.84, "half_width": 0.34, "x_peak": 3
 # ---------------------------------------------------------------------------------------------------
 # cruise fan, intakes, nozzle
 CRUISE_FAN_D = 0.64            # mini: 64 mm EDF (the V18 Freewing E7206)
-CRUISE_FAN_X = 5.70           # both scales: the cruise fan sits at the side intakes' throat, near the CG, and a
-                              # thrust tube carries its jet (and, full scale, the turbine exhaust) to the nozzle
-CRUISE_FAN_X_MINI = 5.70      # mini: EDF at the intake throat, a film thrust tube runs to the nozzle
+CRUISE_FAN_X = 4.10           # the cruise fan's centre, between the rear lift fans, near the CG
+CRUISE_FAN_Z = -0.08
+CRUISE_FAN_X_MINI = 4.10      # mini: the 64 mm EDF in the same place
 NOZZLE = {"x0": 9.45, "x1": 10.10, "r0": 0.33, "r1": 0.27}
-INTAKE = {"x0": 5.15, "x1": 6.20, "y_out": 0.68, "z0": -0.40, "z1": -0.15}   # under the rear ducts' lower lip
+# F-35-style side intakes: the mouths sit just ahead of the front lift fans; behind them the duct carries on as a cheek
+# under the body shoulder (inboard of the fans' lips, below their exit louvres) back to the cruise fan
+INTAKE = {"x0": 1.60, "x_cheek": 2.10, "x1": 4.00, "y_out": 0.72, "y_cheek": 0.57, "z0": -0.42, "z1": 0.05, "z_cheek": -0.17}
 
 # ---------------------------------------------------------------------------------------------------
 # twin canted fins on the fuselage shoulders
-FIN = {"x_root_le": 7.55, "root_chord": 1.55, "tip_chord": 0.60, "height": 1.15, "le_sweep_deg": 45.0,
-       "cant_deg": 22.0, "y_root": 0.38, "z_root": 0.30, "rudder_frac": 0.30}
+FIN = {"x_root_le": 6.45, "root_chord": 1.55, "tip_chord": 0.55, "height": 1.25, "le_sweep_deg": 40.0,
+       "cant_deg": 25.0, "y_root": 0.95, "z_root": 0.10, "rudder_frac": 0.30}
 
 # ---------------------------------------------------------------------------------------------------
 # landing gear (tricycle). The mains sit just behind the rear ducts (the duct band is no place for a wheel);
 # a VTOL lands vertically, so the long wheelbase only costs a heavier nose-wheel share
-GEAR = {"nose_x": 1.90, "main_dx_behind_cg": 1.85, "main_y": 0.80, "height": 0.62, "wheel_d": 0.36,
+GEAR = {"nose_x": 1.70, "main_dx_behind_cg": 1.45, "main_y": 0.80, "height": 0.62, "wheel_d": 0.36,
         "nose_wheel_d": 0.28}
 
 # section thickness (fraction of chord, symmetric thin section)
-T_C = 0.055
+T_C = 0.05
+
+# ---------------------------------------------------------------------------------------------------
+# The person-carrying version. A VTOL cannot simply be scaled up: at constant proportions the disk loading grows with
+# size (mass ~ k^3, fan area ~ k^2), and with the mini's 1.06 m-equivalent fans the full-scale aircraft needs more
+# than 350 kg/m2 and does not close (trade study). The full scale therefore keeps the mini's layout and lines but
+# widens the body shoulders for 1.56 m fans (2.2x the fan area), with a bigger outer wing and stabilators, a longer
+# tail cone and the intakes moved forward. With the louvres shut its static margin is positive but small: it relies on
+# its triplex fly-by-wire for handling, as fighters do. The mini keeps the 5 % margin a simple autopilot wants.
+FULL_VARIANT = {
+    "DUCT_ID": 1.56, "DUCT_Y": 1.43, "DUCT_X": {"front": 2.56, "rear": 4.36}, "BODY_Y": 2.45,
+    "OUTLINE": [(0.90, 0.30), (1.50, 1.40), (2.00, 2.45), (4.90, 4.40), (6.50, 4.40), (7.40, 2.45), (8.30, 1.50), (8.80, 0.55)],
+    "ELEVON": {"y0": 2.85, "y1": 4.20, "chord_frac": 0.25},
+    "STAB": {"x_le_root": 8.90, "y_root": 0.42, "y_tip": 4.00, "c_root": 3.00, "c_tip": 1.20, "le_sweep_deg": 38.0, "z": -0.05},
+    "FUS": [(0.00, 0.000, 0.000, 0.000), (0.50, 0.160, -0.140, 0.140), (1.30, 0.390, -0.350, 0.300),
+            (2.20, 0.450, -0.400, 0.330), (3.10, 0.495, -0.440, 0.360), (4.20, 0.505, -0.450, 0.360),
+            (6.40, 0.505, -0.430, 0.340), (8.40, 0.450, -0.370, 0.320), (10.00, 0.380, -0.330, 0.300),
+            (10.80, 0.350, -0.320, 0.300)],
+    "NOZZLE": {"x0": 10.30, "x1": 10.95, "r0": 0.33, "r1": 0.27},
+    "INTAKE": {"x0": 1.30, "x_cheek": 1.80, "x1": 3.80, "y_out": 0.72, "y_cheek": 0.57, "z0": -0.42, "z1": 0.05, "z_cheek": -0.17},
+    "FIN": {"x_root_le": 7.00, "root_chord": 1.75, "tip_chord": 0.60, "height": 1.40, "le_sweep_deg": 40.0,
+            "cant_deg": 25.0, "y_root": 1.15, "z_root": 0.10, "rudder_frac": 0.30},
+    "GEAR": {"nose_x": 1.70, "main_dx_behind_cg": 1.75, "main_y": 0.80, "height": 0.62, "wheel_d": 0.36, "nose_wheel_d": 0.28},
+    "CRUISE_FAN_X": 4.45,      # behind the pilot's seat: the intake ducts pass the seat before they turn in
+}
+_BASE = {k: globals()[k] for k in FULL_VARIANT}
+VARIANT = "mini"
+
+
+def use(variant: str) -> None:
+    """Switch the module's shape to the mini outline ('mini') or the person-carrying one ('full')."""
+    global VARIANT, FUS_LEN
+    src = FULL_VARIANT if variant == "full" else _BASE
+    for k, v in src.items():
+        globals()[k] = v
+    FUS_LEN = globals()["FUS"][-1][0]
+    VARIANT = "full" if variant == "full" else "mini"
 
 
 def duct_centres():

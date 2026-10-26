@@ -17,8 +17,9 @@ SERVO6_FUNCTION,78
 SERVO7_FUNCTION,77
 SERVO8_FUNCTION,78
 SERVO9_FUNCTION,21
-# exit vanes: driven by a Lua script (vane angle from forward-speed demand, differential for yaw) - not written
-# yet, an open item; with no script the outputs hold their trim (vanes neutral)
+# bottom louvres / exit vanes: driven by a Lua script (open in VTOL modes, shut in fixed-wing modes, angled aft by the
+# forward-speed demand in transition, differential for yaw) - not written yet, an open item; with no script the
+# outputs hold their trim - set the trim to OPEN before any hover test
 SERVO10_FUNCTION,94
 SERVO11_FUNCTION,70
 SERVO12_FUNCTION,95
@@ -31,12 +32,12 @@ BATT_CAPACITY,9000
 BATT_ARM_VOLT,14.8
 BATT_LOW_VOLT,13.2
 BATT_CRT_VOLT,12.4
-# lift motors back off above this total current (hover ~19 A); the EDF runs to full throttle
+# lift motors back off above this total current (hover ~28 A); the EDF runs to full throttle
 Q_M_BAT_CURR_MAX,76
 THR_MAX,100
-# --- speeds from the model (calibrate in flight test): wing-borne minimum ~13.6 m/s
-# (trimmed CL 0.40 at 14 deg, no vortex lift credited). ArduPlane 4.5+ names; older: ARSPD_FBW_MIN/MAX
-AIRSPEED_MIN,19
-AIRSPEED_CRUISE,20
+# --- speeds from the model (calibrate in flight test): wing-borne minimum ~11.7 m/s
+# (trimmed CL 0.51 at 14 deg, no vortex lift credited). ArduPlane 4.5+ names; older: ARSPD_FBW_MIN/MAX
+AIRSPEED_MIN,16
+AIRSPEED_CRUISE,18
 AIRSPEED_MAX,22
-Q_ASSIST_SPEED,17
+Q_ASSIST_SPEED,15

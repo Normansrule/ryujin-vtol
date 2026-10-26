@@ -30,7 +30,7 @@ from mesh import (box, cyl, diff, inter, loft_rings, mirror_y, naca_t, revolve, 
 
 R_ID = P.DUCT_ID / 2
 R_OUT = R_ID + P.DUCT_LIP
-TIP_GAP = 0.018             # blade tip to duct wall (full-scale m): mini 1.8 mm, a 6-inch prop in a 156 mm duct
+TIP_GAP = 0.022             # blade tip to duct wall (full-scale m): mini 2.2 mm, a 4-inch prop in a 106 mm duct
 
 
 # ---------------------------------------------------------------------------------------------------
@@ -47,11 +47,33 @@ def _outline_fn():
 
 
 LE_X, TE_X, Y_TIP = _outline_fn()
+SPAR_MAIN_X = 4.80          # spanwise main spar (mini: 6 mm carbon tube), behind the rear ducts (set by refresh)
+SPAR_CENTRE_X = 3.36        # spanwise centre spar through the strip between the front and rear ducts (set by refresh)
+
+
+def refresh() -> None:
+    """Recompute everything derived from the shape parameters (after v20params.use)."""
+    global R_ID, R_OUT, LE_X, TE_X, Y_TIP, SPAR_MAIN_X, SPAR_CENTRE_X
+    R_ID = P.DUCT_ID / 2
+    R_OUT = R_ID + P.DUCT_LIP
+    LE_X, TE_X, Y_TIP = _outline_fn()
+    SPAR_CENTRE_X = P.duct_centre_x()
+    SPAR_MAIN_X = P.DUCT_X["rear"] + R_OUT + 0.20
+
+
+def set_variant(variant: str) -> None:
+    P.use(variant)
+    refresh()
 
 
 def wing_half_thickness(x, y, chord, u):
-    """Thin symmetric section, thickened smoothly around each duct into a fan fairing."""
+    """Thin symmetric section outboard; inboard of BODY_Y the 'wing' is the blended body's shoulder, a thick flat-topped
+    section that holds the ducts and louvres and fairs into the fuselage sides (the F-35 look)."""
     h = naca_t(u, P.T_C) * chord
+    le, te = x - u * chord, x + (1 - u) * chord
+    body = P.BODY_HALF_T * smoothstep(0.0, 0.9, x - le) * smoothstep(0.0, 0.9, te - x)
+    blend = 1 - smoothstep(P.BODY_Y - 0.35, P.BODY_Y + 0.15, y)
+    h = np.maximum(h, body * blend)
     fair = np.zeros_like(h)
     for _n, dx, dy in P.duct_centres():
         if dy < 0:
@@ -108,14 +130,17 @@ def duct_ring():
     return revolve(prof, 128)
 
 
-def exit_vanes():
-    """Exit-vane cascade under one duct (as on the XV-5): four flat vanes spanning the exit, hinged spanwise (about y);
-    deflected together they turn the efflux aft for transition thrust, differentially for yaw."""
+def louvres(z0: float, z1: float, n: int = 8):
+    """A louvre cascade across one duct opening (centred at the origin): n flat slats hinged spanwise (about y). Shown
+    closed, as in cruise. On top they open by the fan's own suction; underneath they are the exit vanes, driven by a
+    servo per side to close the duct in cruise, open it for hover and turn the efflux aft in transition."""
     out = []
-    for f in (-0.57, -0.19, 0.19, 0.57):
-        x = f * R_ID
-        half = math.sqrt(max(R_ID ** 2 - x ** 2, 0.0)) - 0.02
-        out.append(box(x - 0.07, x + 0.07, -half, half, -P.DUCT_DEPTH / 2 - 0.05, -P.DUCT_DEPTH / 2 - 0.038))
+    pitch = 2 * R_ID / n
+    for k in range(n):
+        x = -R_ID + pitch * (k + 0.5)
+        half = math.sqrt(max(R_ID ** 2 - x ** 2, 0.0)) - 0.012
+        if half > 0.05:
+            out.append(box(x - pitch / 2 + 0.003, x + pitch / 2 - 0.003, -half, half, z0, z1))
     return union(*out)
 
 
@@ -240,21 +265,38 @@ def build_fin():
     return out
 
 
-def build_intake():
-    """Starboard side intake: a raked box on the fuselage side under the strake, open at the front."""
+def intake_mouth_area_m2() -> float:
+    """Both intake mouths (full-scale m2): what the cruise fan can breathe."""
     it = P.INTAKE
-    x0, x1 = it["x0"], it["x1"]
-    w = P.fus_at(x0)[0]
-    outer = Polygon([(w - 0.10, it["z0"]), (it["y_out"], it["z0"] + 0.05), (it["y_out"], it["z1"]), (w - 0.10, it["z1"])])
-    body = trimesh.creation.extrude_polygon(outer, x1 - x0)
-    # extrude_polygon builds along +z from (x, y) = (y, z) here; rotate into the aircraft frame
-    T = np.array([[0, 0, 1, x0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], float)
-    body.apply_transform(T)
-    rake = box(x0 - 0.5, x0 + 0.25, -2, 2, -2, 2)
-    rake.apply_transform(trimesh.transformations.rotation_matrix(math.radians(-25), [0, 0, 1], [x0, it["y_out"], 0]))
+    w = P.fus_at(it["x0"] + 0.1)[0]
+    return 2 * (it["y_out"] - w - 0.035) * (it["z1"] - it["z0"] - 0.09)
+
+
+def build_intake():
+    """Starboard side intake (F-35 style): a raked scoop beside the cockpit just ahead of the front lift fan, then a
+    cheek under the body shoulder - inboard of the fans' lips and below their exit louvres - back to the cruise fan."""
+    it = P.INTAKE
+    xs = np.linspace(it["x0"], it["x1"], 40)
+    rings = []
+    for x in xs:
+        w = P.fus_at(x)[0]
+        g = smoothstep(it["x_cheek"] - 0.25, it["x_cheek"], x)
+        yo = it["y_out"] + (it["y_cheek"] - it["y_out"]) * g
+        zt = it["z1"] + (it["z_cheek"] - it["z1"]) * g
+        fade = 1 - smoothstep(it["x1"] - 0.6, it["x1"], x)
+        yo = w + (yo - w) * fade + 0.004
+        zc, hz = (it["z0"] + zt) / 2, (zt - it["z0"]) / 2
+        ring = []
+        for t in np.linspace(-math.pi / 2, math.pi / 2, 18):
+            ring.append((x, w - 0.15 + (yo - w + 0.15) * math.cos(t) ** 0.3, zc + hz * math.sin(t)))
+        rings.append(np.array(ring))
+    body = loft_rings(rings)
+    rake = box(it["x0"] - 0.6, it["x0"] + 0.20, -2, 2, -2, 2)
+    rake.apply_transform(trimesh.transformations.rotation_matrix(math.radians(-30), [0, 0, 1], [it["x0"], it["y_out"], 0]))
     body = diff(body, rake)
-    inner = box(x0 - 0.2, x1 - 0.25, w + 0.02, it["y_out"] - 0.04, it["z0"] + 0.07, it["z1"] - 0.04)
-    return diff(body, inner)
+    w0 = P.fus_at(it["x0"] + 0.1)[0]
+    mouth = box(it["x0"] - 0.3, it["x0"] + 0.45, w0 + 0.0, it["y_out"] - 0.035, it["z0"] + 0.045, it["z1"] - 0.045)
+    return diff(body, mouth)
 
 
 def build_nozzle():
@@ -317,14 +359,17 @@ def build_oml(main_x: float):
     nz, cone = build_nozzle()
     parts += [("nozzle", nz, "propulsion"), ("nozzle_cone", cone, "propulsion")]
     ring = duct_ring()
-    vanes = exit_vanes()
+    d2 = P.DUCT_DEPTH / 2
+    top = louvres(d2 + 0.0, d2 + 0.012)
+    bot = louvres(-d2 - 0.012, -d2)
     for n, dx, dy in P.duct_centres():
         r = ring.copy()
         r.apply_translation([dx, dy, 0])
         parts.append((f"duct_{n}", r, "propulsion"))
-        v = vanes.copy()
-        v.apply_translation([dx, dy, 0])
-        parts.append((f"vanes_{n}", v, "controls"))
+        for nm, m in ((f"louvres_{n}", top), (f"vanes_{n}", bot)):
+            v = m.copy()
+            v.apply_translation([dx, dy, 0])
+            parts.append((nm, v, "controls"))
     for name, m in build_gear(main_x):
         parts.append((name, m, "gear"))
     return parts
@@ -332,19 +377,26 @@ def build_oml(main_x: float):
 
 # ---------------------------------------------------------------------------------------------------
 # scale-specific insides
-SPAR_MAIN_X = 6.45          # spanwise main spar (mini: 6 mm carbon tube), behind the rear ducts
-SPAR_CENTRE_X = 4.56        # spanwise centre spar through the strip between the front and rear ducts (mini: 4 mm tube)
 KEEL_Z = -0.12              # fore-aft keel tube (mini: 6 mm) from behind the battery bay to the EDF
 # the main spar is two halves that plug into a printed carry-through ring around the thrust tube
-SPARS_MINI = [("spar_main_6mm_R", [SPAR_MAIN_X, 0.38, 0], [SPAR_MAIN_X, 2.85, 0], 0.03),
-              ("spar_main_6mm_L", [SPAR_MAIN_X, -0.38, 0], [SPAR_MAIN_X, -2.85, 0], 0.03),
-              ("spar_centre_4mm", [SPAR_CENTRE_X, -2.20, 0], [SPAR_CENTRE_X, 2.20, 0], 0.02),
-              ("keel_6mm", [4.10, 0, KEEL_Z], [5.30, 0, KEEL_Z], 0.03)]
+def spars_mini():
+    return [("spar_main_6mm_R", [SPAR_MAIN_X, 0.52, 0], [SPAR_MAIN_X, 3.40, 0], 0.03),
+            ("spar_main_6mm_L", [SPAR_MAIN_X, -0.52, 0], [SPAR_MAIN_X, -3.40, 0], 0.03),
+            ("spar_centre_4mm", [SPAR_CENTRE_X, -1.90, 0], [SPAR_CENTRE_X, 1.90, 0], 0.02)]
 PACK_CHECK: dict = {}       # filled by inside_parts (full scale): where the battery really ended up
-WING_MOUNTED = ("servo_", "fuel_tank_", "inverter_rear")     # checked against fuselage + wings, not the fuselage alone
-SERVOS_MINI = [("servo_elevon_R", 5.60, 2.75), ("servo_elevon_L", 5.60, -2.75), ("servo_stab_R", 7.20, 0.85),
-               ("servo_stab_L", 7.20, -0.85), ("servo_rudders", 6.80, -0.85), ("servo_vanes_R", 5.00, 0.30),
-               ("servo_vanes_L", 5.00, -0.30)]
+PACK_KG_PER_M3 = 2000.0     # battery pack density (cylindrical-cell modules with structure and cooling, about 2 kg/L)
+WING_MOUNTED = ("servo_", "fuel_tank_", "inverter_")     # checked against fuselage + wings, not the fuselage alone
+SERVOS_MINI = [("servo_elevon_R", 5.20, 2.90), ("servo_elevon_L", 5.20, -2.90), ("servo_stab_R", 7.20, 0.85),
+               ("servo_stab_L", 7.20, -0.85), ("servo_rudders", 6.80, -0.85), ("servo_vanes_R", 5.05, 0.80),
+               ("servo_vanes_L", 5.05, -0.80)]
+
+
+def intake_duct(sg: int):
+    """One intake duct inside the fuselage (both scales): from the mouth, inside the cheek, to the cruise fan's face."""
+    x0 = P.INTAKE["x0"]
+    xf = P.CRUISE_FAN_X
+    pts = [(x0 + 0.25, 0.50, -0.19), (x0 + 1.0, 0.42, -0.25), (xf - 0.65, 0.38, -0.21), (xf - 0.43, 0.13, P.CRUISE_FAN_Z)]
+    return union(*[cyl([a[0], sg * a[1], a[2]], [b[0], sg * b[1], b[2]], 0.10, 20) for a, b in zip(pts[:-1], pts[1:])])
 
 
 def inside_parts(scale_key: str, sizing: dict):
@@ -369,89 +421,84 @@ def inside_parts(scale_key: str, sizing: dict):
             ("battery_4S2P_21700", union(*[cyl([bx + xo - 0.35, yy, zz], [bx + xo + 0.35, yy, zz], 0.105, 32)
                                            for xo in (-0.355, 0.355) for yy in (-0.106, 0.106) for zz in (-0.115, 0.097)]), "systems",
              "4S2P Li-ion pack: 8 x 21700 cells lying fore-aft, two 2 x 2 bundles end to end, 141 x 43 x 43 mm"),
-            ("fc_speedybee_f405_wing", box(4.10, 4.46, -0.18, 0.18, 0.04, 0.16), "systems",
-             "SpeedyBee F405 WING on soft mounts, on the battery-bay deck behind the pack"),
-            ("esc_4in1", box(xc - 0.18, xc + 0.18, -0.18, 0.18, -0.30, -0.20), "systems", "4-in-1 ESC (XRotor Micro 60A) under the strake floor"),
-            ("edf_e7206", cyl([P.CRUISE_FAN_X_MINI - 0.35, 0, -0.10], [P.CRUISE_FAN_X_MINI + 0.35, 0, -0.10], 0.35, 48), "propulsion",
-             "Freewing E7206 64 mm EDF (70 mm housing)"),
-            ("thrust_tube", cyl([P.CRUISE_FAN_X_MINI + 0.37, 0, -0.08], [P.NOZZLE["x0"], 0, -0.02], 0.30, 48), "propulsion",
+            ("fc_speedybee_f405_wing", box(2.42, 2.78, -0.18, 0.18, -0.06, 0.06), "systems",
+             "SpeedyBee F405 WING on soft mounts, right behind the battery"),
+            ("esc_4in1", box(2.42, 2.78, -0.18, 0.18, -0.34, -0.24), "systems", "4-in-1 ESC (XRotor Micro 60A) under the stack"),
+            ("edf_e7206", cyl([P.CRUISE_FAN_X_MINI - 0.35, 0, P.CRUISE_FAN_Z], [P.CRUISE_FAN_X_MINI + 0.35, 0, P.CRUISE_FAN_Z], 0.35, 48), "propulsion",
+             "Freewing E7206 64 mm EDF (70 mm housing), fed by both side intakes"),
+            ("thrust_tube", cyl([P.CRUISE_FAN_X_MINI + 0.37, 0, P.CRUISE_FAN_Z], [P.NOZZLE["x0"], 0, -0.02], 0.30, 48), "propulsion",
              "0.2 mm PET film thrust tube to the nozzle"),
+            ("intake_duct_R", intake_duct(1), "propulsion", "0.2 mm PET film intake duct"),
+            ("intake_duct_L", intake_duct(-1), "propulsion", "0.2 mm PET film intake duct"),
             ("fpv_camera_19mm", box(3.12, 3.32, -0.095, 0.095, 0.36, 0.55), "systems", "19 mm FPV camera at the pilot's eye point"),
-            ("gps_m10", box(3.10, 3.36, -0.125, 0.125, 0.29, 0.35), "systems", "M10 GPS + compass under the camera seat (sky view through the canopy)"),
-            ("edf_esc_60a", box(4.82, 5.30, -0.13, 0.13, -0.30, -0.17), "systems", "EDF ESC (Skywalker 60A V2), just ahead of the EDF"),
+            ("gps_m10", box(2.50, 2.76, -0.125, 0.125, 0.28, 0.34), "systems", "M10 GPS + compass under the front of the canopy (sky view)"),
+            ("edf_esc_60a", box(2.42, 3.02, -0.13, 0.13, -0.20, -0.10), "systems", "EDF ESC (Skywalker 60A V2) between the flight controller and the 4-in-1"),
         ]
         for nm, x, y in SERVOS_MINI:
             out.append((nm, box(x - 0.115, x + 0.115, y - 0.11, y + 0.11, -0.05, 0.05), "systems", "5 g digital servo, laid flat in a pocket"))
-        for nm, p0, p1, r in SPARS_MINI:
+        for nm, p0, p1, r in spars_mini():
             out.append((nm, cyl(p0, p1, r, 24), "structure", "carbon tube"))
     else:
         out += [(n, m, "payload", "seated pilot envelope") for n, m in build_pilot()]
         bx = sizing["battery_x_m"]
         kwh = sizing["battery_kwh"]
-        vol = sizing["battery_kg"] / 1500.0          # about 1.5 kg/L at pack level
+        vol = sizing["battery_kg"] / PACK_KG_PER_M3
         hy = sizing.get("hybrid") or {}
-        # two battery bays: conformal modules in the nose bay ahead of the pilot's feet and a box behind the CG; the
-        # split puts the pack's centroid where the sizing put the battery (CG on the fan centre)
-        rear_x, rear_box = 5.24, (5.05, 5.43, -0.22, -0.01)
-        f_nose = 1.0
-        xn = float(np.clip(bx, 1.10, 2.35))          # grow the nose pack around the station the sizing asked for
-        for _ in range(8):
-            nose, info = conformal_pack(max(vol * f_nose, 1e-4), xn, x_min=1.0, x_max=2.45, z_lo=-0.40, z_hi=0.30)
-            f_new = (rear_x - bx) / max(rear_x - info["centroid_x"], 1e-6)
-            f_nose = float(np.clip(0.5 * f_nose + 0.5 * f_new, 0.05, 1.0))
-        nose, info = conformal_pack(vol * f_nose, xn, x_min=1.0, x_max=2.45, z_lo=-0.40, z_hi=0.30)
-        v_rear = vol * (1 - f_nose)
-        x0, x1, z0, z1 = rear_box
-        w = min(0.60, v_rear / 0.85 / ((x1 - x0) * (z1 - z0)))
-        rear = box(x0, x1, -w / 2, w / 2, z0, z1) if v_rear > 2e-3 else None
-        self_check = info["centroid_x"] * f_nose + rear_x * (1 - f_nose) if rear is not None else info["centroid_x"]
-        PACK_CHECK.update({"battery_centroid_m": round(float(self_check), 3), "battery_x_sizing_m": round(float(bx), 3),
+        tx0, tx1 = 0.95, 1.70                         # turbogenerator in the nose
+        # the battery fills the nose bay between the turbogenerator and the pilot's feet, narrow enough to clear the
+        # intake ducts and the exhaust pipes (it is the trim weight: the sizing puts its centroid where the CG needs it)
+        nose, info = conformal_pack(vol, float(np.clip(bx, 1.85, 2.30)), x_min=tx1 + 0.08, x_max=2.47, z_lo=-0.40, z_hi=0.05,
+                                    w_max=0.44)
+        PACK_CHECK.update({"battery_centroid_m": round(float(info["centroid_x"]), 3), "battery_x_sizing_m": round(float(bx), 3),
                            "battery_volume_fill": round(float(info["fill"]), 3)})
         out.append(("battery_pack_nose", nose, "systems",
-                    f"{kwh * (f_nose if rear is not None else 1.0):.0f} kWh of the {kwh:.0f} kWh pack: conformal modules in the "
-                    f"nose bay ahead of the pilot's feet (x {info['x0']:.2f}-{info['x1']:.2f} m, {100 * info['fill']:.0f} % of the "
-                    "volume asked for)"))
-        if rear is not None:
-            out.append(("battery_pack_rear", rear, "systems",
-                        f"{kwh * (1 - f_nose):.0f} kWh behind the CG; pack centroid x {self_check:.2f} m (sizing: {bx:.2f} m)"))
+                    f"{kwh:.0f} kWh pack: conformal modules ahead of the pilot's feet (x {info['x0']:.2f}-{info['x1']:.2f} m, "
+                    f"{100 * info['fill']:.0f} % of the volume asked for at {PACK_KG_PER_M3 / 1000:.1f} kg/L)"))
+        out += [("intake_duct_R", intake_duct(1), "propulsion", "intake duct inside the cheek"),
+                ("intake_duct_L", intake_duct(-1), "propulsion", "intake duct inside the cheek")]
         if hy:
-            # wing tanks outboard of the ducts: plan from 0.30 m behind the leading edge to x 5.50, y 2.30-2.80
-            ys = np.linspace(2.30, 2.80, 6)
-            plan = [(float(LE_X(y)) + 0.30, float(y)) for y in ys] + [(5.50, 2.80), (5.50, 2.30)]
-            tank_R = trimesh.creation.extrude_polygon(Polygon(plan), 0.13)
-            tank_R.apply_translation([0, 0, -0.065])
-            tank_L = mirror_y(tank_R)
-            fuel_l_cap = 2 * tank_R.volume * 1000 * 0.92
-            out += [("fuel_tank_R", tank_R, "systems", f"wing tank, {fuel_l_cap / 2:.0f} L (needs {hy['fuel_l'] / 2:.0f} L)"),
-                    ("fuel_tank_L", tank_L, "systems", f"wing tank, {fuel_l_cap / 2:.0f} L (needs {hy['fuel_l'] / 2:.0f} L)"),
-                    ("turbogenerator", cyl([3.80, 0, 0.05], [4.48, 0, 0.05], 0.21, 48), "propulsion",
-                     f"{hy['generator_kw']:.0f} kW turboshaft generator (series hybrid) behind the pilot: flush inlet on the spine, "
-                     "exhaust in two pipes either side of the cruise fan into its thrust tube and out of the jet nozzle")]
+            out.append(("turbogenerator", cyl([tx0, 0, -0.05], [tx1, 0, -0.05], 0.20, 48), "propulsion",
+                        f"{hy['generator_kw']:.0f} kW turboshaft + generator in the nose (where a fighter has its radar), fed "
+                        "from the intake ducts; it is the heaviest thing that can go forward of the tail-heavy airframe"))
             for sg, nm in ((1, "R"), (-1, "L")):
-                pipe = union(cyl([4.46, sg * 0.15, 0.12], [5.30, sg * 0.38, 0.12], 0.05, 20),
-                             cyl([5.30, sg * 0.38, 0.12], [6.30, sg * 0.38, 0.12], 0.05, 20),
-                             cyl([6.30, sg * 0.38, 0.12], [7.20, sg * 0.20, 0.05], 0.05, 20))
-                out.append((f"turbine_exhaust_{nm}", pipe, "propulsion", "insulated exhaust pipe, joins the thrust tube"))
+                pipe = union(cyl([tx1 - 0.02, sg * 0.14, 0.0], [tx1 + 0.12, sg * 0.31, 0.12], 0.05, 20),
+                             cyl([tx1 + 0.12, sg * 0.31, 0.12], [P.CRUISE_FAN_X + 0.32, sg * 0.38, 0.12], 0.05, 20),
+                             cyl([P.CRUISE_FAN_X + 0.32, sg * 0.38, 0.12], [P.CRUISE_FAN_X + 1.0, sg * 0.20, 0.04], 0.05, 20))
+                out.append((f"turbine_exhaust_{nm}", pipe, "propulsion",
+                            "insulated exhaust pipe beside the cockpit into the thrust tube (the exhaust leaves by the jet nozzle)"))
+            # wing tanks in the outer wing ahead of the main spar
+            y0, y1 = P.BODY_Y + 0.10, P.BODY_Y + 0.60
+            ys = np.linspace(y0, y1, 6)
+            plan = [(float(LE_X(y)) + 0.30, float(y)) for y in ys] + [(SPAR_MAIN_X - 0.10, y1), (SPAR_MAIN_X - 0.10, y0)]
+            tank_R = trimesh.creation.extrude_polygon(Polygon(plan), 0.12)
+            tank_R.apply_translation([0, 0, -0.06])
+            tank_L = mirror_y(tank_R)
+            cap = 2 * tank_R.volume * 1000 * 0.92
+            out += [("fuel_tank_R", tank_R, "systems", f"wing tank ahead of the main spar ({cap / 2:.0f} L; needs {hy['fuel_l'] / 2:.0f} L)"),
+                    ("fuel_tank_L", tank_L, "systems", f"wing tank ahead of the main spar ({cap / 2:.0f} L; needs {hy['fuel_l'] / 2:.0f} L)")]
+            PACK_CHECK["fuel_capacity_l"] = round(cap, 1)
+            PACK_CHECK["fuel_needed_l"] = round(hy["fuel_l"] * 1.10, 1)
+            PACK_CHECK["fuel_centroid_x_m"] = round(float(tank_R.center_mass[0]), 3)
         out += [
             ("flight_computers", box(2.50, 2.80, -0.20, 0.20, 0.0, 0.15), "systems",
              "triplex flight-control computers, air data, radios: behind the instrument panel"),
-            ("parachute", cyl([4.80, 0, 0.20], [5.35, 0, 0.20], 0.14, 32), "systems", "ballistic recovery parachute, fires upward"),
-            ("cruise_fan", cyl([P.CRUISE_FAN_X - 0.25, 0, -0.03], [P.CRUISE_FAN_X + 0.25, 0, -0.03], P.CRUISE_FAN_D / 2, 64), "propulsion",
-             "ducted cruise fan, electric, at the intake throat"),
-            ("thrust_tube", cyl([P.CRUISE_FAN_X + 0.26, 0, -0.03], [P.NOZZLE["x0"], 0, -0.02], 0.27, 48), "propulsion",
-             "thrust tube from the cruise fan to the nozzle" + ("; the turbine exhaust joins it" if hy else "")),
+            ("parachute", cyl([P.CRUISE_FAN_X - 0.45, 0, 0.10], [P.CRUISE_FAN_X - 0.45, 0, 0.40], 0.12, 32), "systems",
+             "ballistic recovery parachute behind the seat, under the aft canopy, fires upward"),
+            ("cruise_fan", cyl([P.CRUISE_FAN_X - 0.25, 0, P.CRUISE_FAN_Z], [P.CRUISE_FAN_X + 0.25, 0, P.CRUISE_FAN_Z], P.CRUISE_FAN_D / 2, 64),
+             "propulsion", "electric ducted cruise fan behind the seat, fed by both side intakes"),
+            ("thrust_tube", cyl([P.CRUISE_FAN_X + 0.26, 0, P.CRUISE_FAN_Z], [P.NOZZLE["x0"], 0, -0.02], 0.30, 48), "propulsion",
+             "thrust tube from the cruise fan to the nozzle"),
         ]
         for n, dx, dy in P.duct_centres():
             sg = np.sign(dy)
-            if n.startswith("front"):
-                inv = box(dx - 0.15, dx + 0.15, sg * 0.38 - 0.05, sg * 0.38 + 0.05, -0.10, 0.05)
-            else:                       # rear pair: in the wing root behind the rear ducts and the main spar
-                inv = box(6.55, 6.85, sg * 0.80 - 0.15, sg * 0.80 + 0.15, -0.06, 0.06)
-            out.append((f"inverter_{n}", inv, "systems", "two inverters (one per rotor)"))
-        for nm, p0, p1, r in (("spar_main_R", [SPAR_MAIN_X, 0.50, 0], [SPAR_MAIN_X, 2.75, 0], 0.045),
-                              ("spar_main_L", [SPAR_MAIN_X, -0.50, 0], [SPAR_MAIN_X, -2.75, 0], 0.045),
-                              ("spar_centre", [SPAR_CENTRE_X, -2.20, 0], [SPAR_CENTRE_X, 2.20, 0], 0.05)):
-            out.append((nm, cyl(p0, p1, r, 24), "structure", "carbon box-spar line (schematic)"))
+            yy = 0.85 if n.startswith("front") else 1.65
+            out.append((f"inverter_{n}", box(SPAR_MAIN_X + 0.15, SPAR_MAIN_X + 0.45, sg * yy - 0.15, sg * yy + 0.15, -0.06, 0.06),
+                        "systems", "two inverters (one per rotor) in the aft body behind the main spar"))
+        for nm, p0, p1, r in (("spar_main_R", [SPAR_MAIN_X, 0.52, 0], [SPAR_MAIN_X, P.BODY_Y + 1.4, 0], 0.045),
+                              ("spar_main_L", [SPAR_MAIN_X, -0.52, 0], [SPAR_MAIN_X, -P.BODY_Y - 1.4, 0], 0.045),
+                              ("spar_centre_R", [SPAR_CENTRE_X, 0.52, 0], [SPAR_CENTRE_X, P.BODY_Y - 0.05, 0], 0.05),
+                              ("spar_centre_L", [SPAR_CENTRE_X, -0.52, 0], [SPAR_CENTRE_X, -P.BODY_Y + 0.05, 0], 0.05)):
+            out.append((nm, cyl(p0, p1, r, 24), "structure", "carbon box-spar line (schematic); a frame carries it round the cockpit"))
     return out
 
 
@@ -466,7 +513,7 @@ def section_width(x, z):
     return 2 * max(ys) if ys else 0.0
 
 
-def best_rect(x, z_lo, z_hi, clear):
+def best_rect(x, z_lo, z_hi, clear, w_max=9.0):
     """Largest box section (width, z0, z1) that fits the fuselage section at x between z_lo and z_hi."""
     _w, zb, zt = P.fus_at(x)
     lo, hi = max(z_lo, zb + clear), min(z_hi, zt - clear)
@@ -474,20 +521,20 @@ def best_rect(x, z_lo, z_hi, clear):
     zz = np.linspace(lo, hi, 13)
     for i in range(len(zz)):
         for j in range(i + 2, len(zz)):
-            w = min(section_width(x, z) for z in np.linspace(zz[i], zz[j], 5)) - 2 * clear
+            w = min(min(section_width(x, z) for z in np.linspace(zz[i], zz[j], 5)) - 2 * clear, w_max)
             if w > 0 and w * (zz[j] - zz[i]) > best[0] * (best[2] - best[1]):
                 best = (w, zz[i], zz[j])
     return best
 
 
-def conformal_pack(volume, x_centre, x_min, x_max, z_lo, z_hi, dx=0.05, fill=0.85, clear=0.03):
+def conformal_pack(volume, x_centre, x_min, x_max, z_lo, z_hi, dx=0.05, fill=0.85, clear=0.03, w_max=9.0):
     """Battery modules filling fuselage slices around x_centre (alternately aft and fore, so the pack's centroid
     stays near x_centre) until the volume is reached. Each slice is the largest box that fits the section between
     z_lo and z_hi (less a clearance), times a packing fill."""
     slices = []
 
     def add(x0):
-        w, z0, z1 = best_rect(x0 + dx / 2, z_lo, z_hi, clear)
+        w, z0, z1 = best_rect(x0 + dx / 2, z_lo, z_hi, clear, w_max)
         if w <= 0.05 or z1 - z0 < 0.08:
             return 0.0
         slices.append((x0, w, z0, z1))
@@ -517,6 +564,7 @@ STL_DIR = {"mini": "stl", "full": "stl"}
 def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bool = True):
     from mesh import split_to_fit
     from v18_extract import P1S, bed_fit
+    set_variant(scale_key)
     s = {"mini": 0.1, "full": 1.0}[scale_key]
     mm_per_m = 1000.0 * s
     cg_x = sizing["cg_m"][0] / s
@@ -528,10 +576,9 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
         parts = [p for p in parts if not p[0].startswith("gear_")] + [p for p in parts if p[0].startswith("gear_")]
     # spar holes through the mini airframe (6 mm main, 4 mm centre, 6 mm keel) + 0.3 mm clearance
     if scale_key == "mini":
-        cutters = [cyl([SPAR_MAIN_X, 0.36, 0], [SPAR_MAIN_X, 2.87, 0], 0.033, 24),
-                   cyl([SPAR_MAIN_X, -0.36, 0], [SPAR_MAIN_X, -2.87, 0], 0.033, 24),
-                   cyl([SPAR_CENTRE_X, -2.3, 0], [SPAR_CENTRE_X, 2.3, 0], 0.023, 24),
-                   cyl([4.05, 0, KEEL_Z], [5.35, 0, KEEL_Z], 0.033, 24)]
+        cutters = [cyl([SPAR_MAIN_X, 0.40, 0], [SPAR_MAIN_X, 3.42, 0], 0.033, 24),
+                   cyl([SPAR_MAIN_X, -0.40, 0], [SPAR_MAIN_X, -3.42, 0], 0.033, 24),
+                   cyl([SPAR_CENTRE_X, -1.95, 0], [SPAR_CENTRE_X, 1.95, 0], 0.023, 24)]
         new = []
         for n, m, layer, note in parts:
             if n.startswith(("wing_", "fuselage")):
@@ -545,7 +592,7 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
         scaled.append((n, mm, layer, note))
     res = {"scale": scale_key, "parts": [], "checks": {}}
     # checks: insides within the fuselage / airframe outer mould line, prop tips vs duct wall, everything watertight
-    fus = union(*[m for n, m, layer, _ in scaled if n in ("fuselage", "canopy")])
+    fus = union(*[m for n, m, layer, _ in scaled if n in ("fuselage", "canopy", "intake_R", "intake_L")])
     airframe = trimesh.util.concatenate([m for n, m, layer, _ in scaled if n in ("fuselage", "wing_R", "wing_L")])
     contain = {}
     for n, m, layer, _ in scaled:
@@ -585,7 +632,8 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
     ins = [(n, m) for n, m, _l, _ in scaled if n in inside_names]
     def ok_pair(a, b):             # intended contacts: the pilot in the seat, the exhaust pipes joining the thrust tube
         pil = lambda n: n.startswith("pilot_") or n == "seat"  # noqa: E731
-        joins = [{f"turbine_exhaust_{sd}", o} for sd in "RL" for o in ("thrust_tube", "turbogenerator")]
+        joins = ([{"cruise_fan", "thrust_tube"}] + [{f"turbine_exhaust_{sd}", o} for sd in "RL" for o in ("thrust_tube", "turbogenerator")]
+                 + [{f"intake_duct_{sd}", o} for sd in "RL" for o in ("edf_e7206", "cruise_fan")])     # the ducts feed the fan face
         return (pil(a) and pil(b)) or {a, b} in joins
     collisions = []
     for i in range(len(ins)):
@@ -609,13 +657,15 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
     if scale_key == "full" and PACK_CHECK:
         res["checks"]["battery_pack"] = dict(PACK_CHECK)
         pack_ok = (abs(PACK_CHECK["battery_centroid_m"] - PACK_CHECK["battery_x_sizing_m"]) <= 0.05
-                   and PACK_CHECK["battery_volume_fill"] >= 0.98)
+                   and PACK_CHECK["battery_volume_fill"] >= 0.98
+                   and PACK_CHECK.get("fuel_capacity_l", 1.0) >= PACK_CHECK.get("fuel_needed_l", 0.0))
     res["checks"]["prop_tip_gap_mm"] = round(tip_gap, 2)
     res["checks"]["watertight"] = {n: bool(m.is_watertight) for n, m, layer, _ in scaled if layer not in ("props", "hardware")}
     # mini print set: every printed part split until it fits the P1S bed
     pieces = []
     if scale_key == "mini":
-        printed_names = [n for n, m, layer, _ in scaled if layer in ("skin", "controls", "glass") or n.startswith(("duct_", "nozzle"))]
+        printed_names = [n for n, m, layer, _ in scaled if (layer in ("skin", "controls", "glass") or n.startswith(("duct_", "nozzle")))
+                         and not n.startswith(FOAM_PARTS)]
         fits = lambda mm: (bed_fit(mm) or (False,))[0]     # noqa: E731
         for n, m, layer, _ in scaled:
             if n not in printed_names:
@@ -646,6 +696,7 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
             for p in pieces:
                 ps.add_geometry(p["mesh"], node_name=p["name"], geom_name=p["name"])
             ps.export(out / f"v20_{scale_key}_print_set.3mf")
+            foam_templates(out / "foam" / "v20_mini_foam_templates.svg")
         else:
             for n, m, layer, _ in scaled:
                 if layer in ("skin", "controls", "glass") or n.startswith(("duct_", "nozzle")):
@@ -655,6 +706,38 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
         (out / "parts.json").write_text(json.dumps(res["parts"], indent=1))
         (out / "checks.json").write_text(json.dumps(res["checks"], indent=1))
     return res
+
+
+FOAM_PARTS = ("stabilator", "fin_", "rudder")    # mini: cut from 3 mm Depron sheet, not printed
+
+
+def foam_templates(path: Path, mm_per_m: float = 100.0) -> None:
+    """1:1 cutting templates (SVG, millimetres) for the mini's foam tail: stabilators, fins and rudders (two of each)."""
+    shapes = []
+    st = P.stab_outline(1)
+    shapes.append(("stabilator (cut 2)", [(x, y - st[0][1]) for x, y in st]))
+    f = P.FIN
+    sw = math.tan(math.radians(f["le_sweep_deg"]))
+    h, cr, ct, rf = f["height"], f["root_chord"], f["tip_chord"], f["rudder_frac"]
+    le0, le1 = 0.0, h * sw
+    hinge0, hinge1 = le0 + (1 - rf) * cr, le1 + (1 - rf) * ct
+    shapes.append(("fin (cut 2)", [(le0, 0.0), (le1, h), (hinge1, h), (hinge0, 0.0)]))
+    shapes.append(("rudder (cut 2)", [(hinge0 + 0.01, 0.0), (hinge1 + 0.01, h), (le1 + ct, h), (le0 + cr, 0.0)]))
+    pad, y_off, items = 10.0, 10.0, []
+    width = 0.0
+    for label, pts in shapes:
+        xs = [x for x, _ in pts]
+        ys = [y for _, y in pts]
+        x0, y0 = min(xs), min(ys)
+        poly = " ".join(f"{(x - x0) * mm_per_m + pad:.1f},{(y - y0) * mm_per_m + y_off + 8:.1f}" for x, y in pts)
+        hgt = (max(ys) - y0) * mm_per_m
+        width = max(width, (max(xs) - x0) * mm_per_m + 2 * pad)
+        items.append(f'<text x="{pad}" y="{y_off + 5:.1f}" font-size="5">{label}</text>'
+                     f'<polygon points="{poly}" fill="none" stroke="black" stroke-width="0.3"/>')
+        y_off += hgt + 20
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.0f}mm" height="{y_off:.0f}mm" '
+                    f'viewBox="0 0 {width:.0f} {y_off:.0f}">' + "".join(items) + "</svg>\n")
 
 
 def glb(scaled, path: Path, display_scale: float = 1.0):

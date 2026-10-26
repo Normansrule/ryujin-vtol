@@ -33,7 +33,7 @@ export function aircraft(ctx, el) {
     <dl class="readout">
       <dt>Mass</dt><dd>${v20.mtow_kg ? `${fmt(v20.mtow_kg)} kg` : `${fmt(v20.mass_kg * 1000)} g`}</dd>
       <dt>CG / fan centre</dt><dd>${v20.cg_offset_mm >= 0 ? '+' : ''}${fmt(v20.cg_offset_mm, 1)} mm</dd>
-      <dt>Static margin</dt><dd>${fmt(v20.aero.sm_blocked25_pct, 1)} % <span class="muted">at 25 % duct blockage</span></dd>
+      <dt>Static margin</dt><dd>${fmt(v20.aero.sm_gate_pct, 1)} % <span class="muted">louvres shut</span></dd>
     </dl>
     <p class="small"><a href="#v20/${esc(ctx.variant.replace('v20_', ''))}">Everything about V20</a> · <a href="#aircraft" data-variant="">Back to V18</a></p>` : vsel ? `
     <h2>${esc(vsel.label)}</h2>
@@ -261,6 +261,7 @@ export function v20(ctx, el, sub) {
   if (ctx.variant !== slug) { ctx.setVariant(slug); return; }
   const s = D[key];
   const full = key === 'full';
+  const G = (D.geometry_by_scale || {})[key] || D.geometry;
   const a = s.aero;
   const corridorOk = s.corridor.every((r) => r.forward_ok && r.hover_ok);
   const g = s.groups_kg;
@@ -268,31 +269,31 @@ export function v20(ctx, el, sub) {
   const readout = full ? `
       <dt>Take-off mass</dt><dd>${fmt(s.mtow_kg)} kg <span class="muted">pilot 100, battery ${fmt(s.battery_kg)}, fuel ${fmt(s.hybrid.fuel_kg)}</span></dd>
       <dt>Power</dt><dd>series hybrid: ${fmt(s.hybrid.generator_kw)} kW turbogenerator + ${fmt(s.battery_kwh)} kWh battery</dd>
-      <dt>Length × span</dt><dd>${fmt(D.geometry.length_m, 2)} × ${fmt(a.span_m, 2)} m</dd>
-      <dt>Lift fans</dt><dd>4 ducts × ${fmt(D.geometry.duct_id_m, 2)} m, 2 contra-rotating fans each</dd>
+      <dt>Length × span</dt><dd>${fmt(G.length_m, 2)} × ${fmt(a.span_m, 2)} m</dd>
+      <dt>Lift fans</dt><dd>4 ducts × ${fmt(G.duct_id_m, 2)} m under louvres, 2 contra-rotating fans each</dd>
       <dt>CG / fan centre</dt><dd>${s.cg_offset_mm >= 0 ? '+' : ''}${fmt(s.cg_offset_mm)} mm</dd>
       <dt>Hover power</dt><dd>${fmt(s.hover_kw)} kW <span class="muted">${fmt(s.disk_loading_kg_m2)} kg/m² of fan</span></dd>
-      <dt>Static margin</dt><dd>${fmt(a.sm_blocked25_pct, 1)} % <span class="muted">25 % duct blockage, need ≥ 5 (open ${fmt(a.sm_open_pct, 1)}, closed ${fmt(a.sm_closed_pct, 1)})</span></dd>
+      <dt>Static margin</dt><dd>${fmt(a.sm_gate_pct, 1)} % <span class="muted">louvres shut; positive, flown by triplex fly-by-wire (louvres open ${fmt(a.sm_open_pct, 1)})</span></dd>
       <dt>Cruise</dt><dd>${fmt(s.cruise.v_kmh)} km/h, ${fmt(s.cruise.power_kw)} kW, L/D ${fmt(s.cruise.L_over_D, 1)}</dd>
       <dt>Mission</dt><dd>${fmt(s.mission.cruise_km)} km hop + ${fmt(s.mission.reserve_cruise_min)} min VFR reserve</dd>
       <dt>Slowest wing-borne</dt><dd>${fmt(s.stall_ms, 1)} m/s <span class="muted">trimmed CL ${fmt(s.cl_usable, 2)}</span></dd>` : `
       <dt>All-up mass</dt><dd>${fmt(s.mass_kg * 1000)} g</dd>
-      <dt>Length × span</dt><dd>${fmt(D.geometry.length_m * 100)} × ${fmt(a.span_m * 1000)} mm</dd>
-      <dt>Lift fans</dt><dd>4 ducts × ${fmt(D.geometry.duct_id_m * 100)} mm, 6-inch 3-blade props, exit vanes</dd>
+      <dt>Length × span</dt><dd>${fmt(G.length_m * 100)} × ${fmt(a.span_m * 1000)} mm</dd>
+      <dt>Lift fans</dt><dd>4 ducts × ${fmt(G.duct_id_m * 100)} mm under louvres, 4-inch 3-blade props</dd>
       <dt>CG / fan centre</dt><dd>${s.cg_offset_mm >= 0 ? '+' : ''}${fmt(s.cg_offset_mm, 1)} mm <span class="muted">need ≤ 3</span></dd>
       <dt>Lift thrust / weight</dt><dd>${fmt(s.thrust_to_weight_lift, 2)} <span class="muted">hover ${fmt(s.hover_w)} W</span></dd>
-      <dt>Static margin</dt><dd>${fmt(a.sm_blocked25_pct, 1)} % <span class="muted">25 % duct blockage, need ≥ 5 (open ${fmt(a.sm_open_pct, 1)}, closed ${fmt(a.sm_closed_pct, 1)})</span></dd>
+      <dt>Static margin</dt><dd>${fmt(a.sm_gate_pct, 1)} % <span class="muted">louvres shut, need ≥ 5 (louvres open ${fmt(a.sm_open_pct, 1)})</span></dd>
       <dt>Endurance (model)</dt><dd>${fmt(s.hover_min)} min hover or ${fmt(s.cruise.min)} min cruise at ${fmt(s.cruise.v_best_range, 1)} m/s</dd>
       <dt>Slowest wing-borne</dt><dd>${fmt(s.stall_ms, 1)} m/s <span class="muted">trimmed CL ${fmt(s.cl_usable, 2)}</span></dd>`;
   const pieces = Object.entries(s.checks.P1S || {});
   html(el, `
     <h2>V20 Falcon Jet</h2>
-    <p class="lede-s">One fighter-styled shape at two scales: a ${fmt(D.geometry.length_m * 100)} mm printable mini and a single-seat aircraft. Four ducted lift fans in a square with the CG where their diagonals cross, a cruise fan in the tail, and a wing that carries the weight from about ${fmt(s.corridor.find((r) => r.forward_ok && r.wing_share >= 0.999)?.V ?? 0)} m/s.</p>
+    <p class="lede-s">An F-35-style lift + cruise VTOL at two scales: a ${fmt((D.geometry_by_scale?.mini?.length_m ?? 9.95) * 100)} mm printable mini and a single-seat aircraft. Four lift fans hidden under louvres in the body shoulders, with the CG where their diagonals cross; side intakes feed one jet; the wing carries the weight from about ${fmt(s.corridor.find((r) => r.forward_ok && r.wing_share >= 0.999)?.V ?? 0)} m/s, and then the louvres shut.</p>
     <div class="seg" role="group" aria-label="Scale">
       <button data-scale="mini" aria-pressed="${!full}">Mini 1:10 (build)</button><button data-scale="full" aria-pressed="${full}">Full scale (concept)</button>
     </div>
     ${full ? `<div class="finding"><p>${badge('FIX')} <b>Engineering concept, not a build package.</b> A person-carrying aircraft needs licensed aerospace engineering, structural and propulsion testing, a hazard analysis and FAA approval before anyone sits in it. The 3D view shows it at 1:10.</p></div>` : ''}
-    <div class="gates"><span class="chips">${badge(Math.abs(s.cg_offset_mm) <= (full ? 30 : 3) ? 'PASS' : 'FIX')}<span>Hover balance</span>${badge(a.sm_blocked25_pct >= 5 ? 'PASS' : 'STOP')}<span>Wing-borne</span>${badge(corridorOk ? 'PASS' : 'STOP')}<span>Every speed</span>${badge(s.checks.status === 'PASS' ? 'PASS' : 'FIX')}<span>${full ? 'Packaging' : 'Fit + print'}</span></span></div>
+    <div class="gates"><span class="chips">${badge(Math.abs(s.cg_offset_mm) <= (full ? 30 : 3) ? 'PASS' : 'FIX')}<span>Hover balance</span>${badge(a.sm_gate_pct >= (full ? 0 : 5) ? 'PASS' : 'STOP')}<span>Wing-borne</span>${badge(corridorOk ? 'PASS' : 'STOP')}<span>Every speed</span>${badge(s.checks.status === 'PASS' ? 'PASS' : 'FIX')}<span>${full ? 'Packaging' : 'Fit + print'}</span></span></div>
     <dl class="readout">${readout}</dl>
     <h2>Hover at any point, fly forward at any point</h2>
     ${corridorChart(s.corridor, full ? 'kW' : 'W')}
@@ -301,9 +302,9 @@ export function v20(ctx, el, sub) {
     <div class="table-wrap"><table class="cmp"><tbody>${massRows}</tbody></table></div>
     ${full ? `
       <h2>What it would take</h2>
-      <p class="small">Disk loading (${fmt(s.disk_loading_kg_m2)} kg/m²) and a low-aspect-ratio delta (L/D ${fmt(s.cruise.L_over_D, 1)}) make this a jet-fuel aircraft: all-electric does not close with the 20-minute VFR reserve; a series hybrid does. The trade study scales the same shape, the distance and the powertrain:</p>
-      <div class="table-wrap"><table class="cmp"><thead><tr><th>Size</th><th class="n">Cruise km</th><th>Powertrain</th><th class="n">MTOW kg</th><th class="n">Hover kW</th></tr></thead>
-        <tbody>${D.trade.map((r) => `<tr><td>${fmt(r.length_m, 1)} m</td><td class="n">${fmt(r.cruise_km)}</td><td>${esc(r.powertrain)}</td><td class="n">${r.closes ? fmt(r.mtow_kg) : 'does not close'}</td><td class="n">${r.closes ? fmt(r.hover_kw) : '-'}</td></tr>`).join('')}</tbody></table></div>
+      <p class="small">Hidden fans are small fans: ${fmt(s.disk_loading_kg_m2)} kg/m² of disk loading makes this a heavy, jet-fuel aircraft. The mini's own proportions do not close at full scale, so the full scale widens the shoulders for bigger fans; all-electric does not close with the 20-minute VFR reserve, a series hybrid does:</p>
+      <div class="table-wrap"><table class="cmp"><thead><tr><th>Case</th><th class="n">Cruise km</th><th>Powertrain</th><th class="n">MTOW kg</th><th class="n">Hover kW</th></tr></thead>
+        <tbody>${D.trade.map((r) => `<tr><td>${esc(r.case || '')}<br><span class="muted small">${fmt(r.length_m, 1)} m, ${fmt(r.duct_m, 2)} m fans</span></td><td class="n">${fmt(r.cruise_km)}</td><td>${esc(r.powertrain)}</td><td class="n">${r.closes ? fmt(r.mtow_kg) : 'does not close'}</td><td class="n">${r.closes ? fmt(r.hover_kw) : '-'}</td></tr>`).join('')}</tbody></table></div>
       <ul class="changes small">
         <li>Eight motors in four coaxial ducts: any one rotor can fail (each healthy rotor is rated for ${fmt(s.motor_out.rotor_thrust_needed_x_nominal, 2)} × its hover thrust).</li>
         <li>Open item: with the turbine out in a low hover the battery gives ${fmt(100 * s.hybrid.turbine_out_power_frac)} % of hover power - a height-velocity avoid region, like a single-engine helicopter.</li>
@@ -311,7 +312,7 @@ export function v20(ctx, el, sub) {
         <li>Far outside Part 103 ultralight limits: an experimental airworthiness certificate and a powered-lift-qualified pilot. Ask the FAA (FSDO/MIDO) and a DAR first.</li>
       </ul>` : `
       <h2>Print and build</h2>
-      <p class="small">${pieces.length} printed pieces, ${pieces.every(([, v]) => v.fits) ? 'every one fits the P1S bed' : 'some do not fit yet'}: <code>cad/v20/mini/v20_mini_print_set.3mf</code>. LW-PLA airframe, PETG ducts and nozzle, a vacuum-formed PETG canopy; carbon spars (6 mm main, 4 mm centre, 6 mm keel) run through the joints.</p>
+      <p class="small">${pieces.length} printed pieces, ${pieces.every(([, v]) => v.fits) ? 'every one fits the P1S bed' : 'some do not fit yet'}: <code>cad/v20/mini/v20_mini_print_set.3mf</code>. LW-PLA airframe and louvres, PETG ducts and nozzle, a vacuum-formed PETG canopy; Depron foam tail (templates in <code>cad/v20/mini/foam/</code>); carbon spars (6 mm main, 4 mm centre) run through the joints.</p>
       <details><summary>Parts to buy <span class="muted small">${D.bom.length} rows</span></summary>
         <div class="table-wrap"><table class="cmp"><tbody>${D.bom.map((r) => `<tr><td>${esc(r.item)}<br><span class="muted small">${esc(r.candidate)}</span></td><td class="n">${r.qty || ''}</td><td class="n">${esc(r.usd)}</td><td>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">link</a>` : ''}</td></tr>`).join('')}</tbody></table></div></details>
       <details><summary>Flight-controller port map <span class="muted small">SpeedyBee F405 WING, QuadPlane</span></summary>

@@ -12,11 +12,14 @@ regenerate. Write-up: [docs/V20_FALCON_JET.md](../../docs/V20_FALCON_JET.md).
 - `checks.json`: the generated checks - insides within the fuselage (servos within the wing), no internal collisions,
   the measured prop tip gap, watertight solids, P1S fit.
 
-Print the airframe (fuselage, wing pieces, intakes, fins, rudders, elevons, stabilators, exit vanes) in LW-PLA, foamed,
-one wall; ducts, nozzle and nozzle cone in PETG; the canopy is the buck for a 0.5 mm vacuum-formed PETG shell. The
-tube holes are already in the pieces: the 6 mm main spar (two halves that plug into a printed ring around the thrust
-tube), the 4 mm centre spar through the strip between the front and rear ducts, and the short 6 mm keel from behind the
-battery to the EDF. Slide the carbon tubes through while gluing the joints so the pieces line up.
+Print the airframe (fuselage, body and wing pieces, intakes, elevons, louvres) in LW-PLA, foamed, one wall; ducts,
+nozzle and nozzle cone in PETG; the canopy is the buck for a 0.5 mm vacuum-formed PETG shell. The stabilators, fins and
+rudders are cut from 3 mm Depron with the templates in `foam/v20_mini_foam_templates.svg` (print at 100 %), which keeps
+the tail light enough for the CG to sit on the fan centre without ballast. The intake ducts are rolled from 0.25 mm PET
+film. The tube holes are already in the pieces: the 6 mm main spar (two halves that plug into a printed ring around
+the thrust tube) and the 4 mm centre spar through the strip between the front and rear ducts. Slide the carbon tubes
+through while gluing the joints so the pieces line up. The top louvres hinge on 0.8 mm wire and close with a thin
+elastic; the bottom louvres are linked to one servo per side.
 
 ## `full/` - the full-scale concept
 

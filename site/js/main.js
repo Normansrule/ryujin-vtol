@@ -38,7 +38,8 @@ const ctx = {
     if (v) {
       const e = v.eval;
       const band = [e.np_closed_x_mm, e.np_open_x_mm];
-      const win = [band[0] - 0.12 * e.mac_mm, band[0] - 0.05 * e.mac_mm];
+      const [smLo, smHi] = e.sm_window_pct || [5, 12];       // static-margin window, % of the mean chord
+      const win = [band[0] - (smHi / 100) * e.mac_mm, band[0] - (smLo / 100) * e.mac_mm];
       drawRuler(this.els.ruler, { cgX: e.cg_mm[0], rotorX: e.rotor_centroid_x_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], npBand: band, window: win,
         length: Math.ceil(v.length_mm / 100) * 100, unit: v.unit || 'mm', unitScale: v.unit === 'm' ? 0.01 : 1 });
       this.viewer?.setMarkers({ cg: e.cg_mm, rotorRows: [e.rotor_front_x_mm, e.rotor_rear_x_mm], motorY: v.motor_y_mm || 220, np: band });

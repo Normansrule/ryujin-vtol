@@ -6,10 +6,10 @@ buy one lift motor and one prop first and measure them on the repo's thrust stan
 from __future__ import annotations
 
 MINI_BOM = [
-    {"id": "M01", "item": "Lift motors (4 + 1 spare)", "candidate": "2207 class, 2400-2700 KV, 4S (6-inch freestyle class; compare "
-     "published thrust tables, then measure your own)", "qty": 5, "usd": "90-130", "url": "https://www.miniquadtestbench.com/"},
-    {"id": "M02", "item": "Lift props, 6-inch 3-blade (2 sets of CW + CCW)", "candidate": "6 x 3-4 x 3 tri-blade, 5 mm bore", "qty": 8,
-     "usd": "10-18", "url": "https://www.amazon.com/s?k=6+inch+3+blade+fpv+prop"},
+    {"id": "M01", "item": "Lift motors (4 + 1 spare)", "candidate": "2204-2205 class, 2600-3200 KV, 4S (tested reference: a 2204 3200 KV made 965 g "
+     "with HQProp 4x4x3 on 4S)", "qty": 5, "usd": "60-100", "url": "https://www.miniquadtestbench.com/epicrc-2204-3200kv.html"},
+    {"id": "M02", "item": "Lift props, 4-inch 3-blade (2 sets of CW + CCW)", "candidate": "HQProp 4x4x3 or similar, 5 mm bore", "qty": 8,
+     "usd": "8-15", "url": "https://www.amazon.com/s?k=hqprop+4x4x3"},
     {"id": "M03", "item": "4-in-1 lift ESC", "candidate": "V18 row P06: Hobbywing XRotor Micro 60A 4-in-1", "qty": 1, "usd": "65-100",
      "url": "https://www.hobbywing.com/en/products/xrotor-micro-60a-4in1-blheli-32-dshot1200117"},
     {"id": "M04", "item": "Cruise EDF, 64 mm", "candidate": "V18 row P07: Freewing E7206 64 mm 4S", "qty": 1, "usd": "60-85",
@@ -30,7 +30,7 @@ MINI_BOM = [
      "url": "https://ardupilot.org/plane/docs/common-positioning-landing-page.html"},
     {"id": "A04", "item": "Airspeed sensor + pitot", "candidate": "V18 row A05: Matek ASPD-4525", "qty": 1, "usd": "35-65",
      "url": "https://www.mateksys.com/?portfolio=aspd-4525"},
-    {"id": "A05", "item": "Servos (2 elevons, 2 stabilators, 1 rudders, 2 exit vanes + 1 spare)", "candidate": "5 g digital micro servo, metal gear",
+    {"id": "A05", "item": "Servos (2 elevons, 2 stabilators, 1 rudders, 2 bottom louvres + 1 spare)", "candidate": "5 g digital micro servo, metal gear",
      "qty": 8, "usd": "48-80", "url": "https://www.amazon.com/s?k=5g+digital+metal+gear+micro+servo"},
     {"id": "A06", "item": "Lost-model alarm", "candidate": "V18 row A06: VIFLY Finder 2", "qty": 1, "usd": "10-14",
      "url": "https://www.getfpv.com/vifly-finder-2-drone-buzzer.html"},
@@ -42,7 +42,11 @@ MINI_BOM = [
      "qty": 3, "usd": "15-30", "url": "https://www.amazon.com/s?k=carbon+fiber+tube+6mm+4mm+1000mm"},
     {"id": "S02", "item": "Clear PETG sheet 0.5 mm (vacuum-formed canopy; spares)", "candidate": "A4 sheets", "qty": 3, "usd": "8-15",
      "url": "https://www.amazon.com/s?k=petg+sheet+0.5mm+clear"},
-    {"id": "S03", "item": "PET film 0.2 mm (EDF thrust tube)", "candidate": "A4 sheets", "qty": 2, "usd": "6-10",
+    {"id": "S06", "item": "Depron 3 mm sheet (stabilators, fins, rudders; templates in cad/v20/mini/foam) + 2 mm carbon rod",
+     "candidate": "Depron or EPP-free foamboard of similar density", "qty": 1, "usd": "10-18", "url": "https://www.amazon.com/s?k=depron+3mm+sheet"},
+    {"id": "S07", "item": "Louvre hinges: 0.8 mm music wire, thin elastic thread (top louvres close by elastic, open by fan suction)",
+     "candidate": "", "qty": 1, "usd": "5-8", "url": "https://www.amazon.com/s?k=0.8mm+music+wire"},
+    {"id": "S03", "item": "PET film 0.2 mm (EDF thrust tube, intake ducts)", "candidate": "A4 sheets", "qty": 3, "usd": "6-10",
      "url": "https://www.amazon.com/s?k=0.2mm+pet+film+sheet"},
     {"id": "S04", "item": "Landing gear: 1.5 mm music wire, 30 mm foam wheels x3, wheel collars", "candidate": "", "qty": 1, "usd": "10-18",
      "url": "https://www.amazon.com/s?k=30mm+foam+wheels+rc"},
@@ -64,9 +68,9 @@ PINMAP = [
     {"out": "S7", "function": "77 Elevon left", "to": "left stabilator servo", "note": "stabilators mix like elevons (pitch + roll); reverse if needed"},
     {"out": "S8", "function": "78 Elevon right", "to": "right stabilator servo", "note": "group 8-10"},
     {"out": "S9", "function": "21 Rudder", "to": "rudder servo (pull-pull to both rudders)", "note": "group 8-10"},
-    {"out": "S10", "function": "94 Script1", "to": "right exit-vane servo (front + rear right ducts)", "note": "group 8-10; needs a vane-mixing Lua script (open item)"},
+    {"out": "S10", "function": "94 Script1", "to": "right bottom-louvre servo (front + rear right ducts)", "note": "group 8-10; open in VTOL, shut in cruise, vectored aft in transition - needs a Lua script (open item)"},
     {"out": "S11", "function": "70 Throttle", "to": "EDF ESC signal", "note": "group 11-12; full throttle allowed (the 90 A pack covers EDF + lift fans)"},
-    {"out": "S12", "function": "95 Script2", "to": "left exit-vane servo (front + rear left ducts)", "note": "group 11-12; same script"},
+    {"out": "S12", "function": "95 Script2", "to": "left bottom-louvre servo (front + rear left ducts)", "note": "group 11-12; same script"},
     {"out": "UART1", "function": "SERIAL1_PROTOCOL 23", "to": "ELRS receiver (CRSF)", "note": "Rx TX -> R1, Rx RX -> T1"},
     {"out": "UART3", "function": "SERIAL3_PROTOCOL 5", "to": "M10 GNSS", "note": "compass on I2C"},
     {"out": "I2C", "function": "ARSPD_TYPE 1", "to": "ASPD-4525 airspeed", "note": "pitot through the nose, 30 mm ahead of the skin"},
@@ -94,8 +98,9 @@ SERVO6_FUNCTION,78
 SERVO7_FUNCTION,77
 SERVO8_FUNCTION,78
 SERVO9_FUNCTION,21
-# exit vanes: driven by a Lua script (vane angle from forward-speed demand, differential for yaw) - not written
-# yet, an open item; with no script the outputs hold their trim (vanes neutral)
+# bottom louvres / exit vanes: driven by a Lua script (open in VTOL modes, shut in fixed-wing modes, angled aft by the
+# forward-speed demand in transition, differential for yaw) - not written yet, an open item; with no script the
+# outputs hold their trim - set the trim to OPEN before any hover test
 SERVO10_FUNCTION,94
 SERVO11_FUNCTION,70
 SERVO12_FUNCTION,95

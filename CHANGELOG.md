@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.8.0 - 2026-10-26
+
+V20 rev B: the four lift fans hidden in an F-35-style blended body, one jet that works the way a jet should.
+
+- **Layout:** the fans moved from open holes in a delta into the shoulders of a wide, blended body beside the cockpit,
+  under louvres that shut in cruise (top louvres open by fan suction, bottom louvres are servo-driven and double as
+  exit vanes). Trapezoidal outer wings, larger all-moving stabilators, canted fins, F-35-style side intakes.
+- **Stability:** the gate is now the louvres-shut case (the forward-most neutral point): mini 6.7 % (gate 5 %), stuck-open
+  louvres 17.3 %. Found by a planform search with the vortex lattice; open and closed duct lattices both in the model.
+- **Engine:** the cruise fan sits near the CG fed by both intakes through internal ducts, with a thrust tube to the
+  nozzle; its power now comes from momentum theory with the intake area measured from the outer mould line.
+- **Mini:** 1,548 g, 4-inch props, 4S2P Li-ion, EDF behind the battery bay, Depron foam tail (SVG templates) to keep the
+  CG on the fan centre without ballast; 35 watertight print pieces; no internal collisions; cruise 18 m/s at 242 W.
+- **Full scale:** the mini's proportions do not close at full scale (disk loading), so the full scale widens the
+  shoulders for 1.56 m fans: 2,844 kg series hybrid with a nose turbogenerator, 1,263 kW hover, 20 km + 20-minute
+  reserve; static margin 1.9 % (fly-by-wire). Open items reported: only 31 % of the battery fits the nose bay;
+  turbine failure in a low hover.
+- Tools: shape variants (`v20params.use`), internal collision check, foam templates, the ruler measures the gap to
+  the nearest edge of the CG window and takes a per-variant static-margin window.
+
 ## 0.7.0 - 2026-10-26
 
 V20 "Falcon Jet": a fighter-styled lift + cruise VTOL, drawn once and sized at two scales.

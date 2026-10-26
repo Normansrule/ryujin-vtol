@@ -15,6 +15,7 @@ ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import v20params as P  # noqa: E402
 from bom import MINI_BOM, PINMAP  # noqa: E402
+import geometry as GEO  # noqa: E402
 
 
 def f(v, n=0):
@@ -63,75 +64,90 @@ def main() -> int:
     geo = json.loads((ROOT / "analysis" / "v20_geometry.json").read_text())
     m, F = sz["mini"], sz["full"]
     corridor_png(sz, ROOT / "analysis" / "v20_corridor.png")
+    global GEO_INTAKE_FRAC
+    GEO.set_variant("mini")
+    GEO_INTAKE_FRAC = GEO.intake_mouth_area_m2() / (math.pi / 4 * P.CRUISE_FAN_D ** 2 * (1 - 0.39 ** 2))
     L = []
     w = L.append
-    w("# V20 \"Falcon Jet\": one shape, two scales\n")
+    P.use("mini")
+    mini_p = {"D": P.DUCT_ID, "L": P.FUS_LEN}
+    P.use("full")
+    full_p = {"D": P.DUCT_ID, "L": P.FUS_LEN}
+    P.use("mini")
+    w("# V20 \"Falcon Jet\" (rev B): hidden lift fans, one jet, two scales\n")
     w("> **Status.** The mini is a buildable, 3D-printable experimental RC model: generated parts, a print set that fits "
-      "the P1S, a parts list and a bench port map - not yet printed, bench-tested or flown. The full-scale aircraft is an "
-      "**engineering concept study** of the same shape carrying one person: sizing, packaging and a regulatory path. It is "
-      "not a build package and nothing here makes it airworthy. A person-carrying aircraft needs licensed aerospace "
-      "engineering, structural and propulsion testing, a hazard analysis and FAA approval before anyone sits in it.\n")
-    w("![V20 mini, three-quarter view, with the hover frame between its four lift fans](../analysis/view_v20_mini.png)\n")
+      "the P1S, foam-tail templates, a parts list and a bench port map - not yet printed, bench-tested or flown. The "
+      "full-scale aircraft is an **engineering concept study** of the same layout carrying one person: sizing, packaging "
+      "and a regulatory path. It is not a build package and nothing here makes it airworthy. A person-carrying aircraft "
+      "needs licensed aerospace engineering, structural and propulsion testing, a hazard analysis and FAA approval before "
+      "anyone sits in it.\n")
+    w("![V20 mini, three-quarter view: louvres shut over the four lift fans, F-35-style intakes, the hover frame](../analysis/view_v20_mini.png)\n")
     w("## The answer\n")
     a_m, a_f = m["aero"], F["aero"]
-    sm = lambda x: 1000 * x                                  # noqa: E731
+    cor_ok = lambda r: all(c["forward_ok"] and c["hover_ok"] for c in r["corridor"]) and r["corridor"]   # noqa: E731
     rows = [
-        ["Scale", "1 : 10", "1 : 1"],
-        ["Length x span", f"{f(P.FUS_LEN * 100)} x {f(a_m['span_m'] * 1000)} mm", f"{P.FUS_LEN:.2f} x {a_f['span_m']:.2f} m"],
-        ["Lift ducts", f"4 x {f(P.DUCT_ID * 100)} mm, one 6-inch 3-blade prop each, exit vanes", f"4 x {P.DUCT_ID:.2f} m, two contra-rotating 5-blade fans each, exit vanes"],
-        ["Cruise engine", "64 mm EDF (Freewing E7206)", f"{P.CRUISE_FAN_D:.2f} m ducted fan, {f(F['cruise']['fan_installed_kw'])} kW"],
+        ["Scale", "1 : 10 of the layout", "1 : 1 (shoulders widened for bigger fans)"],
+        ["Length x span", f"{f(mini_p['L'] * 100)} x {f(a_m['span_m'] * 1000)} mm", f"{full_p['L']:.2f} x {a_f['span_m']:.2f} m"],
+        ["Lift fans (hidden under louvres)", f"4 x {f(mini_p['D'] * 100)} mm ducts, one 4-inch 3-blade prop each",
+         f"4 x {full_p['D']:.2f} m ducts, two contra-rotating 5-blade fans each"],
+        ["Jet", "64 mm EDF (Freewing E7206) behind the battery bay, fed by both side intakes",
+         f"{P.CRUISE_FAN_D:.2f} m electric ducted fan, {f(F['cruise']['fan_installed_kw'])} kW"],
         ["Power source", f"4S2P Li-ion, {m['battery']['ah']:.0f} Ah, {m['battery']['max_a']:.0f} A",
          f"series hybrid: {f(F['hybrid']['generator_kw'])} kW turbogenerator + {F['battery_kwh']:.0f} kWh battery"],
         ["Mass", f"{f(m['mass_kg'] * 1000)} g", f"{f(F['mtow_kg'])} kg (pilot 100 kg, battery {f(F['battery_kg'])} kg, fuel {f(F['hybrid']['fuel_kg'])} kg)"],
         ["CG from the centre of the 4 fans", f"{m['cg_offset_mm']:+.1f} mm", f"{F['cg_offset_mm']:+.0f} mm"],
-        ["Hover power", f"{f(m['hover_w'])} W", f"{f(F['hover_kw'])} kW"],
+        ["Hover power", f"{f(m['hover_w'])} W", f"{f(F['hover_kw'])} kW ({f(F['disk_loading_kg_m2'])} kg/m2 of fan)"],
         ["Lift thrust / weight", f"{m['thrust_to_weight_lift']:.2f}", f"{1.10 * 8 / 6:.2f} rated (one rotor may fail)"],
-        ["Static margin: ducts open / 25 % blocked (gate) / closed", f"{a_m['sm_open_pct']:.1f} / **{a_m['sm_blocked25_pct']:.1f}** / {a_m['sm_closed_pct']:.1f} %",
-         f"{a_f['sm_open_pct']:.1f} / **{a_f['sm_blocked25_pct']:.1f}** / {a_f['sm_closed_pct']:.1f} %"],
+        ["Static margin, louvres shut (cruise; gate) / open", f"**{a_m['sm_closed_pct']:.1f}** / {a_m['sm_open_pct']:.1f} % (gate 5 %)",
+         f"**{a_f['sm_closed_pct']:.1f}** / {a_f['sm_open_pct']:.1f} % (positive; fly-by-wire)"],
         ["Slowest wing-borne flight (trimmed CL at 14 deg)", f"{m['stall_ms']:.1f} m/s (CL {m['cl_usable']:.2f})",
          f"{F['stall_ms']:.1f} m/s, {F['stall_ms'] * 1.944:.0f} kt (CL {F['cl_usable']:.2f})"],
-        ["Cruise", f"{m['cruise']['v_best_range']:.1f} m/s, {f(m['cruise']['power_w'])} W", f"{f(F['cruise']['v_kmh'])} km/h, {f(F['cruise']['power_kw'])} kW, L/D {F['cruise']['L_over_D']:.1f}"],
+        ["Cruise (louvres shut)", f"{m['cruise']['v_best_range']:.1f} m/s, {f(m['cruise']['power_w'])} W, L/D {m['cruise']['L_over_D']:.1f}",
+         f"{f(F['cruise']['v_kmh'])} km/h, {f(F['cruise']['power_kw'])} kW, L/D {F['cruise']['L_over_D']:.1f}"],
         ["Endurance / mission", f"{m['hover_min']:.0f} min hover or {m['cruise']['min']:.0f} min cruise (model)",
          f"{F['mission']['cruise_km']:.0f} km hop + {F['mission']['reserve_cruise_min']:.0f} min VFR reserve"],
         ["Hover and forward flight at every speed (quasi-steady model)",
-         f"yes, 0-{m['corridor'][-1]['V']:.0f} m/s" if all(r["forward_ok"] and r["hover_ok"] for r in m["corridor"]) else "no",
-         f"yes, 0-{F['corridor'][-1]['V']:.0f} m/s" if all(r["forward_ok"] and r["hover_ok"] for r in F["corridor"]) else "no"],
+         f"yes, 0-{m['corridor'][-1]['V']:.0f} m/s" if cor_ok(m) else "no",
+         f"yes, 0-{F['corridor'][-1]['V']:.0f} m/s" if cor_ok(F) else "no"],
     ]
     w(table(rows, ["", "V20 mini (printable RC)", "V20 full (single-seat concept)"]))
     w("")
-    w("The two are the same outer mould line by construction (`tools/v20/v20params.py`, generated by "
-      "`tools/v20/geometry.py`); only what sits inside changes. The mini is the flying test article for the shape, the "
-      "control laws and the transition, at a scale where a mistake costs a print.\n")
-    w("![V20 mini from above: the four lift ducts in the strakes and wing roots, the CG marker where the diagonals cross]"
+    w("Rev A (v0.7.0) had the four fans in open holes through a big delta wing. It worked on paper but looked like a "
+      "drone glued into a jet, and the holes cost drag all the time. Rev B hides them.\n")
+    w("![V20 mini from above: the four lift fans in the body shoulders, louvres shut, the CG where the diagonals cross]"
       "(../analysis/view_v20_mini_top.png)\n")
 
     w("## Why it looks like this\n")
     w("**Hover first.** Four lift fans in a square; the CG goes where their diagonals cross, so each fan lifts a quarter "
-      "of the weight and every fan keeps the same control headroom. The heaviest movable item is the trim weight: on the "
-      f"mini the battery (pack centre x {m['battery_x_m'] * 1000:.0f} mm, in the nose); on the full-scale aircraft the "
-      f"battery too, in the nose bay ahead of the pilot's feet (centroid x {F['battery_x_m']:.2f} m), balancing the "
-      "turbogenerator behind the seat and the tail.\n")
-    w("**Then fly.** For wing-borne flight the neutral point must sit behind that same point. A duct sunk in a wing sits "
-      "at about half the local chord, but a delta's neutral point sits at about a third of its mean chord, so a 2 x 2 "
-      "square of ducts spread through a delta puts the CG far behind the neutral point. The first layouts tried here were "
-      "15-25 % of the mean chord unstable. The fix is the layout you see:\n")
-    w("- the ducts sit in the **forward half** of a large cranked delta (front pair in strakes beside the cockpit, rear "
-      "pair in the wing roots), as close together as the lips allow;")
-    w(f"- the ducts are **big**: {P.DUCT_ID:.2f} m at full scale (6-inch props on the mini). The first V20 draft had 1.06 m "
-      "ducts; at that size the full-scale disk loading was over 350 kg/m2 and the aircraft did not close under honest "
-      "assumptions. Bigger ducts need wider strakes, which is why the planform reaches further out than a fighter's;")
-    w("- the wing carries on well behind them, with a forward-swept trailing edge outboard;")
-    w(f"- **all-moving stabilators** of 3.2 m semi-span add the rest; the vortex lattice puts the neutral point "
-      f"{a_m['sm_open_pct']:.1f} % of the mean chord behind the CG with the ducts open, after the fuselage's destabilising "
-      f"moment (about {100 * a_m['Cma_fus'] / a_m['CLa']:.0f} % of margin, Raymer's method) is taken off.")
-    w(f"- The ducts stay **open in cruise** (fans stopped). Open and closed ducts bound the real case: a stopped fan, its hub "
-      f"and stators block part of each duct, which puts lift back over the front pair. Closed, the margin is "
-      f"{a_m['sm_closed_pct']:.1f} %; the design gate is **5 % or more at 25 % blockage**, and the V20 has "
-      f"{a_m['sm_blocked25_pct']:.1f} %. How much a parked fan really blocks is a wind-tunnel number - measure it on the mini "
-      "(Stage 1) before trusting either end. Louvre doors are not in this layout for the same reason.\n")
-    w("**The jet.** One ducted cruise fan in the tail cone, fed by two side intakes under the strakes, exhausts through a "
-      "round nozzle: in the mini the V18's own 64 mm EDF sits at the intake throat with a film thrust tube to the nozzle "
-      "(that keeps its 142 g near the CG). Twin canted fins with rudders, elevons on the outer wing, a gold-tinted canopy.\n")
+      "of the weight and every fan keeps the same control headroom. The battery is the trim weight: on the mini it sits "
+      f"in the nose (pack centre x {m['battery_x_m'] * 1000:.0f} mm); on the full-scale aircraft in the nose bay between the "
+      f"turbogenerator and the pilot's feet (centroid x {F['battery_x_m']:.2f} m).\n")
+    w("**Hidden fans.** The fans live in the shoulders of a wide, blended body, like the F-35's - beside the cockpit, the "
+      "front pair right next to the pilot's seat. Louvres close each duct top and bottom in cruise, so the aircraft is a "
+      "clean jet with no holes. On top they open by the fan's own suction and close with a light elastic; underneath "
+      "they are servo-driven and double as **exit vanes**, turning the fans' efflux aft in transition (as on the 1960s "
+      "XV-5 fan-in-wing).\n")
+    w("**Then fly.** With the louvres shut the wing's lift comes back over the front fans and the neutral point moves "
+      "forward, so the stability gate is the louvres-shut case. That is why the fans sit as far forward as the body "
+      "allows, the trapezoidal outer wings sit well aft, and the all-moving stabilators are large: the vortex lattice "
+      f"puts the neutral point **{a_m['sm_closed_pct']:.1f} %** of the mean chord behind the CG with the louvres shut "
+      f"({a_m['sm_open_pct']:.1f} % with them open), after the fuselage's destabilising moment (Raymer's method). "
+      "Stuck-open louvres therefore make it more stable, not less.\n")
+    w("**The jet.** F-35-style side intakes sit just ahead of the front fans; behind them each duct carries on as a cheek "
+      "under the body shoulder, inboard of the fans' lips and below their louvres, to one cruise fan near the CG. A thrust "
+      "tube carries its jet to the round nozzle. On the mini that is the 64 mm EDF right behind the battery bay: an EDF in "
+      "the tail would need a nose full of ballast, because the big stabilators and the wing behind the fans make the "
+      "airframe tail-heavy. The intakes give "
+      f"{100 * GEO_INTAKE_FRAC:.0f} % of the EDF's swept area (EDF practice is 80-100 %); the cruise-power model includes "
+      "that penalty, and the Stage 2 thrust test must be run through the printed intakes.\n")
+    w("**Lighter tail.** The mini's stabilators, fins and rudders are cut from 3 mm Depron foam with a carbon rod "
+      "(templates in `cad/v20/mini/foam/`): half the mass of printed surfaces, and the tail is where its balance is "
+      "decided.\n")
+    w("**Scaling up is not free.** At constant proportions the disk loading grows with size: mass goes as the cube, fan "
+      "area as the square. With the mini's proportions the full-scale aircraft needs more than 350 kg/m2 of fan and does "
+      "not close (trade study below), so the full scale widens the shoulders for "
+      f"{full_p['D']:.2f} m fans and grows the outer wing and stabilators to keep it stable. Its louvres-shut margin is "
+      f"{a_f['sm_closed_pct']:.1f} %: positive, and enough for a triplex fly-by-wire aircraft, but thinner than the mini's.\n")
 
     w("## Hover at any point, fly forward at any point\n")
     w("![Transition corridor: how the weight moves from the fans to the wing, and the power, at every speed]"
@@ -141,9 +157,9 @@ def main() -> int:
       "trim the pitch with front/rear differential thrust, and the cruise fan beats the drag - including the lift ducts' "
       "**momentum drag** (air taken in at flight speed and thrown down costs drag in proportion to speed). That drag is "
       "the classic fan-in-wing problem: on the full-scale aircraft it reaches several kilonewtons mid-transition, so "
-      "its ducts get **exit vanes** (as on the 1960s XV-5 fan-in-wing) that turn the efflux aft by up to 30 deg. The "
-      f"mini has them too (up to {sz['assumptions']['mini'].get('vane_max_deg', 0):.0f} deg, one servo per side): without them "
-      "its 64 mm EDF cannot beat the momentum drag at 12-13 m/s and the corridor has a gap.\n")
+      "the bottom louvres double as **exit vanes** that turn the efflux aft (up to 30 deg full scale, "
+      f"{sz['assumptions']['mini'].get('vane_max_deg', 0):.0f} deg on the mini). The louvres are open whenever the fans run (the "
+      "model then uses the open-duct lattice and the holes' drag) and shut once the wing carries it all.\n")
     for key, label in (("mini", "Mini"), ("full", "Full")):
         c = sz[key]["corridor"]
         idx = sorted(set(list(range(0, len(c), max(1, len(c) // 8))) + [len(c) - 1]))
@@ -168,12 +184,13 @@ def main() -> int:
     gm = geo["mini"]["checks"]
     w("## Build the mini\n")
     w(f"**Print set.** `cad/v20/mini/v20_mini_print_set.3mf` and `cad/v20/mini/stl/`: {len(gm['P1S'])} pieces, every one "
-      "fits the P1S bed (pieces were cut with flat joints where a part was too big). Print the airframe in LW-PLA "
-      "(foamed to about 0.6 g/cm3, one 0.45 mm wall, gyroid ribs), ducts and nozzle in PETG, the canopy as a buck for a "
-      "0.5 mm vacuum-formed PETG shell. Glue the joints with the carbon spars running through them: a 6 mm main spar "
-      "behind the rear ducts in two halves that plug into a printed ring around the thrust tube, a 4 mm centre spar through "
-      "the strip between the front and rear ducts, and a short 6 mm keel tube from behind the battery to the EDF. The "
-      "exit vanes are printed too (four per duct, hinged spanwise on 1 mm wire).\n")
+      "a closed solid that fits the P1S bed (larger parts were cut with flat joints). Print the airframe in LW-PLA "
+      "(foamed to about 0.6 g/cm3, one 0.45 mm wall, gyroid ribs), ducts and nozzle in PETG, the louvres in LW-PLA, the "
+      "canopy as a buck for a 0.5 mm vacuum-formed PETG shell. Cut the stabilators, fins and rudders from 3 mm Depron with "
+      "the 1:1 templates in `cad/v20/mini/foam/`. Glue the joints with the carbon spars running through them: a 6 mm main "
+      "spar behind the rear fans in two halves that plug into a printed ring around the thrust tube, and a 4 mm centre spar "
+      "through the strip between the front and rear fans. Louvres hinge on 0.8 mm music wire: the top ones close with "
+      "a thin elastic and open by the fan's suction, the bottom ones are linked to one servo per side.\n")
     pieces = sorted(gm["P1S"].items(), key=lambda kv: kv[0])
     w(table([[f"`{n}`", "fits" if v["fits"] else "**NO**", f"{v['footprint_mm']:.0f}", f"{v['height_mm']:.0f}"] for n, v in pieces],
             ["Piece", "P1S", "Footprint mm", "Height mm"]))
@@ -197,11 +214,15 @@ def main() -> int:
     w(table([[p["out"], p["function"], p["to"], p["note"]] for p in PINMAP], ["Output", "ArduPilot function", "Goes to", "Note"]))
     w("")
     w("**Gates before the first hover** (on top of the repo's Stage 0-10):\n")
-    for g in (f"Thrust stand: one ducted 6-inch prop on its motor gives at least {m['rotor_tmax_kg']:.2f} kg at full throttle on 4S "
-              f"(the model's limit, set by a quarter of the pack's power); below that, change motor or prop before printing the strakes.",
+    for g in (f"Thrust stand: one ducted 4-inch prop on its motor gives at least {m['rotor_tmax_kg']:.2f} kg at full throttle on 4S, "
+              "with the louvres open; below that, change motor or prop before printing the body.",
+              "EDF bench: the E7206 run through the printed intakes and thrust tube - record thrust and current; the model "
+              "assumes the intakes cost some thrust (they give about three quarters of the fan's swept area).",
+              "Louvres: the top ones open fully at hover throttle and shut with the fan off; the bottom ones open, shut and "
+              "vector aft on the servo, and the trim position is OPEN.",
               f"Weigh and balance: the CG within 3 mm of x {P.duct_centre_x() * 100:.0f} mm (centre of the four ducts); move the pack, not ballast.",
               f"Duct tip gap: {gm['prop_tip_gap_mm']:.1f} mm in the model (measured from the meshes) - check it all round with a feeler, "
-              "no rub when you flex the strake by hand.",
+              "no rub when you flex the body shoulder by hand.",
               "Props off: motor order and direction per the port map, every surface moves the right way in every mode.",
               "Tethered hover: hover throttle 40-50 %, no oscillation; then free hover; then transitions in steps of 2 m/s.",
               f"Battery current: logged peak under {0.85 * m['battery']['max_a']:.0f} A in hover and transition.",
@@ -212,21 +233,21 @@ def main() -> int:
     w("")
 
     # ---------------- full scale concept
+    P.use("full")
     H = F["hybrid"]
     w("## The full-scale aircraft (concept study)\n")
-    w("![V20 full scale, side view, with the pilot, battery, fuel tank and turbogenerator](../analysis/view_v20_full_side.png)\n")
-    w("**Why it is a hybrid.** With honest efficiencies (fan figure of merit 0.70, cruise-fan system 0.55, the delta's "
-      "drag due to lift, a usable CL from the trimmed lattice) and the legal VFR reserve, an all-electric version of this "
-      "shape does not close at any size or distance in the trade study below - not at 220 Wh/kg and not at 300. Two things "
-      f"do it: even with four {P.DUCT_ID:.2f} m ducts the disk loading is "
-      f"{f(F['disk_loading_kg_m2'])} kg/m2 (an open-rotor eVTOL runs 50-100), so hover takes {f(F['hover_kw'])} kW; and the "
-      f"low-aspect-ratio delta cruises at L/D {F['cruise']['L_over_D']:.1f}, so the 20-minute reserve alone is "
-      f"{F['energy_kwh']['reserve']:.0f} kWh. Jet fuel carries that reserve for a fraction of a battery's mass. The V20 full "
-      "scale is therefore a **series hybrid**: a turboshaft-driven generator right behind the seat (a flush inlet on the "
-      "spine, two insulated exhaust pipes either side of the cruise fan into its thrust tube, so the exhaust leaves "
-      "through the jet nozzle) carries cruise and the reserve; fuel sits in wing tanks outboard of the ducts; a "
-      "high-power battery in the nose carries hover and transition and balances the tail. That is the conclusion the "
-      "1960s fan-in-wing XV-5 reached with turbojets: this shape is a jet-fuel aircraft.\n")
+    w("![V20 full scale, side view: pilot, nose turbogenerator and battery, cruise fan behind the seat](../analysis/view_v20_full_side.png)\n")
+    w("**Why it is a hybrid.** With honest efficiencies (fan figure of merit 0.70, the cruise fan from momentum theory "
+      "through the intakes, the delta's drag due to lift, a usable CL from the trimmed lattice) and the legal VFR reserve, "
+      "an all-electric version does not close in the trade study below - not at 220 Wh/kg and not at 300. Hidden fans "
+      f"are small fans: even widened to {P.DUCT_ID:.2f} m the disk loading is {f(F['disk_loading_kg_m2'])} kg/m2 (an "
+      f"open-rotor eVTOL runs 50-100), so hover takes {f(F['hover_kw'])} kW, and the 20-minute reserve at cruise is "
+      f"{F['energy_kwh']['reserve']:.0f} kWh. Jet fuel carries that for a fraction of a battery's mass. So the full scale is a "
+      "**series hybrid**: a turboshaft-driven generator in the nose, where a fighter has its radar (it is the heaviest "
+      "thing that can go forward of a tail-heavy airframe), fed from the intake ducts, its exhaust in two insulated pipes "
+      "beside the cockpit into the thrust tube - the exhaust leaves through the jet nozzle. The battery fills the nose bay "
+      "between the turbine and the pilot's feet and trims the CG; fuel is in the outer wings. This is what the 1960s "
+      "fan-in-wing XV-5 found with turbojets: a fighter-shaped fan lifter is a jet-fuel aircraft, and a heavy one.\n")
     w(f"Closed sizing loop (`tools/v20/sizing.py`): pilot 100 kg; generator {f(H['generator_kw'])} kW (cruise and reserve "
       f"power + 10 %) at {sz['assumptions']['full']['hybrid']['gen_kw_per_kg']} kW/kg and "
       f"{sz['assumptions']['full']['hybrid']['sfc_kg_per_kwh']} kg of fuel per kWh; battery "
@@ -234,7 +255,8 @@ def main() -> int:
       f"{sz['assumptions']['full']['hybrid']['c_peak']:.0f}C; lift motors and inverters rated so that **any one of the "
       "eight rotors can fail** - re-splitting thrust onto the diagonal keeps pitch and roll trimmed, and the busiest "
       "healthy rotor then carries 1/6 of the weight (+10 % for control), for the 60 s it takes to land; cruise fan sized "
-      "to beat the drag from 1.1 x stall to 1.15 x cruise speed; structure from the generated wetted areas at composite "
+      "to beat the drag from 1.1 x stall to 1.15 x cruise speed and the transition's momentum drag; structure from the "
+      "generated wetted areas at composite "
       "areal densities; systems including a triplex flight-control system and a ballistic parachute.\n")
     w(table([[k, f"{f(v)} kg"] for k, v in F["groups_kg"].items()] + [["**MTOW**", f"**{f(F['mtow_kg'])} kg**"]], ["Group", "Mass"]))
     w("")
@@ -244,8 +266,8 @@ def main() -> int:
       f"{F['mission']['cruise_km']:.0f} km at {F['cruise']['v_kmh']:.0f} km/h, transition and {F['mission']['landing_hover_s']} s hover, "
       f"then a {F['mission']['reserve_cruise_min']:.0f} min reserve + {F['mission']['reserve_hover_s']} s hover): hover {e['hover']:.0f}, "
       f"transition {e['transition']:.0f}, cruise {e['cruise']:.0f}, reserve {e['reserve']:.0f} kWh at the bus; the generator "
-      f"supplies {sp['generator_kwh']:.0f} kWh ({f(H['fuel_kg'])} kg, {f(H['fuel_l'])} L of Jet A in the wing tanks, whose "
-      f"centroid is close to the fan centre: burning it all moves the CG {abs(H['cg_shift_fuel_burn_mm']):.0f} mm forward) and "
+      f"supplies {sp['generator_kwh']:.0f} kWh ({f(H['fuel_kg'])} kg, {f(H['fuel_l'])} L of Jet A in the outer-wing tanks; "
+      f"burning it all moves the CG {abs(H['cg_shift_fuel_burn_mm']):.0f} mm forward) and "
       f"the battery {sp['battery_kwh']:.0f} kWh of its {F['battery_kwh']:.0f} kWh. Battery power is sized for the larger of "
       "hover with 20 % thrust in hand and the transition's peak (from the corridor), less the generator; the cruise fan's "
       "thrust for the transition's momentum drag as well as cruise.\n")
@@ -253,20 +275,30 @@ def main() -> int:
       f"with the turbine stopped it supplies {100 * H['turbine_out_power_frac']:.0f} % of hover power - about "
       f"{100 * H['turbine_out_power_frac'] ** (2 / 3):.0f} % of the thrust needed. Above parachute height that is a "
       "parachute or a powered descent; in a low hover it is a hard landing. Single-engine helicopters live with the same "
-      "kind of height-velocity avoid region. The safe rule - the battery alone holds a 60 s hover - is in the trade study "
-      "and does **not** close at this size; twin turbogenerators, larger ducts or a lower disk loading are the ways out, "
-      "and a real program would have to pick one.\n")
-    rows = [[f"{r['k']:.1f} ({r['length_m']:.1f} m, {r['duct_m']:.2f} m ducts)", f"{r['cruise_km']:.0f}", r["powertrain"],
+      "kind of height-velocity avoid region. The safe rule - the battery alone holds a 60 s hover - is in the trade study; "
+      "twin turbogenerators, bigger fans or a lower disk loading are the ways out, and a real program would have to pick "
+      "one.\n")
+    bp = geo["full"]["checks"].get("battery_pack", {})
+    if bp:
+        w(f"**Packaging (open).** The generated full-scale model (`cad/v20/full/checks.json`) holds the pilot, the nose "
+          f"turbogenerator, the exhaust pipes, the intake ducts, the cruise fan, the parachute, the inverters and "
+          f"{bp.get('fuel_capacity_l', 0):.0f} L of wing tanks ({bp.get('fuel_needed_l', 0):.0f} L needed) without collisions - "
+          f"but only **{100 * bp.get('battery_volume_fill', 0):.0f} %** of the {f(F['battery_kg'])} kg battery fits the nose bay "
+          "between the turbine and the pilot's feet. The rest has nowhere to go in a body this slim: more volume in the "
+          "nose (a deeper forebody), a denser pack, or a lighter, less tail-heavy airframe that needs less battery as trim "
+          "weight. This is a real finding of the concept, not a rounding error.\n")
+    rows = [[r.get("case", ""), f"{r['length_m']:.1f} m, {r['duct_m']:.2f} m fans", f"{r['cruise_km']:.0f}", r["powertrain"],
              f(r["mtow_kg"]) if r["closes"] else "does not close", f(r["battery_kg"]) if r["closes"] else "-",
              f(r["fuel_kg"]) if r["closes"] and r["fuel_kg"] else "-", f(r["hover_kw"]) if r["closes"] else "-"] for r in sz["trade"]]
-    w("Trade study (same shape scaled by k; cruise distance; powertrain; every row carries the 20 min reserve):\n")
-    w(table(rows, ["Scale k", "Cruise km", "Powertrain", "MTOW kg", "Battery kg", "Fuel kg", "Hover kW"]))
+    w("Trade study (every row carries the 20-minute reserve):\n")
+    w(table(rows, ["Case", "Size", "Cruise km", "Powertrain", "MTOW kg", "Battery kg", "Fuel kg", "Hover kW"]))
     w("")
-    closes = [r for r in sz["trade"] if r["closes"]]
-    w("Only the hybrid closes" + (f", up to {max(r['cruise_km'] for r in closes):.0f} km in this table" if closes else "") +
-      ". Scaling the whole aircraft up does not rescue the all-electric version: structure and drag grow as fast as fan "
-      "area. Mass grows steeply with distance because every kilogram of fuel and generator raises the hover power, and "
-      "hover power sizes the battery and the motors.\n")
+    w("Read it from the top: the mini's own proportions do not close at full scale (fans too small for the weight); the "
+      "widened full-scale shape closes only as a hybrid; mass climbs steeply with distance, because every kilogram of fuel "
+      "and generator raises the hover power, which sizes the battery and the motors; and a bigger aircraft is heavier, not "
+      "better. **This is a heavy aircraft for one person.** If the full scale is the goal, the honest lever is bigger fans - "
+      "which means a less fighter-like body - or the F-35B's architecture (one large shaft-driven lift fan and a "
+      "swivelling engine nozzle), not more styling.\n")
     w("**Safety architecture (what a real program would have to carry):**\n")
     for s_ in ("Eight motors in four coaxial ducts. Any one motor, inverter or blade-out leaves enough thrust (sized above); the "
                "lost rotor's torque is no longer cancelled, so yaw must be held by the other pairs' differential speed, the "
@@ -311,10 +343,10 @@ def main() -> int:
     w("## How the numbers were made\n")
     w("- `tools/v20/v20params.py`: the master shape (full-scale metres). `tools/v20/geometry.py`: meshes for both scales, the "
       "mini print set and the checks (insides within the fuselage, prop tip gap, P1S fit). `tools/v20/aero.py`: vortex "
-      "lattice of the planform with the duct holes and the stabilators (same solver as `tools/aero_vlm.py`, within 0.3 % "
+      "lattice of the planform with the ducts open (louvres open) or covered (louvres shut) and the stabilators (same solver as `tools/aero_vlm.py`, within 0.3 % "
       "of AeroSandbox) plus Raymer's fuselage correction. `tools/v20/sizing.py`: masses and CG, momentum-theory hover power "
       "with figures of merit, Raymer flat-plate drag build-up, the corridor search, the full-scale sizing loop and the trade study.")
-    w("- Assumptions to replace with measurements first: LW-PLA areal density (Stage 1 coupons), ducted 6-inch thrust and "
+    w("- Assumptions to replace with measurements first: LW-PLA and Depron areal densities (Stage 1 coupons), ducted 4-inch thrust and "
       "current (thrust stand), the EDF's thrust and power at speed, the fan figures of merit (mini 0.48, full 0.70), the "
       "duct-hole drag and blockage, the leading-edge suction (mini 0.2, full 0.5), the turbogenerator's mass and fuel burn. "
       "Every number in this document moves when those do; rerun `make v20`.")

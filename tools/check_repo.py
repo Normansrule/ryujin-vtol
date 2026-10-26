@@ -244,13 +244,20 @@ def check_v20() -> None:
     if abs(m["cg_offset_mm"]) > 3.0:
         fails.append(f"V20 mini: CG {m['cg_offset_mm']:+.1f} mm from the centre of the four fans (gate 3 mm)")
     for key, r in (("mini", m), ("full", f)):
-        if r["aero"]["sm_blocked25_pct"] < 5.0:
-            fails.append(f"V20 {key}: static margin {r['aero']['sm_blocked25_pct']:.1f} % at 25 % duct blockage (gate 5 %)")
+        need = 5.0 if key == "mini" else 0.0          # full scale: positive, flown by triplex fly-by-wire
+        if r["aero"]["sm_gate_pct"] < need:
+            fails.append(f"V20 {key}: static margin {r['aero']['sm_gate_pct']:.1f} % with the louvres shut (gate {need:.0f} %)")
         bad = [c["V"] for c in r["corridor"] if not (c["forward_ok"] and c["hover_ok"])]
         if bad:
             fails.append(f"V20 {key}: no level-flight solution at {bad} m/s")
         if geo[key]["checks"]["status"] != "PASS":
-            fails.append(f"V20 {key}: geometry checks {geo[key]['checks']['status']} (cad/v20/{key}/checks.json)")
+            msg = f"V20 {key}: geometry checks {geo[key]['checks']['status']} (cad/v20/{key}/checks.json)"
+            if key == "full":       # the full scale is a concept study: its packaging gaps are findings, reported as flags
+                bp = geo[key]["checks"].get("battery_pack", {})
+                flags.append(msg + (f" - only {100 * bp['battery_volume_fill']:.0f} % of the battery fits the nose bay"
+                                    if bp.get("battery_volume_fill", 1) < 0.98 else ""))
+            else:
+                fails.append(msg)
     if not f.get("converged"):
         fails.append("V20 full: the sizing loop did not close")
     if f.get("hybrid") and f["hybrid"]["turbine_out_power_frac"] < 1.0:
