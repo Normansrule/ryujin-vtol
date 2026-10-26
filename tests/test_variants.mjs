@@ -45,4 +45,8 @@ test('V20 page data', () => {
   const D = j('site/data/v20.json');
   for (const k of ['mini', 'full']) assert.ok(D[k].corridor.every((r) => r.forward_ok && r.hover_ok), `${k} corridor`);
   assert.ok(D.bom.length > 10 && D.pinmap.length >= 12 && D.trade.length > 0);
+  // rev C: payload modules, the payload limit, directional stability and the ground uses are in the page data
+  assert.ok(D.payload_modules.length >= 3 && D.payload_modules.every((m) => m.grams <= D.mini.payload.max_kg * 1000), 'payload modules within the limit');
+  for (const k of ['mini', 'full']) assert.ok(D[k].aero.Cnb > 0 && D[k].aero.sm_gate_pct >= 5, `${k} stability`);
+  assert.ok(D.mini.ground.perch_h_half_pack > 1 && D.full.cargo.bay_l > 0, 'missions');
 });

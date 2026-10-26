@@ -348,9 +348,18 @@ input[type="number"], input[type="text"], select { padding: 0.32rem 0.5rem; bord
 .hud { position: absolute; inset: 0; display: none; pointer-events: none; color: #7CF2B0; font: 500 0.85rem var(--font-num); letter-spacing: 0.04em; }
 .viewport.pilot .hud { display: block; }
 .viewport.pilot .ruler, .viewport.pilot .viewport-hint { display: none; }
+.viewport.no-overlay .ruler { display: none; }
 .hud svg { position: absolute; inset: 12% 18%; width: 64%; height: 76%; overflow: visible; filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.55)); }
 .hud line, .hud .wings { stroke: currentColor; stroke-width: 2; fill: none; }
 .hud text { fill: currentColor; font: 500 11px var(--font-num); }
 .hud-cap { position: absolute; left: 1rem; bottom: 1rem; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(8, 14, 20, 0.55); }
 .hud-tip { position: absolute; right: 1rem; bottom: 1rem; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(8, 14, 20, 0.55); color: #DDE6EE; }
 .v20chart { width: 100%; height: auto; color: var(--ink, currentColor); margin: 4px 0 2px; }
+
+/* V20 spec sheet */
+table.spec { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+table.spec th[scope="row"] { text-align: left; font-weight: 500; color: var(--ink-soft); padding: 0.28rem 0.8rem 0.28rem 0; white-space: nowrap; vertical-align: top; }
+table.spec td { padding: 0.28rem 0; font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+table.spec td .muted { font-family: inherit; font-size: 0.86rem; }
+table.spec .spec-h { text-align: left; font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); padding: 0.9rem 0 0.3rem; border-bottom: 1px solid var(--rule); }
+table.spec tbody.spec-sect tr:not(:first-child) { border-bottom: 1px solid var(--rule); }

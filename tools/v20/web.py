@@ -1,8 +1,8 @@
 """V20 data for the web workbench: two standalone viewer variants (v20_mini, v20_full) and the V20 tab's page data.
 
-Both models are shown in the same display frame: the mini at real size (mm) and the full-scale aircraft at 1:10, so
-the two sit in the same frame (the full scale is a wider-shouldered variant of the same layout) and the viewer's camera, grid and markers need no rescaling. The
-page shows full-scale numbers in metres and kilograms.
+Both models are shown in the same display frame: the mini at real size (mm) and the full-scale aircraft at 1:10. Rev C
+uses one outer mould line for both, so they line up exactly and the viewer's camera, grid and markers need no
+rescaling. The page shows full-scale numbers in metres and kilograms.
 """
 from __future__ import annotations
 
@@ -14,13 +14,14 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 import v20params as P  # noqa: E402
-from bom import MINI_BOM, PINMAP  # noqa: E402
+from bom import MINI_BOM, PAYLOAD_MODULES, PINMAP  # noqa: E402
 
 DISPLAY_MM_PER_M = 100.0     # full-scale metre -> display mm (mini scale 1:10; full shown at 1:10)
 
 
 def _group(name: str) -> str:
-    for pre, label in (("wing", "Wing and strakes"), ("elevon", "Controls"), ("stabilator", "Controls"), ("rudder", "Controls"),
+    for pre, label in (("wing", "Wing and strakes"), ("elevon", "Controls"), ("ruddervator", "V-tail"), ("bay_door", "Payload bay"),
+                       ("payload", "Payload"), ("cargo", "Payload"), ("spine", "Fuselage"),
                        ("fin", "Fins"), ("duct", "Lift ducts"), ("fan", "Lift fans"), ("nozzle", "Cruise jet"), ("edf", "Cruise jet"),
                        ("thrust", "Cruise jet"), ("cruise", "Cruise jet"), ("intake", "Cruise jet"), ("gear", "Landing gear"),
                        ("battery", "Battery"), ("fuel", "Fuel"), ("turbo", "Power"), ("pilot", "Cockpit"), ("seat", "Cockpit"), ("canopy", "Cockpit"),
@@ -59,7 +60,7 @@ def _entry(key: str, sz: dict, geo: dict) -> dict:
     cor = s["corridor"]
     corridor_ok = all(r["forward_ok"] and r["hover_ok"] for r in cor)
     sm_gate = a["sm_gate_pct"]
-    sm_need = 0.0 if full else 5.0          # the full scale flies on triplex fly-by-wire; the mini wants 5 %
+    sm_need = 5.0                           # rev C: the same 5 % gate at both scales (the full scale also has fly-by-wire)
     gates_ok = sm_gate >= sm_need and (abs(off_real_mm) <= (3.0 if not full else 30.0)) and corridor_ok \
         and geo[key]["checks"]["status"] == "PASS"
     mass_g = (s["mass_kg"] if not full else s["mtow_kg"]) * 1000
@@ -72,12 +73,12 @@ def _entry(key: str, sz: dict, geo: dict) -> dict:
                     "mass_basis": "surface area x areal density" if p["name"] in masses else "",
                     "centroid_mm": [round(v * (0.1 if full else 1.0), 1) for v in p["centroid_mm"]],
                     "bbox_mm": [round(v * (0.1 if full else 1.0), 1) for v in p["bbox_mm"]], "P1S": None, "group_label": _group(p["name"])})
-    eye = (3.22, 0.0, 0.455) if not full else (3.48, 0.0, 0.52)
+    eye = (3.22, 0.0, 0.455) if not full else (3.48, 0.0, 0.57)
     label = "V20 mini (1:10, printable)" if not full else "V20 full scale (single seat, concept; shown 1:10)"
-    summ = ("F-35-style lift + cruise VTOL: 4 lift fans hidden under louvres, side intakes to one 64 mm EDF, 4S2P Li-ion, "
-            "3D-printed on the P1S with a foam tail" if not full else
-            "The same layout for one pilot, shoulders widened for 1.56 m fans: 8 motors in 4 coaxial ducts, series hybrid "
-            "(nose turbogenerator + battery); engineering concept")
+    summ = ("Fury-style lift + cruise VTOL: 4 lift fans hidden under louvres, a V-tail, side intakes to one 64 mm EDF, a "
+            "payload bay at the CG, 4S3P Li-ion; 3D-printed on the P1S" if not full else
+            "The same shape for one pilot: 8 motors in 4 coaxial ducts, series hybrid (nose turbogenerator + battery), a "
+            "cargo bay at the CG; engineering concept")
     return {
         "label": label, "short": "V20 Mini" if not full else "V20 Full", "summary": summ, "standalone": True, "family": "v20",
         "display_scale": 1.0 if not full else 10.0, "unit": "mm" if not full else "m",
@@ -121,7 +122,8 @@ def page_data() -> dict | None:
         geom[key] = {"length_m": P.FUS_LEN, "span_m": sz[key]["aero"]["span_m"] / sz[key]["scale"], "duct_id_m": P.DUCT_ID,
                      "duct_x_m": P.DUCT_X, "duct_y_m": P.DUCT_Y}
     P.use("mini")
-    out = {"mini": {}, "full": {}, "trade": sz["trade"], "bom": MINI_BOM, "pinmap": PINMAP, "assumptions": sz["assumptions"],
+    out = {"mini": {}, "full": {}, "trade": sz["trade"], "bom": MINI_BOM, "pinmap": PINMAP, "payload_modules": PAYLOAD_MODULES,
+           "assumptions": sz["assumptions"],
            "geometry": geom["full"], "geometry_by_scale": geom}
     for key in ("mini", "full"):
         s = dict(sz[key])

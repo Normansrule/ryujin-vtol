@@ -45,14 +45,15 @@ SCALES = {
         "areal_kg_m2": {"skin": 0.34, "controls": 0.20, "glass": 0.45, "propulsion": 0.40, "gear": 0.0},
         # tail surfaces from 3 mm Depron foam sheet with a 2 mm carbon rod and printed roots (templates in cad/v20/mini/foam):
         # half the mass of printed surfaces, and the tail is where the mini's balance is decided
-        "foam_kg_m2": 0.10, "foam_parts": ("stabilator", "fin_", "rudder"),
+        "foam_kg_m2": 0.10, "foam_parts": ("ruddervator",),
         "rotors_per_duct": 1,
-        "fm": 0.48,                # small ducted 4-inch props at low Reynolds number: figure of merit vs ideal ducted
+        "fm": 0.50,                # small ducted 6-inch props at low Reynolds number: figure of merit vs ideal ducted
                                    # momentum theory (published small-duct tests run 0.4-0.55)
         "eta_drive": 0.80,         # motor x ESC at hover throttle
         "kappa_coax": 1.0,
-        "rotor_tmax_kg": 0.72,     # one 4-inch 3-blade prop, 2204-class motor, 4S: 75 % of a 965 g open-prop test (the
-                                   # thrust stand decides); the battery limit below can bind first
+        "rotor_tmax_kg": 0.95,     # one 6-inch 3-blade prop on a 2207-class motor (1900-2100 KV), 4S, in its duct with the
+                                   # louvres open: about 70 % of the 1.3-1.4 kg such a set makes in the open on 4S (an
+                                   # assumption until the thrust stand measures it); the battery limit below can bind first
         "cruise_static_thrust_kg": 1.20,   # Freewing E7206 64 mm EDF on 4S (vendor figure)
         "cruise_jet_ms": 55.0,     # EDF exit velocity scale for the thrust lapse with speed
         "eta_fan_drive": 0.49,     # 64 mm EDF: fan x motor x ESC (its vendor 1.2 kg / 780 W static point gives 0.49)
@@ -64,9 +65,10 @@ SCALES = {
         "louvre_cd": 0.02,         # louvres shut (cruise): slat gaps and steps, per duct area
         "vane_max_deg": 15.0,      # printed exit vanes, one servo per side (front + rear duct linked): they close the
                                    # 12-13 m/s gap where the EDF alone cannot beat the lift ducts' momentum drag
-        # 4S2P Li-ion, 8 x 21700 (Molicel P45B class: 4.5 Ah, 45 A continuous each) -> 9 Ah, 90 A
-        "battery": {"cells": 4, "parallel": 2, "cell_ah": 4.5, "cell_a": 45.0, "kg": 0.58, "usable": 0.80,
-                    "v_load": 13.2, "margin": 0.85},   # pack power limit = 90 A x 13.2 V under load x 0.85
+        # 4S3P Li-ion, 12 x 21700 (Molicel P45B class: 4.5 Ah, 45 A continuous each) -> 13.5 Ah, 135 A. Rev C carries the
+        # third parallel row for range: the wider chined nose holds a 3-wide pack, and it is also the nose weight
+        "battery": {"cells": 4, "parallel": 3, "cell_ah": 4.5, "cell_a": 45.0, "kg": 0.87, "usable": 0.80,
+                    "v_load": 13.2, "margin": 0.85},   # pack power limit = 135 A x 13.2 V under load x 0.85
     },
     "full": {
         "scale": 1.0,
@@ -158,15 +160,28 @@ def oml():
     return _OML[1]
 
 
+BODY_PARTS = ("fuselage", "wing_R", "wing_L", "canopy", "spine", "intake_R", "intake_L")
+_WET = {}
+
+
+def body_overlap_factor() -> float:
+    """The blended body is several overlapping solids (fuselage, wings with their root fillets, canopy, spine,
+    intakes): the air only sees the outside of their union. Wetted area of the union / sum of the parts' areas."""
+    if P.VARIANT not in _WET:
+        from mesh import union
+        ms = [m for n, m, _l in oml() if n in BODY_PARTS]
+        _WET[P.VARIANT] = float(union(*ms).area) / sum(float(m.area) for m in ms)
+    return _WET[P.VARIANT]
+
+
 def exposed_area(name, mesh):
-    """Wetted area (full scale m2) a part shows to the air: wing area inside the fuselage is not skin."""
+    """Wetted area (full scale m2) a part shows to the air: the parts of the blended body share the outside of their
+    union; a duct shows only its inner wall."""
     a = float(mesh.area)
-    if name.startswith("wing_"):
-        ys = np.linspace(0, P.FUS[5][1], 30)
-        inside = np.trapezoid(GEO.TE_X(ys) - GEO.LE_X(ys), ys)
-        a -= 2 * inside
+    if name in BODY_PARTS:
+        a *= body_overlap_factor()
     if name.startswith("duct_"):
-        a *= 0.5            # inner wall only; the outer face is buried in the strake
+        a *= 0.5            # inner wall only; the outer face is buried in the body shoulder
     return a
 
 
@@ -179,7 +194,7 @@ def drag_buildup(s: float, V: float):
     rows = []
     total = 0.0
     for name, m, layer in oml():
-        if layer in ("gear",) or name.startswith(("nozzle", "duct_", "vanes_")):
+        if layer in ("gear",) or name.startswith(("nozzle", "duct_", "vanes_", "bay_door")):
             continue
         L = {"fuselage": P.FUS_LEN, "canopy": P.CANOPY["x1"] - P.CANOPY["x0"]}.get(name.split("_")[0], 3.0) * s
         if name.startswith(("wing", "elevon")):
@@ -234,36 +249,44 @@ def mass_items(scale_key: str, extra: dict, s: float | None = None) -> list:
     return items
 
 
-def mini_components():
-    """Mini hardware (kg) at full-scale-metre positions (positions are scaled with the airframe)."""
+PAYLOAD_DEFAULT = ("payload module: 4K action camera (RunCam Thumb 2 class) on a 5 g tilt servo, window door", 0.025)
+
+
+def mini_components(payload_kg: float | None = None):
+    """Mini hardware (kg) at full-scale-metre positions (positions are scaled with the airframe). payload_kg replaces
+    the default payload module's mass (it sits at the CG, in the belly bay)."""
     it = []
     for n, x, y in P.duct_centres():
-        it.append((f"lift motor {n} (2204-class, 2600-3200 KV)", x, y, -0.02, 0.028, "propulsion"))
-        it.append((f"lift prop {n} (4-inch 3-blade)", x, y, 0.02, 0.004, "propulsion"))
+        it.append((f"lift motor {n} (2207-class, 1900-2100 KV)", x, y, -0.02, 0.033, "propulsion"))
+        it.append((f"lift prop {n} (6-inch 3-blade)", x, y, 0.02, 0.0055, "propulsion"))
     xc = P.duct_centre_x()
+    pb = P.PAYLOAD_BAY
     it += [
-        ("4-in-1 ESC (Hobbywing XRotor Micro 60A)", 2.60, 0.0, -0.29, 0.016, "propulsion"),
-        ("EDF Freewing E7206 64 mm 4S", P.CRUISE_FAN_X_MINI, 0.0, -0.10, 0.142, "propulsion"),
-        ("EDF thrust tube + nozzle liner (0.2 mm PET film)", 6.96, 0.0, -0.05, 0.012, "propulsion"),
+        ("4-in-1 ESC (Hobbywing XRotor Micro 60A)", 2.98, 0.0, -0.19, 0.016, "propulsion"),
+        ("EDF Freewing E7206 64 mm 4S", P.CRUISE_FAN_X, 0.0, -0.10, 0.142, "propulsion"),
+        ("EDF thrust tube + nozzle liner (0.2 mm PET film)", (P.CRUISE_FAN_X + 0.37 + P.NOZZLE["x0"]) / 2, 0.0, -0.05, 0.012, "propulsion"),
         ("intake ducts (0.2 mm PET film, two)", 2.9, 0.0, -0.2, 0.006, "propulsion"),
-        ("EDF ESC (Hobbywing Skywalker 60A V2)", 2.72, 0.0, -0.15, 0.040, "propulsion"),
-        ("flight controller SpeedyBee F405 WING", 2.60, 0.0, 0.0, 0.025, "avionics"),
-        ("GPS + compass (M10), under the front of the canopy", 2.63, 0.0, 0.31, 0.012, "avionics"),
+        ("EDF ESC (Hobbywing Skywalker 60A V2)", 3.50, 0.0, -0.22, 0.040, "propulsion"),
+        ("flight controller SpeedyBee F405 WING", 2.98, 0.0, 0.0, 0.025, "avionics"),
+        ("GPS + compass (M10), under the front of the canopy", 2.63, 0.0, 0.29, 0.012, "avionics"),
         ("ELRS receiver", 2.0, 0.0, 0.15, 0.003, "avionics"),
         ("FPV camera 19 mm (pilot's eye)", 3.22, 0.0, 0.45, 0.008, "avionics"),
         ("VTX 400 mW", 2.2, 0.0, 0.0, 0.006, "avionics"),
         ("airspeed sensor + pitot", 0.6, 0.0, 0.0, 0.006, "avionics"),
-        ("servo x2 elevons (5 g digital)", 5.20, 0.0, 0.0, 0.011, "controls"),
-        ("servo x2 stabilators (5 g digital, short pushrods)", 7.20, 0.0, 0.0, 0.011, "controls"),
-        ("servo x1 rudders (5 g, pull-pull to both rudders)", 6.80, -0.85, 0.0, 0.0055, "controls"),
-        ("servo x2 bottom louvres / exit vanes (5 g, one per side, front + rear linked)", 5.05, 0.0, 0.0, 0.011, "controls"),
-        ("top louvre hinge wires + elastic closers (suction-opened)", P.duct_centre_x(), 0.0, 0.14, 0.006, "controls"),
-        ("linkages, horns, hinges", 7.0, 0.0, 0.0, 0.013, "controls"),
+        ("servo x2 elevons (5 g digital)", 6.10, 0.0, 0.0, 0.011, "controls"),
+        ("servo x2 ruddervators (5 g digital, in the dorsal spine)", 7.865, 0.0, 0.32, 0.011, "controls"),
+        ("servo x2 bottom louvres / exit vanes (5 g, one per side, front + rear linked)", 3.75, 0.0, 0.0, 0.011, "controls"),
+        ("servo x1 payload-bay doors (5 g)", pb["x1"] + 0.10, 0.0, -0.30, 0.0055, "controls"),
+        ("top louvre hinge wires + elastic closers (suction-opened)", xc, 0.0, 0.14, 0.006, "controls"),
+        ("linkages, horns, hinges, 2 mm ruddervator pivot rods", 6.8, 0.0, 0.0, 0.012, "controls"),
         ("wiring, XT60, connectors", xc, 0.0, -0.1, 0.030, "systems"),
-        ("carbon tubes: 6 mm main spar (2 halves), 4 mm centre spar", 4.3, 0.0, 0.0, 0.024, "airframe"),
-        ("fixed tricycle gear (wire legs, foam wheels)", P.duct_centre_x() + 0.6, 0.0, -0.6, 0.032, "gear"),
+        ("carbon tubes: 6 mm main spar (2 halves), 4 mm centre spar", 4.9, 0.0, 0.0, 0.018, "airframe"),
+        ("fixed tricycle gear (wire legs, foam wheels)", 4.2, 0.0, -0.6, 0.034, "gear"),
         ("glue, screws, magnets", 5.0, 0.0, 0.0, 0.020, "systems"),
     ]
+    name, kg = PAYLOAD_DEFAULT
+    it.append((name if payload_kg is None else f"payload {payload_kg * 1000:.0f} g", (pb["x0"] + pb["x1"]) / 2, 0.0, -0.38,
+               kg if payload_kg is None else payload_kg, "payload"))
     return it
 
 
@@ -280,11 +303,11 @@ TURBO_X = 1.325             # turboshaft + generator in the nose (where a fighte
                             # the airframe tail-heavy, and the turbine is the heaviest thing that can go forward. It breathes
                             # from the intake ducts; two insulated exhaust pipes run aft beside the cockpit into the thrust
                             # tube, so the exhaust still leaves through the jet nozzle
-FUEL_X = 3.95               # wing tanks ahead of the main spar, outboard of the body (from the generated tank solids)
+FUEL_X = 3.85               # wing tanks ahead of the main spar, outboard of the body (from the generated tank solids)
 FULL_BAY = (1.95, 2.30)     # battery centroid limits: the nose bay between the turbogenerator and the pilot's feet
 MINI_VMAX = 23.0            # top of the mini's corridor (m/s): above this the 64 mm EDF cannot beat the drag
-MINI_BAY = (1.66, 1.70)     # 4S2P pack centre (full-scale metres): the 141 mm two-block pack needs the nose width from
-                            # x 0.95 and must end before the avionics stack at 2.42
+MINI_BAY = (1.90, 2.08)     # 4S3P pack centre (full-scale metres): the 141 mm two-block, 3-wide pack needs the nose
+                            # width from x 1.2 and must end before the avionics stack at 2.80
 
 
 def solve_cg(items, battery_kg, bay, target_x):
@@ -529,6 +552,30 @@ def size_mini():
         groups[g] = groups.get(g, 0) + k
     groups["battery"] = batt
     v_min = math.ceil(1.35 * vstall)
+    # payload: the heaviest module the bay can take while each fan still hovers at <= 80 % of its thrust and the pack
+    # can still give the 20 % control headroom (the same rule as the corridor's hover check). It sits at the CG.
+    # payload: the heaviest module that keeps lift thrust/weight >= 1.7 (hover at <= 60 % of full thrust: room to
+    # control and to climb) and the battery able to give the 20 % control headroom; then the corridor is re-run at that
+    # mass to check the transition still works
+    m_thrust = 4 * rot_tmax / G0 / 1.7
+    m_power = M
+    while hover_power_w(1.2 * (m_power + 0.005) * G0, s, cfg) <= pk["p_max_w"] and m_power < 10:
+        m_power += 0.005
+    m_max = min(m_thrust, m_power)
+    pay0 = PAYLOAD_DEFAULT[1]
+    pay_max = m_max - (M - pay0)
+    M_full = M - pay0 + max(pay_max, 0.0)
+    pc_full, _, _ = cruise_power_w(M_full, s, vr, cfg, d, T_static, cfg["cruise_max_w"])
+    cor_max = corridor(M_full, s, cfg, d, cg[0] * s, rot_tmax, T_static, MINI_VMAX, pk["p_max_w"], cfg["cruise_max_w"],
+                       usable_cl(d, cg[0] * s, cfg))
+    payload = {"default_kg": pay0, "max_kg": pay_max, "limited_by": "thrust/weight 1.7" if m_thrust < m_power else "battery power",
+               "corridor_ok_at_max": all(c["hover_ok"] and c["forward_ok"] for c in cor_max),
+               "hover_min_at_max": e_wh / hover_power_w(M_full * G0, s, cfg) * 60, "cruise_min_at_max": e_wh / pc_full * 60,
+               "bay_mm": [round((P.PAYLOAD_BAY["x1"] - P.PAYLOAD_BAY["x0"]) * 100), round(2 * P.PAYLOAD_BAY["half_width"] * 100), 18]}
+    # on the ground: perched with the motors off, the camera, flight controller and a low-power video link keep running
+    perch_w = {"flight controller, GPS, receiver": 2.0, "camera recording": 1.8, "video link at 25 mW": 1.2}
+    ground = {"perch_w": sum(perch_w.values()), "perch_breakdown_w": perch_w,
+              "perch_h_half_pack": 0.5 * e_wh / sum(perch_w.values()), "power_bank_wh": e_wh}
     return {
         "scale": s, "mass_kg": M, "groups_kg": groups, "items": [(n, k, list(p), g) for n, k, p, g in items],
         "battery_kg": batt, "battery_x_m": xb_c * s, "battery_x_unclipped_m": xb * s, "cg_m": (cg * s).tolist(),
@@ -544,7 +591,7 @@ def size_mini():
                       "CL": trim16[2]},
         "airspeeds": {"AIRSPEED_MIN": v_min, "Q_ASSIST_SPEED": math.ceil(1.2 * vstall),
                       "AIRSPEED_CRUISE": max(v_min + 1, round(vr)), "AIRSPEED_MAX": int(MINI_VMAX) - 1},
-        "corridor": cor, "battery_wh_usable": e_wh,
+        "corridor": cor, "battery_wh_usable": e_wh, "payload": payload, "ground": ground,
     }
 
 
@@ -555,7 +602,9 @@ def aero_summary(d, x_cg, dc=None):
     do = d.get("open", d)
     sm_c = A.static_margin(d, x_cg)
     sm_o = A.static_margin(do, x_cg)
-    return {"sm_open_pct": sm_o, "sm_closed_pct": sm_c, "sm_gate_pct": sm_c, "x_np_closed_m": d["x_np_m"],
+    cn = A.cn_beta(d, x_cg)
+    return {"Cnb": cn["Cnb"], "Cnb_tail": cn["Cnb_tail"], "Cnb_fus": cn["Cnb_fus"],
+            "sm_open_pct": sm_o, "sm_closed_pct": sm_c, "sm_gate_pct": sm_c, "x_np_closed_m": d["x_np_m"],
             "x_np_open_m": do["x_np_m"], "S_m2": d["geo"]["S_m2"], "span_m": d["geo"]["span_m"], "AR": d["geo"]["AR"],
             "mac_m": d["geo"]["mac_m"], "x_np_m": d["x_np_m"], "x_np_wing_stab_m": d["x_np_wing_m"], "CLa": d["CLa"],
             "sm_pct": sm_c, "Cma_fus": d["Cma_fus"]}
@@ -730,8 +779,23 @@ def size_full(mission: dict = MISSION, k: float = 1.0, wh_per_kg: float | None =
                    "L_over_D": W / D, "v_best_endurance": ve, "fan_static_thrust_n": T_static, "fan_installed_kw": cruise_kw},
         "mission": mission, "energy_kwh": E, "stall_ms": vstall, "aero": aero_summary(d, cg[0] * s, dc),
         "trim_cruise": {"alpha_deg": math.degrees(trim[0]), "pitch_surfaces_deg": math.degrees(trim[1]), "CL": trim[2]},
-        "corridor": cor, "iterations": log,
+        "corridor": cor, "iterations": log, "cargo": cargo_full(), "ground": ground_full(hyb) if hybrid else {},
     }
+
+
+def cargo_full() -> dict:
+    """The belly bay at the CG (doors flush in cruise) and the uncrewed cargo version (the cockpit becomes a cargo
+    module of the pilot + seat's mass, so the sizing, CG and corridor are unchanged)."""
+    pb = P.PAYLOAD_BAY
+    vol_l = (pb["x1"] - pb["x0"] - 0.08) * (2 * pb["half_width"] - 0.06) * (pb["z_top"] - 0.02 + 0.45) * 1000
+    return {"bay_l": vol_l, "bay_kg": 40.0, "uncrewed_cargo_kg": 122.0}
+
+
+def ground_full(hyb: dict, export_kw: float = 100.0, sfc_part: float = 0.65) -> dict:
+    """On the ground the turbogenerator is a mobile generator: export power through a ground inverter (an added
+    part) at part load, where a small turboshaft burns more per kWh than at its design point."""
+    return {"export_kw": export_kw, "fuel_kg_per_h": export_kw * sfc_part,
+            "hours_on_mission_fuel": hyb["fuel_kg"] / (export_kw * sfc_part), "generator_kw": hyb["generator_kw"]}
 
 
 def size_full_with_corridor(mission: dict = MISSION, k: float = 1.0, powertrain: str = "hybrid", rounds: int = 4,
@@ -765,19 +829,18 @@ def corridor_unlimited(r: dict, k: float, thrust: float | None = None) -> list:
 
 
 def trade_study():
-    """Full-scale closure: the mini's own proportions scaled up (the reason the full scale has bigger fans), then the
-    full-scale shape across mission distance and powertrain (series hybrid; hybrid whose battery alone can hold a 60 s
+    """Full-scale closure: the shape across mission distance and powertrain (series hybrid; hybrid whose battery alone can hold a 60 s
     hover; all-electric at today's and a future pack energy density), and one size up. Every row carries the same
     20-minute VFR reserve; hybrid rows also size the battery and cruise fan for the transition corridor."""
     rows = []
-    cases = [("mini proportions (1.06 m fans)", "mini", 1.0, 20.0, "hybrid", None, 0.0),
-             ("full shape", "full", 1.0, 10.0, "hybrid", None, 0.0),
+    cases = [("full shape", "full", 1.0, 10.0, "hybrid", None, 0.0),
              ("full shape", "full", 1.0, 20.0, "hybrid", None, 0.0),
              ("full shape", "full", 1.0, 50.0, "hybrid", None, 0.0),
              ("full shape, battery alone holds a 60 s hover", "full", 1.0, 20.0, "hybrid", None, 60.0),
              ("full shape", "full", 1.0, 20.0, "battery", 220.0, 0.0),
              ("full shape", "full", 1.0, 20.0, "battery", 300.0, 0.0),
-             ("full shape, 1.2x larger", "full", 1.2, 20.0, "hybrid", None, 0.0)]
+             ("full shape, 1.2x larger", "full", 1.2, 20.0, "hybrid", None, 0.0),
+             ("full shape, 0.9x smaller", "full", 0.9, 20.0, "hybrid", None, 0.0)]
     for label, var, k, km, pt, wh, tout in cases:
         SCALES["full"]["hybrid"]["turbine_out_hover_s"] = tout
         try:
@@ -803,7 +866,8 @@ def main() -> int:
     mini = size_mini()
     full = size_full_with_corridor()
     trade = trade_study() if "--no-trade" not in sys.argv else []
-    out = {"_note": __doc__.strip(), "mini": mini, "full": full, "trade": trade,
+    GEO.set_variant("full")
+    out = {"_note": __doc__.strip(), "mini": mini, "full": full, "trade": trade, "_overlap": body_overlap_factor(),
            "assumptions": {k: {kk: vv for kk, vv in v.items()} for k, v in SCALES.items()}}
     (ROOT / "analysis").mkdir(exist_ok=True)
     (ROOT / "analysis" / "v20_sizing.json").write_text(json.dumps(out, indent=1, default=float))

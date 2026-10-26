@@ -133,11 +133,12 @@ From [V20_FALCON_JET.md](V20_FALCON_JET.md#build-the-mini):
 
 | Gate | PASS | FIX | STOP |
 |---|---|---|---|
-| Thrust stand: one ducted 4-inch prop on its motor, 4S, full throttle, louvres open | >= 0.72 kg | 0.6-0.72 kg: higher-KV motor or 4x4.5x3 prop | < 0.6 kg |
+| Thrust stand: one 6-inch prop on its motor in a printed duct, 4S, full throttle, louvres open | >= 0.95 kg | 0.8-0.95 kg: 6x4x3 prop or a stronger 2207 | < 0.8 kg |
 | EDF through the printed intakes and thrust tube | >= 1.0 kg static | 0.85-1.0 kg: smooth the intake lips, check the tube | < 0.85 kg |
-| Print coupons: LW-PLA skin and Depron tail areal density | <= 0.34 / 0.10 kg/m2 | up to 0.45 / 0.14: thinner wall, lighter foam | heavier (the mini gets too heavy and tail-heavy) |
-| Weigh and balance with the pack in place | CG within 3 mm of x 336 mm | 3-8 mm: move the pack | > 8 mm |
+| Print coupons: LW-PLA skin and Depron ruddervator areal density | <= 0.34 / 0.10 kg/m2 | up to 0.45 / 0.14: thinner wall, lighter foam | heavier (the mini gets too heavy and tail-heavy) |
+| Weigh and balance on the printed stand, pack and payload module in place | CG within 3 mm of x 346 mm | 3-8 mm: move the pack | > 8 mm |
 | Duct tip gap, body shoulder flexed by hand | about 2 mm all round, no rub | rub: sand the duct | prop strikes the duct |
 | Louvres, props off then at hover throttle | top ones open fully by suction and shut with the fan off; bottom ones open, shut and reach 15 deg aft | binding: ease the hinges, softer elastic | a louvre stays shut with the fan running |
-| Tethered hover | throttle 50-60 %, no oscillation, current < 35 A | oscillation: lower the rate gains | cannot hold attitude |
-| Transitions, steps of 2 m/s | each step holds level, current < 76 A | stop at the last good step and tune | any loss of control |
+| Payload port and bay doors (props off) | doors open and close on S9, the module's servo moves | binding: ease the hinges | doors open in flight with no command |
+| Tethered hover | throttle 45-60 %, no oscillation, current < 33 A | oscillation: lower the rate gains | cannot hold attitude |
+| Transitions, steps of 2 m/s | each step holds level, current < 115 A | stop at the last good step and tune | any loss of control |

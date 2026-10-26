@@ -181,6 +181,7 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
 
   // ----- markers -----
   const markers = new THREE.Group();
+  let markersWanted = true;          // the engineering overlay can be switched off (V20 shows the clean aircraft first)
   root.add(markers);
   const cgGroup = new THREE.Group();
   const cgIcon = cgSprite();
@@ -278,7 +279,7 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
     controls.enableZoom = !cockpit;
     controls.enablePan = !cockpit;
     controls.maxPolarAngle = cockpit ? Math.PI : Math.PI * 0.53;
-    markers.visible = !cockpit;
+    markers.visible = !cockpit && markersWanted;
   }
   function viewPose(view = 'three-quarter', cx = center.x, len = spanX) {
     if (view === 'cockpit') return cockpitPose();
@@ -506,7 +507,7 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
     if (np) { npBand.scale.x = Math.max(np[1] - np[0], 2); npBand.position.x = (np[0] + np[1]) / 2; }
     request();
   }
-  function setMarkersVisible(on) { markers.visible = on; request(); }
+  function setMarkersVisible(on) { markersWanted = on; markers.visible = on && !pilot; request(); }
 
   // ----- picking -----
   const ray = new THREE.Raycaster();

@@ -55,6 +55,14 @@ const ctx = {
     drawRuler(this.els.ruler, { cgX, rotorX, rotorRows: [240 + shift, 420 + shift], npBand: band, window: win });
     this.viewer?.setMarkers({ cg: b ? [cgX, 0, 0] : r.cg_mm, rotorRows: [240 + shift, 420 + shift], np: band });
   },
+  // engineering overlay (CG marker, fan frame, neutral-point band, balance ruler): always on for V18/V19, where the
+  // balance is the point; on V20 the clean aircraft is shown first and the overlay is a toggle
+  overlay20: false,
+  applyOverlay() {
+    const on = current !== 'v20' || this.overlay20;
+    document.getElementById('viewport').classList.toggle('no-overlay', !on);
+    this.viewer?.setMarkersVisible(on && !this.viewer.pilot);
+  },
   setPilot(on) {
     const vp = document.getElementById('viewport');
     vp.classList.toggle('pilot', on);
@@ -125,6 +133,7 @@ function render(force = false) {
     currentSub = sub;
     pills();
     views[name](ctx, wb ? ctx.els.panel : ctx.els.page, sub);
+    ctx.applyOverlay();
     if (changed && wb) ctx.els.panel.scrollTop = 0;
   }
   if (wb) { ctx.viewer?.resize(); ctx.updateRuler(); }
@@ -186,6 +195,7 @@ async function start() {
     document.dispatchEvent(new CustomEvent('viewer-ready'));
     if (ctx.variant) await ctx.viewer.setVariant(ctx.variant, { animate: false });
     ctx.updateRuler();
+    ctx.applyOverlay();
     window.addEventListener('resize', () => ctx.updateRuler());
     // warm the recommended variant so the first switch is instant
     const rec = ctx.data.variants?.recommended;

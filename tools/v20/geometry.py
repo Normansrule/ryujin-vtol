@@ -81,9 +81,23 @@ def wing_half_thickness(x, y, chord, u):
         r = np.hypot(x - dx, y - dy)
         fair = np.maximum(fair, 1 - smoothstep(R_OUT + 0.02, R_OUT + 0.40, r))
     h_duct = P.DUCT_DEPTH / 2 + 0.012
+    # blended wing-body fillet: ahead of and behind the duct band the wing root thickens smoothly up to the body's
+    # height, so the fuselage, aft body and wing read as one lifting body (beside the fans the body stands up from the
+    # shoulders, as on the F-35)
+    fx = np.array([f[0] for f in P.FUS])
+    w_b = np.interp(x, fx, [f[1] for f in P.FUS])
+    h_b = np.minimum(np.interp(x, fx, [f[3] for f in P.FUS]), -np.interp(x, fx, [f[2] for f in P.FUS])) - 0.03
+    band = smoothstep(P.DUCT_X["front"] - R_OUT - 0.6, P.DUCT_X["front"] - R_OUT - 0.1, x) * \
+        (1 - smoothstep(P.DUCT_X["rear"] + R_OUT + 0.1, P.DUCT_X["rear"] + R_OUT + 0.9, x))
+    reach = 0.9 - 0.75 * band
+    fil = h_b * (1 - smoothstep(w_b - 0.05, w_b + reach, y)) ** 1.6
+    h = np.maximum(h, fil * smoothstep(0.0, 0.5, x - le) * smoothstep(0.0, 0.5, te - x))
     # stay a closed section at the leading and trailing edges
     edge = smoothstep(0.0, 0.06, u) * smoothstep(0.0, 0.06, 1 - u)
     return np.maximum(h, h_duct * fair * edge)
+
+
+WING_ENVELOPE = None
 
 
 def build_wing():
@@ -99,6 +113,8 @@ def build_wing():
     N = np.zeros_like(Pm)
     N[..., 2] = 1
     wing = surface_solid(Pm, N, H, hmin=0.002)
+    global WING_ENVELOPE
+    WING_ENVELOPE = wing.copy()           # before the holes: the duct walls and louvres are trimmed to it (flush)
     holes = [cyl([dx, dy, -1], [dx, dy, 1], R_OUT, 96) for _n, dx, dy in P.duct_centres() if dy > 0]
     wing = diff(wing, *holes)
     # elevon: the aft chord_frac of the outer wing between y0 and y1
@@ -183,18 +199,21 @@ def fan(coax: bool, blades: int, r_tip: float):
 
 
 # ---------------------------------------------------------------------------------------------------
-def fus_ring(x, k=56, n_up=2.2, n_lo=1.75):
+def fus_ring(x, k=64):
+    """Chined section at station x: z = z_chine + h (1 - |y/w|^q)^r above and below the chine line. r = 1 gives the
+    sharp chine of the nose (its edge runs into the wing leading edge); r < 1 rounds it off aft."""
     w, zb, zt = P.fus_at(x)
     zc = min(max(P.CHINE_Z, zb + 0.3 * (zt - zb)), zt - 0.2 * (zt - zb)) if w > 0 else 0.0
+    r = P.chine_r(x)
     pts = []
     for t in np.linspace(0, 2 * math.pi, k, endpoint=False):
-        c, s = math.cos(t), math.sin(t)
-        if s >= 0:
-            y = w * math.copysign(abs(c) ** (2 / n_up), c)
-            z = zc + (zt - zc) * abs(s) ** (2 / n_up)
+        c, s_ = math.cos(t), math.sin(t)
+        y = w * c
+        u = min(abs(c), 1.0)
+        if s_ >= 0:
+            z = zc + (zt - zc) * (1 - u ** P.CHINE["q_up"]) ** r
         else:
-            y = w * math.copysign(abs(c) ** (2 / n_lo), c)
-            z = zc - (zc - zb) * abs(s) ** (2 / n_lo)
+            z = zc - (zc - zb) * (1 - u ** P.CHINE["q_lo"]) ** r
         pts.append((x, y, z))
     return np.array(pts)
 
@@ -206,63 +225,71 @@ def build_fuselage():
 
 
 def build_canopy():
+    """Low frameless canopy: a long teardrop whose tail runs down into the dorsal spine."""
     c = P.CANOPY
-    xs = np.linspace(c["x0"], c["x1"], 40)
+    xs = np.linspace(c["x0"], c["x1"], 48)
     rings = []
     for x in xs:
         u = (x - c["x0"]) / (c["x1"] - c["x0"])
         up = (c["x_peak"] - c["x0"]) / (c["x1"] - c["x0"])
-        prof = math.sin(math.pi * u) ** 0.5 if u < up else math.sin(math.pi * (0.5 + 0.5 * (u - up) / (1 - up))) ** 0.75
+        prof = math.sin(0.5 * math.pi * u / up) ** 0.6 if u < up else math.cos(0.5 * math.pi * (u - up) / (1 - up)) ** 1.4
         prof = max(prof, 0.02)
         _w, _zb, zt = P.fus_at(x)
         h = (c["z_top"] - zt) * prof
-        hw = c["half_width"] * max(math.sin(math.pi * u) ** 0.35, 0.05)
+        hw = c["half_width"] * max(math.sin(math.pi * min(u / (2 * up), 0.5)) ** 0.5, 0.05) * (1 - 0.35 * max(0.0, u - up) / (1 - up))
         ring = []
-        for t in np.linspace(0, math.pi, 24):
-            ring.append((x, hw * math.cos(t), zt - 0.04 + (h + 0.04) * math.sin(t) ** 0.8))
-        ring.append((x, -hw * 0.98, zt - 0.08))
-        ring.append((x, hw * 0.98, zt - 0.08))
+        for t in np.linspace(0, math.pi, 28):
+            ring.append((x, hw * math.cos(t), zt - 0.05 + (h + 0.05) * math.sin(t) ** 0.7))
+        ring.append((x, -hw * 0.98, zt - 0.09))
+        ring.append((x, hw * 0.98, zt - 0.09))
         rings.append(np.array(ring))
     return loft_rings(rings)
 
 
-def build_stab():
-    s = P.STAB
-    xs_out = P.stab_outline(1)
-    yv = np.linspace(s["y_root"] - 0.12, s["y_tip"], 28)
-    f = np.clip((yv - s["y_root"]) / (s["y_tip"] - s["y_root"]), 0, 1)
-    le = s["x_le_root"] + f * (xs_out[1][0] - s["x_le_root"])
-    ch = s["c_root"] + f * (s["c_tip"] - s["c_root"])
-    us = (1 - np.cos(np.linspace(0, math.pi, 40))) / 2
+def build_spine():
+    """Dorsal spine from behind the canopy to the V-tail roots: it carries the canopy line aft (and the mini's
+    ruddervator servos and wiring)."""
+    sp = P.SPINE
+    xs = np.linspace(sp["x0"], sp["x1"], 36)
+    rings = []
+    for x in xs:
+        u = (x - sp["x0"]) / (sp["x1"] - sp["x0"])
+        _w, _zb, zt = P.fus_at(x)
+        rise = (sp["z_top"] - zt) * (math.sin(math.pi * min(u / 0.25, 1.0) / 2) ** 0.8) * (1 - smoothstep(0.55, 1.0, u))
+        hw = sp["half_width"] * (1 - 0.45 * u)
+        ring = [(x, hw * math.cos(t), zt - 0.06 + (rise + 0.06) * math.sin(t) ** 0.8) for t in np.linspace(0, math.pi, 22)]
+        ring += [(x, -hw * 0.98, zt - 0.10), (x, hw * 0.98, zt - 0.10)]
+        rings.append(np.array(ring))
+    return loft_rings(rings)
+
+
+def bay_box():
+    pb = P.PAYLOAD_BAY
+    return box(pb["x0"], pb["x1"], -pb["half_width"], pb["half_width"], -1.0, pb["z_top"])
+
+
+def translated(m, v):
+    t = m.copy()
+    t.apply_translation(v)
+    return t
+
+
+def build_vtail(side: int = 1):
+    """One all-moving ruddervator, built in its own tilted plane (dihedral VTAIL['dihedral_deg']); its root runs a
+    little into the aft body."""
+    v = P.VTAIL
+    root, sdir, nrm = P.vtail_frame(side)
+    sv = np.linspace(-0.08, v["span"], 26)
+    g = np.clip(sv / v["span"], 0, 1)
+    le = v["x_le_root"] + sv.clip(0) * math.tan(math.radians(v["le_sweep_deg"]))
+    ch = v["c_root"] + g * (v["c_tip"] - v["c_root"])
+    us = (1 - np.cos(np.linspace(0, math.pi, 36))) / 2
     X = le[:, None] + us[None, :] * ch[:, None]
-    Y = np.repeat(yv[:, None], len(us), 1)
-    Pm = np.stack([X, Y, np.full(X.shape, s["z"])], -1)
+    S = np.repeat(sv[:, None], len(us), 1)
+    Pm = np.stack([X, root[1] + S * sdir[1], root[2] + S * sdir[2]], -1)
     N = np.zeros_like(Pm)
-    N[..., 2] = 1
-    return surface_solid(Pm, N, naca_t(us, 0.045)[None, :] * ch[:, None], hmin=0.002)
-
-
-def build_fin():
-    """Starboard fin (canted outboard) and its rudder."""
-    f = P.FIN
-    sv = np.linspace(-0.06, f["height"], 24)
-    g = np.clip(sv / f["height"], 0, 1)
-    le = f["x_root_le"] + sv.clip(0) * math.tan(math.radians(f["le_sweep_deg"]))
-    ch = f["root_chord"] + g * (f["tip_chord"] - f["root_chord"])
-    out = []
-    for name, (u0, u1) in (("fin", (0.0, 1 - f["rudder_frac"] - 0.01)), ("rudder", (1 - f["rudder_frac"] + 0.005, 1.0))):
-        us = u0 + (u1 - u0) * (1 - np.cos(np.linspace(0, math.pi, 30))) / 2
-        X = le[:, None] + us[None, :] * ch[:, None]
-        S = np.repeat(sv[:, None], len(us), 1)
-        Pm = np.stack([X, np.zeros_like(X), S], -1)
-        N = np.zeros_like(Pm)
-        N[..., 1] = 1
-        H = np.maximum(naca_t(us, 0.05)[None, :] * ch[:, None], 0.004 if name == "rudder" else 0.002)
-        m = surface_solid(Pm, N, H, hmin=0.002)
-        m.apply_transform(trimesh.transformations.rotation_matrix(-math.radians(f["cant_deg"]), [1, 0, 0]))
-        m.apply_translation([0, f["y_root"], f["z_root"]])
-        out.append((name, m))
-    return out
+    N[..., 1], N[..., 2] = nrm[1], nrm[2]
+    return surface_solid(Pm, N, naca_t(us, 0.05)[None, :] * ch[:, None], hmin=0.003)
 
 
 def intake_mouth_area_m2() -> float:
@@ -331,7 +358,7 @@ def build_gear(main_x: float):
 
 def build_pilot():
     """Seated pilot (95th-percentile-ish envelope) and seat, full scale only."""
-    x_hip, z_seat = 3.55, -0.30
+    x_hip, z_seat = 3.55, -0.25
     parts = [("pilot_torso", box(x_hip - 0.18, x_hip + 0.12, -0.21, 0.21, z_seat, z_seat + 0.62)),
              ("pilot_head", trimesh.creation.icosphere(subdivisions=2, radius=0.12)),
              ("pilot_legs", box(x_hip - 1.05, x_hip - 0.05, -0.17, 0.17, z_seat - 0.02, z_seat + 0.20)),
@@ -344,16 +371,22 @@ def build_pilot():
 def build_oml(main_x: float):
     """Outer-mould-line parts shared by both scales: [(name, mesh, layer)] in full-scale metres."""
     parts = []
-    parts.append(("fuselage", build_fuselage(), "skin"))
+    fus = build_fuselage()
+    # internal payload bay in the belly at the CG: the bay is cut out of the body and closed by two conformal doors
+    # (the bottom door_t of skin over the bay, split on the centreline; they open sideways like bomb-bay doors)
+    pb = P.PAYLOAD_BAY
+    bay = bay_box()
+    skin = diff(inter(fus, bay), translated(fus, [0, 0, pb["door_t"]]))
+    fus = diff(fus, bay)
+    for side, (y0, y1) in (("R", (0.004, pb["half_width"])), ("L", (-pb["half_width"], -0.004))):
+        parts.append((f"bay_door_{side}", inter(skin, box(pb["x0"] - 0.1, pb["x1"] + 0.1, y0, y1, -2, 0)), "controls"))
+    parts.append(("fuselage", fus, "skin"))
     parts.append(("canopy", build_canopy(), "glass"))
     wing, elevon = build_wing()
     parts += [("wing_R", wing, "skin"), ("wing_L", mirror_y(wing), "skin"),
               ("elevon_R", elevon, "controls"), ("elevon_L", mirror_y(elevon), "controls")]
-    st = build_stab()
-    parts += [("stabilator_R", st, "controls"), ("stabilator_L", mirror_y(st), "controls")]
-    for name, m in build_fin():
-        layer = "controls" if name == "rudder" else "skin"
-        parts += [(f"{name}_R", m, layer), (f"{name}_L", mirror_y(m), layer)]
+    vr = build_vtail(1)
+    parts += [("ruddervator_R", vr, "controls"), ("ruddervator_L", build_vtail(-1), "controls"), ("spine", build_spine(), "skin")]
     it = build_intake()
     parts += [("intake_R", it, "skin"), ("intake_L", mirror_y(it), "skin")]
     nz, cone = build_nozzle()
@@ -362,14 +395,17 @@ def build_oml(main_x: float):
     d2 = P.DUCT_DEPTH / 2
     top = louvres(d2 + 0.0, d2 + 0.012)
     bot = louvres(-d2 - 0.012, -d2)
+    env_R = WING_ENVELOPE
+    env_L = mirror_y(env_R)
     for n, dx, dy in P.duct_centres():
+        env = env_R if dy > 0 else env_L
         r = ring.copy()
         r.apply_translation([dx, dy, 0])
-        parts.append((f"duct_{n}", r, "propulsion"))
+        parts.append((f"duct_{n}", inter(r, env), "propulsion"))      # never proud of the skin near the edges
         for nm, m in ((f"louvres_{n}", top), (f"vanes_{n}", bot)):
             v = m.copy()
-            v.apply_translation([dx, dy, 0])
-            parts.append((nm, v, "controls"))
+            v.apply_translation([dx, dy, -0.004 if nm.startswith("louvres") else 0.004])
+            parts.append((nm, inter(v, env), "controls"))
     for name, m in build_gear(main_x):
         parts.append((name, m, "gear"))
     return parts
@@ -377,25 +413,26 @@ def build_oml(main_x: float):
 
 # ---------------------------------------------------------------------------------------------------
 # scale-specific insides
-KEEL_Z = -0.12              # fore-aft keel tube (mini: 6 mm) from behind the battery bay to the EDF
 # the main spar is two halves that plug into a printed carry-through ring around the thrust tube
 def spars_mini():
-    return [("spar_main_6mm_R", [SPAR_MAIN_X, 0.52, 0], [SPAR_MAIN_X, 3.40, 0], 0.03),
-            ("spar_main_6mm_L", [SPAR_MAIN_X, -0.52, 0], [SPAR_MAIN_X, -3.40, 0], 0.03),
-            ("spar_centre_4mm", [SPAR_CENTRE_X, -1.90, 0], [SPAR_CENTRE_X, 1.90, 0], 0.02)]
+    return [("spar_main_6mm_R", [SPAR_MAIN_X, 0.52, 0], [SPAR_MAIN_X, SPAR_MAIN_Y, 0], 0.03),
+            ("spar_main_6mm_L", [SPAR_MAIN_X, -0.52, 0], [SPAR_MAIN_X, -SPAR_MAIN_Y, 0], 0.03),
+            ("spar_centre_4mm", [SPAR_CENTRE_X, -2.30, 0], [SPAR_CENTRE_X, 2.30, 0], 0.02)]
+SPAR_MAIN_Y = 4.40          # the main spar halves reach to here (the tip section is too thin beyond)
 PACK_CHECK: dict = {}       # filled by inside_parts (full scale): where the battery really ended up
 PACK_KG_PER_M3 = 2000.0     # battery pack density (cylindrical-cell modules with structure and cooling, about 2 kg/L)
 WING_MOUNTED = ("servo_", "fuel_tank_", "inverter_")     # checked against fuselage + wings, not the fuselage alone
-SERVOS_MINI = [("servo_elevon_R", 5.20, 2.90), ("servo_elevon_L", 5.20, -2.90), ("servo_stab_R", 7.20, 0.85),
-               ("servo_stab_L", 7.20, -0.85), ("servo_rudders", 6.80, -0.85), ("servo_vanes_R", 5.05, 0.80),
-               ("servo_vanes_L", 5.05, -0.80)]
+SERVOS_MINI = [("servo_elevon_R", 6.10, 3.90), ("servo_elevon_L", 6.10, -3.90), ("servo_vanes_R", 3.75, 2.38),
+               ("servo_vanes_L", 3.75, -2.38)]
+# ruddervator servos: on the centreline in the dorsal spine, fore and aft of each other, above the thrust tube
+SERVOS_SPINE = [("servo_ruddervator_R", 7.60, 7.83), ("servo_ruddervator_L", 7.90, 8.13)]
 
 
 def intake_duct(sg: int):
     """One intake duct inside the fuselage (both scales): from the mouth, inside the cheek, to the cruise fan's face."""
     x0 = P.INTAKE["x0"]
     xf = P.CRUISE_FAN_X
-    pts = [(x0 + 0.25, 0.50, -0.19), (x0 + 1.0, 0.42, -0.25), (xf - 0.65, 0.38, -0.21), (xf - 0.43, 0.13, P.CRUISE_FAN_Z)]
+    pts = [(x0 + 0.25, 0.52, -0.20), (x0 + 1.0, 0.46, -0.25), (xf - 0.65, 0.40, -0.22), (xf - 0.43, 0.13, P.CRUISE_FAN_Z)]
     return union(*[cyl([a[0], sg * a[1], a[2]], [b[0], sg * b[1], b[2]], 0.10, 20) for a, b in zip(pts[:-1], pts[1:])])
 
 
@@ -417,29 +454,39 @@ def inside_parts(scale_key: str, sizing: dict):
     if scale_key == "mini":
         s = 0.1
         bx = sizing["battery_x_m"] / s
+        pb = P.PAYLOAD_BAY
         out += [
-            ("battery_4S2P_21700", union(*[cyl([bx + xo - 0.35, yy, zz], [bx + xo + 0.35, yy, zz], 0.105, 32)
-                                           for xo in (-0.355, 0.355) for yy in (-0.106, 0.106) for zz in (-0.115, 0.097)]), "systems",
-             "4S2P Li-ion pack: 8 x 21700 cells lying fore-aft, two 2 x 2 bundles end to end, 141 x 43 x 43 mm"),
-            ("fc_speedybee_f405_wing", box(2.42, 2.78, -0.18, 0.18, -0.06, 0.06), "systems",
+            ("battery_4S3P_21700", union(*[cyl([bx + xo - 0.35, yy, zz], [bx + xo + 0.35, yy, zz], 0.105, 32)
+                                           for xo in (-0.355, 0.355) for yy in (-0.215, 0.0, 0.215) for zz in (-0.115, 0.097)]), "systems",
+             "4S3P Li-ion pack: 12 x 21700 cells lying fore-aft, two 3 x 2 bundles end to end, 141 x 65 x 43 mm; in and out "
+             "through the canopy hatch (magnets)"),
+            ("fc_speedybee_f405_wing", box(2.80, 3.16, -0.18, 0.18, -0.06, 0.06), "systems",
              "SpeedyBee F405 WING on soft mounts, right behind the battery"),
-            ("esc_4in1", box(2.42, 2.78, -0.18, 0.18, -0.34, -0.24), "systems", "4-in-1 ESC (XRotor Micro 60A) under the stack"),
-            ("edf_e7206", cyl([P.CRUISE_FAN_X_MINI - 0.35, 0, P.CRUISE_FAN_Z], [P.CRUISE_FAN_X_MINI + 0.35, 0, P.CRUISE_FAN_Z], 0.35, 48), "propulsion",
+            ("esc_4in1", box(2.80, 3.16, -0.18, 0.18, -0.24, -0.14), "systems", "4-in-1 ESC (XRotor Micro 60A) under the flight controller, above the payload bay"),
+            ("edf_e7206", cyl([P.CRUISE_FAN_X - 0.35, 0, P.CRUISE_FAN_Z], [P.CRUISE_FAN_X + 0.35, 0, P.CRUISE_FAN_Z], 0.35, 48), "propulsion",
              "Freewing E7206 64 mm EDF (70 mm housing), fed by both side intakes"),
-            ("thrust_tube", cyl([P.CRUISE_FAN_X_MINI + 0.37, 0, P.CRUISE_FAN_Z], [P.NOZZLE["x0"], 0, -0.02], 0.30, 48), "propulsion",
+            ("thrust_tube", cyl([P.CRUISE_FAN_X + 0.37, 0, P.CRUISE_FAN_Z], [P.NOZZLE["x0"], 0, -0.02], 0.30, 48), "propulsion",
              "0.2 mm PET film thrust tube to the nozzle"),
             ("intake_duct_R", intake_duct(1), "propulsion", "0.2 mm PET film intake duct"),
             ("intake_duct_L", intake_duct(-1), "propulsion", "0.2 mm PET film intake duct"),
             ("fpv_camera_19mm", box(3.12, 3.32, -0.095, 0.095, 0.36, 0.55), "systems", "19 mm FPV camera at the pilot's eye point"),
-            ("gps_m10", box(2.50, 2.76, -0.125, 0.125, 0.28, 0.34), "systems", "M10 GPS + compass under the front of the canopy (sky view)"),
-            ("edf_esc_60a", box(2.42, 3.02, -0.13, 0.13, -0.20, -0.10), "systems", "EDF ESC (Skywalker 60A V2) between the flight controller and the 4-in-1"),
+            ("gps_m10", box(2.50, 2.76, -0.125, 0.125, 0.26, 0.32), "systems", "M10 GPS + compass under the front of the canopy (sky view)"),
+            ("edf_esc_60a", box(3.20, 3.80, -0.13, 0.13, -0.27, -0.17), "systems", "EDF ESC (Skywalker 60A V2) on the payload bay roof, in the intake ducts' airflow"),
+            ("payload_camera_module", box(pb["x0"] + 0.20, pb["x0"] + 0.62, -0.17, 0.17, -0.46, -0.31), "payload",
+             "payload module (default): 4K action camera on a tilt cradle, looking down through the bay-door window; "
+             "swap for the mapping, drop-release or sensor module (all at the CG)"),
         ]
         for nm, x, y in SERVOS_MINI:
             out.append((nm, box(x - 0.115, x + 0.115, y - 0.11, y + 0.11, -0.05, 0.05), "systems", "5 g digital servo, laid flat in a pocket"))
+        for nm, x0, x1 in SERVOS_SPINE:
+            out.append((nm, box(x0, x1, -0.11, 0.11, 0.27, 0.37), "systems", "5 g digital servo in the dorsal spine, short pushrod to the ruddervator's horn"))
         for nm, p0, p1, r in spars_mini():
             out.append((nm, cyl(p0, p1, r, 24), "structure", "carbon tube"))
     else:
         out += [(n, m, "payload", "seated pilot envelope") for n, m in build_pilot()]
+        pb = P.PAYLOAD_BAY
+        out.append(("cargo_container", box(pb["x0"] + 0.04, pb["x1"] - 0.04, -pb["half_width"] + 0.03, pb["half_width"] - 0.03, -0.45, pb["z_top"] - 0.02),
+                    "payload", "belly cargo bay at the CG: medical kit, survival or rescue gear, baggage (doors open sideways)"))
         bx = sizing["battery_x_m"]
         kwh = sizing["battery_kwh"]
         vol = sizing["battery_kg"] / PACK_KG_PER_M3
@@ -556,9 +603,18 @@ def conformal_pack(volume, x_centre, x_min, x_max, z_lo, z_hi, dx=0.05, fill=0.8
 
 
 # ---------------------------------------------------------------------------------------------------
-COLORS = {"skin": "#B9C3CD", "controls": "#98A7B6", "glass": "#C9A35B", "propulsion": "#3A4149", "gear": "#23272C",
-          "props": "#15191E", "hardware": "#4B535C", "systems": "#3F7CAC", "payload": "#5C6B4E", "structure": "#2A2E33"}
+COLORS = {"skin": "#8A939B", "controls": "#7A848D", "glass": "#2A2F33", "propulsion": "#30353A", "gear": "#202428",
+          "props": "#15191E", "hardware": "#4B535C", "systems": "#3F7CAC", "payload": "#B07A2A", "structure": "#2A2E33"}
 STL_DIR = {"mini": "stl", "full": "stl"}
+
+
+def inside_test(mesh, pts):
+    """Points inside a closed mesh. trimesh's ray-parity test can misfire on a point whose ray grazes an edge, so a
+    point it calls outside is re-checked by signed distance (positive inside)."""
+    ins = mesh.contains(pts)
+    if (~ins).any():
+        ins[~ins] = trimesh.proximity.signed_distance(mesh, pts[~ins]) > 0
+    return ins
 
 
 def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bool = True):
@@ -574,11 +630,11 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
     parts = [(n, m, layer, "") for n, m, layer in oml_parts] + inner
     if scale_key == "full":
         parts = [p for p in parts if not p[0].startswith("gear_")] + [p for p in parts if p[0].startswith("gear_")]
-    # spar holes through the mini airframe (6 mm main, 4 mm centre, 6 mm keel) + 0.3 mm clearance
+    # spar holes through the mini airframe (6 mm main, 4 mm centre) + 0.3 mm clearance
     if scale_key == "mini":
-        cutters = [cyl([SPAR_MAIN_X, 0.40, 0], [SPAR_MAIN_X, 3.42, 0], 0.033, 24),
-                   cyl([SPAR_MAIN_X, -0.40, 0], [SPAR_MAIN_X, -3.42, 0], 0.033, 24),
-                   cyl([SPAR_CENTRE_X, -1.95, 0], [SPAR_CENTRE_X, 1.95, 0], 0.023, 24)]
+        cutters = [cyl([SPAR_MAIN_X, 0.40, 0], [SPAR_MAIN_X, SPAR_MAIN_Y + 0.02, 0], 0.033, 24),
+                   cyl([SPAR_MAIN_X, -0.40, 0], [SPAR_MAIN_X, -SPAR_MAIN_Y - 0.02, 0], 0.033, 24),
+                   cyl([SPAR_CENTRE_X, -2.35, 0], [SPAR_CENTRE_X, 2.35, 0], 0.023, 24)]
         new = []
         for n, m, layer, note in parts:
             if n.startswith(("wing_", "fuselage")):
@@ -592,7 +648,13 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
         scaled.append((n, mm, layer, note))
     res = {"scale": scale_key, "parts": [], "checks": {}}
     # checks: insides within the fuselage / airframe outer mould line, prop tips vs duct wall, everything watertight
-    fus = union(*[m for n, m, layer, _ in scaled if n in ("fuselage", "canopy", "intake_R", "intake_L")])
+    # the containment envelope is built from the outer mould line before the spar holes are cut (a thin hole through
+    # the body would confuse the inside test's ray parity), plus the payload-bay cavity
+    env = [bay_box()] + [m for n, m, _l in oml_parts if n in ("fuselage", "canopy", "intake_R", "intake_L", "spine")]
+    env = [m.copy() for m in env]
+    for m in env:
+        m.apply_scale(mm_per_m)
+    fus = union(*env)
     airframe = trimesh.util.concatenate([m for n, m, layer, _ in scaled if n in ("fuselage", "wing_R", "wing_L")])
     contain = {}
     for n, m, layer, _ in scaled:
@@ -600,7 +662,7 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
             v = m.vertices[:: max(1, len(m.vertices) // 300)]
             c0 = v.mean(0)
             v = c0 + (v - c0) * 0.99              # 1 % inset: points on the skin itself count as inside
-            inside = fus.contains(v) if fus.is_watertight else np.ones(len(v), bool)
+            inside = inside_test(fus, v) if fus.is_watertight else np.ones(len(v), bool)
             contain[n] = round(float(inside.mean()), 3)
     # prop tip gap, measured: the duct's smallest inner radius over the rotor's height band minus the largest radius
     # any blade vertex reaches (both about the duct axis)
@@ -620,13 +682,13 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
         rd = np.hypot(*(dv[:, :2] - c).T)
         gaps.append(float(rd.min() - rb.max()))
     tip_gap = min(gaps) if gaps else float("nan")
-    # servos sit in wing and tail pockets: check them against the airframe (fuselage + wings) instead
-    air = union(*[m for n, m, layer, _ in scaled if n in ("fuselage", "wing_R", "wing_L")])
+    # servos sit in wing and spine pockets: check them against the airframe (fuselage + wings + spine) instead
+    air = union(*[m for n, m, layer, _ in scaled if n in ("fuselage", "wing_R", "wing_L", "spine")])
     for n, m, layer, _ in scaled:
         if n.startswith(WING_MOUNTED):
             v = m.vertices
             c0 = v.mean(0)
-            contain[n] = round(float(air.contains(c0 + (v - c0) * 0.99).mean()), 3)
+            contain[n] = round(float(inside_test(air, c0 + (v - c0) * 0.99).mean()), 3)
     # internal collisions: every pair of inside parts whose bounding boxes touch, by boolean intersection volume
     inside_names = {n for n, _m, _l, _ in inner if not n.startswith(("fan_",))}
     ins = [(n, m) for n, m, _l, _ in scaled if n in inside_names]
@@ -676,6 +738,12 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
                 pieces.append({"name": f"{n}" + (f"_p{i + 1}" if len(ps) > 1 else ""), "of": n, "mesh": pm,
                                "fits": bool(bf and bf[0]), "footprint_mm": bf[1] if bf else None,
                                "height_mm": bf[3] if bf else None})
+        for n, m in stand_parts():
+            mm = m.copy()
+            mm.apply_scale(mm_per_m)
+            bf = bed_fit(mm)
+            pieces.append({"name": n, "of": "stand", "mesh": mm, "fits": bool(bf and bf[0]), "footprint_mm": bf[1] if bf else None,
+                           "height_mm": bf[3] if bf else None})
         res["checks"]["P1S"] = {p["name"]: {"fits": p["fits"], "footprint_mm": p["footprint_mm"], "height_mm": p["height_mm"]} for p in pieces}
     res["checks"]["watertight_print_pieces"] = all(bool(p["mesh"].is_watertight) for p in pieces)
     res["checks"]["status"] = "PASS" if (all(v >= 0.98 for v in contain.values()) and all(res["checks"]["watertight"].values())
@@ -708,36 +776,45 @@ def build(scale_key: str, sizing: dict, out_root: Path | None = None, export: bo
     return res
 
 
-FOAM_PARTS = ("stabilator", "fin_", "rudder")    # mini: cut from 3 mm Depron sheet, not printed
+FOAM_PARTS = ("ruddervator",)    # mini: cut from 3 mm Depron sheet, not printed
 
 
 def foam_templates(path: Path, mm_per_m: float = 100.0) -> None:
-    """1:1 cutting templates (SVG, millimetres) for the mini's foam tail: stabilators, fins and rudders (two of each)."""
-    shapes = []
-    st = P.stab_outline(1)
-    shapes.append(("stabilator (cut 2)", [(x, y - st[0][1]) for x, y in st]))
-    f = P.FIN
-    sw = math.tan(math.radians(f["le_sweep_deg"]))
-    h, cr, ct, rf = f["height"], f["root_chord"], f["tip_chord"], f["rudder_frac"]
-    le0, le1 = 0.0, h * sw
-    hinge0, hinge1 = le0 + (1 - rf) * cr, le1 + (1 - rf) * ct
-    shapes.append(("fin (cut 2)", [(le0, 0.0), (le1, h), (hinge1, h), (hinge0, 0.0)]))
-    shapes.append(("rudder (cut 2)", [(hinge0 + 0.01, 0.0), (hinge1 + 0.01, h), (le1 + ct, h), (le0 + cr, 0.0)]))
-    pad, y_off, items = 10.0, 10.0, []
-    width = 0.0
-    for label, pts in shapes:
-        xs = [x for x, _ in pts]
-        ys = [y for _, y in pts]
-        x0, y0 = min(xs), min(ys)
-        poly = " ".join(f"{(x - x0) * mm_per_m + pad:.1f},{(y - y0) * mm_per_m + y_off + 8:.1f}" for x, y in pts)
-        hgt = (max(ys) - y0) * mm_per_m
-        width = max(width, (max(xs) - x0) * mm_per_m + 2 * pad)
-        items.append(f'<text x="{pad}" y="{y_off + 5:.1f}" font-size="5">{label}</text>'
-                     f'<polygon points="{poly}" fill="none" stroke="black" stroke-width="0.3"/>')
-        y_off += hgt + 20
+    """1:1 cutting template (SVG, millimetres) for the mini's foam ruddervators (cut two, one flipped), with the line of
+    the 2 mm carbon pivot rod (30 % of the chord: the surface is close to balanced about it, so a 5 g servo holds it)."""
+    v = P.VTAIL
+    pts = P.vtail_outline()
+    tl = math.tan(math.radians(v["le_sweep_deg"]))
+    piv = [(v["x_le_root"] + 0.30 * v["c_root"], -0.10), (v["x_le_root"] + v["span"] * tl + 0.30 * v["c_tip"], v["span"])]
+    pad, top = 10.0, 18.0
+    x0 = min(x for x, _ in pts)
+    f = lambda x, y: f"{(x - x0) * mm_per_m + pad:.1f},{top + (v['span'] - y) * mm_per_m:.1f}"   # noqa: E731  root at the bottom
+    w = (max(x for x, _ in pts) - x0) * mm_per_m + 2 * pad
+    h = top + (v["span"] + 0.15) * mm_per_m + 10
+    body = (f'<text x="{pad}" y="10" font-size="5">V20 mini ruddervator - 3 mm Depron, cut 2 (flip one). Print at 100 %; '
+            f'the root edge is at the bottom. Dashed: 2 mm carbon pivot rod, 10 mm into the spine.</text>'
+            f'<polygon points="{" ".join(f(x, y) for x, y in pts)}" fill="none" stroke="black" stroke-width="0.3"/>'
+            f'<polyline points="{f(*piv[0])} {f(*piv[1])}" fill="none" stroke="black" stroke-width="0.3" stroke-dasharray="2,1.5"/>'
+            f'<line x1="{pad}" y1="{h - 4:.1f}" x2="{pad + 50}" y2="{h - 4:.1f}" stroke="black" stroke-width="0.5"/>'
+            f'<text x="{pad + 52}" y="{h - 3:.1f}" font-size="4">50 mm (check the print scale)</text>')
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.0f}mm" height="{y_off:.0f}mm" '
-                    f'viewBox="0 0 {width:.0f} {y_off:.0f}">' + "".join(items) + "</svg>\n")
+    path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{w:.0f}mm" height="{h:.0f}mm" viewBox="0 0 {w:.0f} {h:.0f}">'
+                    + body + "</svg>\n")
+
+
+def stand_parts():
+    """Printed display / balance / charging stand for the mini (full-scale metres, scaled like the aircraft). Two posts
+    with rounded saddles hold the body shoulders on the fan-centre line: if the aircraft sits level on them, its CG is
+    on the hover balance point. A cable slot lets the charger reach the pack through the canopy hatch."""
+    xc = P.duct_centre_x()
+    out = [("stand_base", box(xc - 0.95, xc + 0.95, -1.15, 1.15, -1.18, -1.12))]
+    for side, y in (("R", 0.78), ("L", -0.78)):
+        post = cyl([xc, y, -1.13], [xc, y, -0.20], 0.10, 32)
+        saddle = cyl([xc - 0.25, y, -0.215], [xc + 0.25, y, -0.215], 0.06, 32)    # rounded edge along x: a knife edge in pitch
+        out.append((f"stand_post_{side}", union(post, saddle)))
+    slot = box(xc + 0.55, xc + 0.95, -0.12, 0.12, -1.20, -1.10)
+    out[0] = ("stand_base", diff(out[0][1], slot))
+    return out
 
 
 def glb(scaled, path: Path, display_scale: float = 1.0):
@@ -747,18 +824,28 @@ def glb(scaled, path: Path, display_scale: float = 1.0):
         h = h.lstrip("#")
         return [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
     scene = trimesh.Scene()
+    # display only: the blended body (fuselage, wings with their root fillets, spine) is one union, so the overlapping
+    # skins do not flicker where they nearly coincide; it is shown under the fuselage's name
+    blend = ("fuselage", "wing_R", "wing_L", "spine")
+    by = {n: m for n, m, _l, _ in scaled}
+    body = union(*[by[n] for n in blend if n in by]) if all(n in by for n in blend) else None
     for n, m, layer, _ in scaled:
-        mm = m.copy()
+        if body is not None and n in blend[1:]:
+            continue
+        mm = (body if (body is not None and n == "fuselage") else m).copy()
         mm.apply_scale(display_scale)
+        # smooth shading with the vertices split at creases (chines, trailing edges, duct lips stay sharp); without
+        # normals the viewer falls back to flat, faceted shading
+        mm = trimesh.graph.smooth_shade(mm, angle=math.radians(32))
         key = "glass" if n == "canopy" else ("props" if layer == "props" else layer)
-        alpha = {"glass": 0.5, "props": 0.85}.get(key, 1.0)
+        alpha = {"glass": 0.82, "props": 0.85}.get(key, 1.0)
         metal = {"propulsion": 0.45, "hardware": 0.5, "glass": 0.6, "structure": 0.3}.get(key, 0.08)
         mm.visual = trimesh.visual.TextureVisuals(material=PBRMaterial(
-            name=n, baseColorFactor=[*col(COLORS.get(key, "#B9C3CD")), alpha], roughnessFactor=0.18 if key == "glass" else 0.55,
+            name=n, baseColorFactor=[*col(COLORS.get(key, "#B9C3CD")), alpha], roughnessFactor=0.08 if key == "glass" else 0.62,
             metallicFactor=metal, alphaMode="BLEND" if alpha < 1 else "OPAQUE", doubleSided=False))
         scene.add_geometry(mm, node_name=n, geom_name=n)
     path.parent.mkdir(parents=True, exist_ok=True)
-    scene.export(path)
+    path.write_bytes(trimesh.exchange.gltf.export_glb(scene, include_normals=True))
 
 
 def main(argv) -> int:

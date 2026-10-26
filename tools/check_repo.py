@@ -244,9 +244,11 @@ def check_v20() -> None:
     if abs(m["cg_offset_mm"]) > 3.0:
         fails.append(f"V20 mini: CG {m['cg_offset_mm']:+.1f} mm from the centre of the four fans (gate 3 mm)")
     for key, r in (("mini", m), ("full", f)):
-        need = 5.0 if key == "mini" else 0.0          # full scale: positive, flown by triplex fly-by-wire
+        need = 5.0                                     # rev C: the same gate at both scales
         if r["aero"]["sm_gate_pct"] < need:
             fails.append(f"V20 {key}: static margin {r['aero']['sm_gate_pct']:.1f} % with the louvres shut (gate {need:.0f} %)")
+        if r["aero"].get("Cnb", 1.0) <= 0.0:
+            fails.append(f"V20 {key}: directionally unstable (Cn_beta {r['aero']['Cnb']:+.3f} per rad)")
         bad = [c["V"] for c in r["corridor"] if not (c["forward_ok"] and c["hover_ok"])]
         if bad:
             fails.append(f"V20 {key}: no level-flight solution at {bad} m/s")
@@ -269,6 +271,8 @@ def check_v20() -> None:
         for line in ("Q_M_PWM_TYPE,5", f"AIRSPEED_MIN,{m['airspeeds']['AIRSPEED_MIN']}", f"BATT_CAPACITY,{m['battery']['ah'] * 1000:.0f}"):
             if line not in txt:
                 fails.append(f"{pf.relative_to(ROOT)}: expected '{line}' (regenerate with python3 tools/v20/report.py)")
+    if not m.get("payload", {}).get("corridor_ok_at_max", True):
+        fails.append("V20 mini: the transition corridor fails at the payload limit")
     if m["thrust_to_weight_lift"] < 2.0:
         flags.append(f"V20 mini: lift thrust/weight {m['thrust_to_weight_lift']:.2f} (want 2.0+ for control margin)")
     nf = [n for n, v in geo["mini"]["checks"].get("P1S", {}).items() if not v["fits"]]

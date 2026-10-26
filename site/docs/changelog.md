@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.9.0 - 2026-10-26
+
+V20 rev C: a professional Fury / CCA-style shape, a payload bay, longer endurance, uses on the ground, a cleaner app.
+
+- **Shape:** chined forebody running into the wing leading edge; the wing root blends into the body ahead of and
+  behind the fans; low frameless canopy and dorsal spine; a wide aft body carrying the nozzle; a V-tail of two
+  all-moving ruddervators replaces rev B's two stabilators and two fins (half the tail area, one servo fewer).
+- **One shape at both scales:** the mini is an exact 1:10 model of the full-scale aircraft (6-inch props in 157 mm ducts).
+- **Aero model:** the vortex lattice is now non-planar (per-panel normals), so the V-tail's pitch and yaw authority
+  come from the solver; added a weathercock-stability check (Cn_beta, V-tail less fuselage). Static margin with the
+  louvres shut: mini 5.5 %, full 5.5 % - the 5 % gate now holds at both scales.
+- **Mini:** 1,991 g, 4S3P pack (also the nose weight), 27 min hover (rev B 16.8),
+  36 min / 38 km cruise (rev B 25.7 min / 28.4 km), payload bay at the CG with four
+  modules (camera, mapping, drop, sensor) up to 269 g with the corridor re-checked at that mass, one
+  payload port (S9); perch-and-watch, power-bank and a printed balance / charging stand; 45 print pieces.
+- **Full scale:** 2,237 kg series hybrid, L/D 7.9, 55 L cargo bay, uncrewed
+  cargo version, ground power export; battery fill 42 % (rev B 31 %), turbine-out
+  106 % of hover power. The wetted area now counts the blended body once
+  (the union of its overlapping parts), which lowers the structure estimate; much of the mass drop from rev B is this
+  correction.
+- **App:** painted model (medium grey, smoked canopy), the engineering overlay is a toggle on V20, a spec sheet, a
+  missions panel with the payload modules and ground uses.
+
 ## 0.8.0 - 2026-10-26
 
 V20 rev B: the four lift fans hidden in an F-35-style blended body, one jet that works the way a jet should.
