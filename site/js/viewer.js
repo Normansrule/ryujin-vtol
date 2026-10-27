@@ -200,7 +200,8 @@ export async function createViewer(canvas, { parts, hinges, onPick, variants = {
   markers.add(hoverFrame);
   function setHoverFrame(xf, xr, y) {
     for (const c of [...hoverFrame.children]) { hoverFrame.remove(c); c.geometry.dispose(); }
-    const P = [[xf, y], [xr, y], [xr, -y], [xf, -y]];
+    const [yf, yr] = Array.isArray(y) ? y : [y, y];        // a staggered layout has a wider rear pair
+    const P = [[xf, yf], [xr, yr], [xr, -yr], [xf, -yf]];
     const segs = [[P[0], P[1]], [P[1], P[2]], [P[2], P[3]], [P[3], P[0]], [P[0], P[2]], [P[1], P[3]]];
     segs.forEach(([a, b], i) => {
       const len = Math.hypot(b[0] - a[0], b[1] - a[1]);

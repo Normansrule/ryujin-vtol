@@ -1,4 +1,4 @@
-# V20 "Falcon Jet" (rev C): one blended body, hidden fans, a V-tail and a payload bay
+# V20 "Falcon Jet" (rev C.2): one blended body, staggered hidden fans, a V-tail and a payload bay
 
 > **Status.** The mini is a buildable, 3D-printable experimental RC model: generated parts, a print set that fits the P1S (with a balance stand), a foam template, a parts list and a bench port map - not yet printed, bench-tested or flown. The full-scale aircraft is an **engineering concept study** of the same shape carrying one person: sizing, packaging and a regulatory path. It is not a build package and nothing here makes it airworthy. A person-carrying aircraft needs licensed aerospace engineering, structural and propulsion testing, a hazard analysis and FAA approval before anyone sits in it.
 
@@ -10,35 +10,36 @@
 |---|---:|---:|
 | Scale | 1 : 10 of the full-scale shape (exactly) | 1 : 1 |
 | Length x span | 1,080 x 1,000 mm | 10.8 x 10.0 m |
-| Lift fans (hidden under louvres) | 4 x 157 mm ducts, one 6-inch 3-blade prop each | 4 x 1.57 m ducts, two contra-rotating 5-blade fans each |
+| Lift fans (hidden under louvres, staggered chevron) | 4 x 157 mm ducts, one 6-inch 3-blade prop each | 4 x 1.57 m ducts, two contra-rotating 5-blade fans each |
 | Tail | V-tail: two all-moving ruddervators (3 mm Depron) | V-tail: two all-moving ruddervators |
-| Jet | 64 mm EDF (Freewing E7206), fed by both side intakes | 0.64 m electric ducted fan, 525 kW |
-| Power source | 4S3P Li-ion, 13.5 Ah, 135 A | series hybrid: 418 kW turbogenerator + 93 kWh battery |
-| Mass | 1,991 g | 2,237 kg (pilot 100 kg, battery 515 kg, fuel 92 kg) |
-| Payload | up to 269 g in a 90 x 54 x 18 mm bay at the CG | 55 L belly bay; uncrewed cargo version 122 kg |
+| Jet | 64 mm EDF (Freewing E7206), fed by both side intakes | 0.64 m electric ducted fan, 526 kW |
+| Power source | 4S3P Li-ion, 13.5 Ah, 135 A | series hybrid: 420 kW turbogenerator + 92 kWh battery |
+| Mass | 1,995 g | 2,235 kg (pilot 100 kg, battery 509 kg, fuel 92 kg) |
+| Payload | up to 265 g in a 90 x 54 x 18 mm bay at the CG | 55 L belly bay; uncrewed cargo version 122 kg |
 | CG from the centre of the 4 fans | +0.0 mm | +0 mm |
-| Hover power | 350 W | 875 kW (289 kg/m2 of fan) |
-| Lift thrust / weight | 1.91 | 1.47 rated (one rotor may fail) |
-| Static margin, louvres shut (gate) / open | **5.5** / 18.1 % (gate 5 %) | **5.5** / 18.1 % (gate 5 %) |
-| Weathercock stability (Cn_beta, per rad) | +0.069 | +0.069 |
-| Slowest wing-borne flight (trimmed CL at 14 deg) | 10.5 m/s (CL 0.51) | 35.2 m/s, 68 kt (CL 0.51) |
-| Cruise (louvres shut) | 17.6 m/s, 260 W, L/D 5.2 | 237 km/h, 380 kW, L/D 7.9 |
+| Hover power | 351 W | 874 kW (289 kg/m2 of fan) |
+| Lift thrust / weight | 1.90 | 1.47 rated (one rotor may fail) |
+| Static margin, louvres shut (gate) / open | **5.9** / 16.1 % (gate 5 %) | **5.9** / 16.1 % (gate 5 %) |
+| Weathercock stability (Cn_beta, per rad) | +0.068 | +0.068 |
+| Slowest wing-borne flight (trimmed CL at 14 deg) | 10.6 m/s (CL 0.50) | 35.4 m/s, 69 kt (CL 0.50) |
+| Cruise (louvres shut) | 17.6 m/s, 261 W, L/D 5.2 | 236 km/h, 381 kW, L/D 7.9 |
 | Endurance / mission | 27 min hover or 36 min cruise (38 km) | 20 km hop + 20 min VFR reserve |
 | Hover and forward flight at every speed (quasi-steady model) | yes, 0-23 m/s | yes, 0-76 m/s |
 
-**Rev B to rev C, the mini** (rev B is v0.8.0):
+**Rev B to rev C.2, the mini** (rev B is v0.8.0):
 
-|  | Rev B | Rev C |
+|  | Rev B | Rev C.2 |
 |---|---:|---:|
 | Span | 760 mm | 1,000 mm |
-| Aspect ratio | 1.65 | 1.78 |
-| Mass | 1,548 g | 1,991 g |
+| Aspect ratio | 1.65 | 1.76 |
+| Mass | 1,548 g | 1,995 g |
 | Hover endurance | 16.8 min | 26.6 min |
-| Cruise endurance / range | 25.7 min / 28.4 km | 35.9 min / 37.9 km |
+| Cruise endurance / range | 25.7 min / 28.4 km | 35.7 min / 37.6 km |
 | Cruise L/D | 4.5 | 5.2 |
-| Payload | none | up to 269 g |
-| Lift thrust / weight | 1.86 | 1.91 |
-| Static margin (louvres shut) | 6.7 % | 5.5 % |
+| Payload | none | up to 265 g |
+| Lift thrust / weight | 1.86 | 1.90 |
+| Static margin (louvres shut) | 6.7 % | 5.9 % |
+| Fan layout | 2 x 2 square | staggered chevron (rear pair 0.9 m further out at full scale) |
 | Tail surfaces / servos | 4 surfaces, 3 servos | 2 surfaces, 2 servos |
 
 Bigger 6-inch fans (they hover on less power per kilogram) and a 50 % bigger pack, which the chined nose now holds and which is also the nose weight that puts the CG on the fan centre. Cruise gains are modest: the 64 mm EDF's efficiency, not the airframe, is what limits the mini's range. Lift thrust/weight stays below the 2.0 the repo wants - the thrust stand decides; a stronger 2207 or a 6x4 prop is the fix if it comes in short.
@@ -49,9 +50,17 @@ Bigger 6-inch fans (they hover on less power per kilogram) and a 50 % bigger pac
 
 **One body.** A chined forebody - the nose's widest line is a sharp edge - runs straight into the wing leading edge, and the wing root thickens into the body ahead of and behind the fans, so nose, body, wing and aft body read as one lifting shape, the way the Anduril Fury and the other collaborative combat aircraft (CCA) designs do. A low frameless canopy fairs into a dorsal spine that runs back to the tail.
 
-**Hover first.** Four lift fans in a square; the CG goes where their diagonals cross, so each fan lifts a quarter of the weight and every fan keeps the same control headroom. The fans live in the shoulders of the body beside the cockpit, under louvres that shut in cruise: on top they open by the fan's own suction and close with a light elastic; underneath they are servo-driven and double as **exit vanes**, turning the efflux aft in transition (as on the 1960s XV-5 fan-in-wing). The battery is the trim weight: the mini's pack sits in the nose (centre x 196 mm), the full-scale pack in the nose bay (centroid x 1.95 m).
+**Hover first.** Four equal lift fans; the CG goes on their centroid, so each fan lifts a quarter of the weight and every fan keeps the same control headroom. The fans live in the shoulders of the body beside the cockpit, under louvres that shut in cruise: on top they open by the fan's own suction and close with a light elastic; underneath they are servo-driven and double as **exit vanes**, turning the efflux aft in transition (as on the 1960s XV-5 fan-in-wing). The battery is the trim weight: the mini's pack sits in the nose (centre x 198 mm), the full-scale pack in the nose bay (centroid x 1.95 m).
 
-**A V-tail.** Two all-moving ruddervators replace rev B's two stabilators and two fins: they pitch together and yaw apart. The vortex lattice is now non-planar - each panel has its own normal - so the tail's pitch authority (cos^2 of the dihedral) and yaw authority (sin^2) come out of the solver, not a rule of thumb. At 45 deg dihedral it gives a static margin of **5.5 %** with the louvres shut (the forward-most neutral point; the gate) and a weathercock stability Cn_beta of +0.069 per radian after the fuselage's destabilising part (Raymer eq. 16.47). Half the tail area of rev B, two servos instead of three.
+**Where the fans go (rev C.2).** The four fans form a staggered chevron that follows the wing's sweep: the front pair tucked against the body beside the cockpit (y = +/-1.43 m full scale), the rear pair 0.9 m further out (y = +/-2.33 m). Rev C had them in a square. The stagger is there for physical reasons, not just the look:
+
+- **Wake.** In transition a fan in line behind another ingests its disturbed inflow and the open louvres' wake. Staggered, the rear fan's disk overlaps the front fan's track by 43 % of its width instead of 100 %.
+- **Control arms.** Roll from differential fan thrust and yaw from differential exit vanes both scale with lateral distance: the rear pair's arm grows from 1.43 to 2.33 m (x1.6). The fore-aft spacing - the pitch arm - stays 1.80 m, and the fan centroid, which is the hover balance point, does not move.
+- **Room underneath.** The bay between the rear fans and the fuselage is free, so the main landing gear moves forward to 1.1 m behind the CG (rev C: 1.85 m, behind the whole fan band), the rear fans' efflux no longer blasts the wheels and belly, and the mini's louvre servos sit there on a short linkage.
+- **Clean leading edge.** The leading-edge extension now reaches further forward, so even the front fans have skin ahead of their lips: a better inflow at the front lip in transition (where fan-in-wing designs first separate) and no duct showing at the edge. That area is ahead of the CG, so the outer wing moved aft to keep the stability margin.
+- **Grilles that follow the planform.** The top louvres run parallel to the outer leading edge (they open by the fan's suction, so their direction is free); the bottom louvres stay spanwise, because they turn the efflux aft in transition.
+
+**A V-tail.** Two all-moving ruddervators replace rev B's two stabilators and two fins: they pitch together and yaw apart. The vortex lattice is now non-planar - each panel has its own normal - so the tail's pitch authority (cos^2 of the dihedral) and yaw authority (sin^2) come out of the solver, not a rule of thumb. At 45 deg dihedral it gives a static margin of **5.9 %** with the louvres shut (the forward-most neutral point; the gate) and a weathercock stability Cn_beta of +0.068 per radian after the fuselage's destabilising part (Raymer eq. 16.47). Half the tail area of rev B, two servos instead of three.
 
 **A payload bay at the CG.** The belly between the four fans holds a 90 x 54 x 18 mm bay (mini) behind two conformal doors. Anything carried there - a camera, a sensor, a package to drop - sits on the hover balance point, so swapping or dropping it does not re-trim the aircraft. Bombers and the F-35 keep their weapons bays at the CG for the same reason.
 
@@ -70,7 +79,7 @@ Bigger 6-inch fans (they hover on less power per kilogram) and a 50 % bigger pac
 | Drop / release | the bay doors open on S9 (28 Gripper) and let a small package fall | printed hook + 5 g servo | 15 | drop a line, a sample bag, a tracker or a marker; carry up to the payload limit |
 | Sensor | downward rangefinder + air-quality / weather sensor on I2C | Benewake TF-Luna (5 g) + Bosch BME688 breakout (2 g) | 15 | precision landing, terrain following, air sampling; a weather station while perched |
 
-Payload limit **269 g**: the heaviest module that keeps lift thrust/weight at 1.7 or more (thrust/weight 1.7); the corridor was re-run at that mass and still passes. Full, it hovers 22 min or cruises 32 min.
+Payload limit **265 g**: the heaviest module that keeps lift thrust/weight at 1.7 or more (thrust/weight 1.7); the corridor was re-run at that mass and still passes. Full, it hovers 22 min or cruises 32 min.
 
 **On the ground** it keeps working:
 
@@ -90,29 +99,29 @@ Mini (W):
 
 | m/s | On wing % | Alpha deg | Pitch surfaces deg | Front / rear duct thrust, % of rated | Vanes deg | Power | Can stop and hover |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| 0.0 | 0 | 0.0 | 0.0 | 52 / 52 | 0 | 350 | yes |
-| 2.9 | 7 | 14.0 | -3.0 | 55 / 46 | 15 | 330 | yes |
-| 5.8 | 29 | 8.0 | 20.0 | 76 / 1 | 15 | 452 | yes |
-| 8.6 | 41 | 8.0 | 1.0 | 64 / 0 | 15 | 587 | yes |
-| 11.5 | 100 | 11.7 | -5.4 | 0 / 0 | 0 | 264 | yes |
-| 14.4 | 100 | 7.5 | -3.4 | 0 / 0 | 0 | 234 | yes |
-| 17.2 | 100 | 5.2 | -2.4 | 0 / 0 | 0 | 255 | yes |
-| 20.1 | 100 | 3.8 | -1.8 | 0 / 0 | 0 | 319 | yes |
-| 23.0 | 100 | 2.9 | -1.3 | 0 / 0 | 0 | 446 | yes |
+| 0.0 | 0 | 0.0 | 0.0 | 52 / 52 | 0 | 351 | yes |
+| 2.9 | 7 | 14.0 | -4.0 | 54 / 46 | 15 | 331 | yes |
+| 5.8 | 30 | 8.0 | 20.0 | 75 / 2 | 15 | 457 | yes |
+| 8.6 | 58 | 13.5 | -8.0 | 45 / 0 | 15 | 583 | yes |
+| 11.5 | 100 | 11.8 | -5.8 | 0 / 0 | 0 | 266 | yes |
+| 14.4 | 100 | 7.6 | -3.7 | 0 / 0 | 0 | 236 | yes |
+| 17.2 | 100 | 5.2 | -2.6 | 0 / 0 | 0 | 257 | yes |
+| 20.1 | 100 | 3.9 | -1.9 | 0 / 0 | 0 | 322 | yes |
+| 23.0 | 100 | 3.0 | -1.4 | 0 / 0 | 0 | 450 | yes |
 
 Full (kW):
 
 | m/s | On wing % | Alpha deg | Pitch surfaces deg | Front / rear duct thrust, % of rated | Vanes deg | Power | Can stop and hover |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| 0.0 | 0 | 0.0 | 0.0 | 68 / 68 | 0 | 875 | yes |
-| 9.5 | 7 | 14.0 | -3.0 | 72 / 60 | 15 | 828 | yes |
-| 18.9 | 27 | 14.0 | -6.0 | 79 / 36 | 30 | 717 | yes |
-| 28.4 | 49 | 11.5 | -5.0 | 79 / 1 | 30 | 899 | yes |
-| 37.8 | 100 | 12.1 | -5.6 | 0 / 0 | 0 | 454 | yes |
-| 47.3 | 100 | 7.8 | -3.6 | 0 / 0 | 0 | 356 | yes |
-| 56.7 | 100 | 5.4 | -2.5 | 0 / 0 | 0 | 346 | yes |
-| 66.2 | 100 | 4.0 | -1.8 | 0 / 0 | 0 | 383 | yes |
-| 75.7 | 100 | 3.0 | -1.4 | 0 / 0 | 0 | 456 | yes |
+| 0.0 | 0 | 0.0 | 0.0 | 68 / 68 | 0 | 874 | yes |
+| 9.4 | 7 | 14.0 | -4.0 | 70 / 61 | 15 | 827 | yes |
+| 18.9 | 28 | 14.0 | -4.0 | 78 / 35 | 30 | 698 | yes |
+| 28.3 | 50 | 11.0 | -3.0 | 79 / 0 | 30 | 849 | yes |
+| 37.8 | 100 | 12.3 | -6.0 | 0 / 0 | 0 | 455 | yes |
+| 47.2 | 100 | 7.9 | -3.8 | 0 / 0 | 0 | 357 | yes |
+| 56.6 | 100 | 5.5 | -2.7 | 0 / 0 | 0 | 347 | yes |
+| 66.1 | 100 | 4.0 | -2.0 | 0 / 0 | 0 | 384 | yes |
+| 75.5 | 100 | 3.1 | -1.5 | 0 / 0 | 0 | 458 | yes |
 
 'Can stop and hover' means the four fans alone could take the full weight right now with 20 % of their thrust still in hand for control, and the power source could supply that 20 % extra on all four. This is a **quasi-steady** model: each speed is solved on its own, without gusts, acceleration, pitch dynamics or fan-wing interference - it says a path exists, not that a pilot or autopilot can fly it. Flight test on the mini decides that.
 
@@ -125,12 +134,12 @@ Full (kW):
 | `bay_door_L` | fits | 22 | 90 |
 | `bay_door_R` | fits | 22 | 90 |
 | `canopy` | fits | 242 | 66 |
-| `duct_front_L` | fits | 138 | 169 |
-| `duct_front_R` | fits | 138 | 169 |
+| `duct_front_L` | fits | 140 | 169 |
+| `duct_front_R` | fits | 140 | 169 |
 | `duct_rear_L` | fits | 140 | 169 |
 | `duct_rear_R` | fits | 140 | 169 |
-| `elevon_L` | fits | 106 | 185 |
-| `elevon_R` | fits | 106 | 185 |
+| `elevon_L` | fits | 110 | 185 |
+| `elevon_R` | fits | 110 | 185 |
 | `fuselage_p1` | fits | 238 | 101 |
 | `fuselage_p2` | fits | 254 | 95 |
 | `fuselage_p3` | fits | 95 | 136 |
@@ -138,10 +147,10 @@ Full (kW):
 | `fuselage_p5` | fits | 224 | 92 |
 | `intake_L` | fits | 51 | 250 |
 | `intake_R` | fits | 51 | 250 |
-| `louvres_front_L` | fits | 109 | 156 |
-| `louvres_front_R` | fits | 109 | 156 |
-| `louvres_rear_L` | fits | 109 | 156 |
-| `louvres_rear_R` | fits | 109 | 156 |
+| `louvres_front_L` | fits | 110 | 155 |
+| `louvres_front_R` | fits | 110 | 155 |
+| `louvres_rear_L` | fits | 110 | 155 |
+| `louvres_rear_R` | fits | 110 | 155 |
 | `nozzle` | fits | 66 | 66 |
 | `nozzle_cone` | fits | 24 | 48 |
 | `spine_p1` | fits | 32 | 230 |
@@ -149,26 +158,26 @@ Full (kW):
 | `stand_base` | fits | 139 | 230 |
 | `stand_post_L` | fits | 44 | 98 |
 | `stand_post_R` | fits | 44 | 98 |
-| `vanes_front_L` | fits | 109 | 156 |
-| `vanes_front_R` | fits | 109 | 156 |
-| `vanes_rear_L` | fits | 109 | 156 |
-| `vanes_rear_R` | fits | 109 | 156 |
-| `wing_L_p1` | fits | 182 | 228 |
-| `wing_L_p2` | fits | 206 | 250 |
-| `wing_L_p3` | fits | 156 | 250 |
-| `wing_L_p4` | fits | 207 | 250 |
-| `wing_L_p5` | fits | 184 | 250 |
-| `wing_L_p6` | fits | 154 | 250 |
-| `wing_L_p7` | fits | 103 | 189 |
-| `wing_R_p1` | fits | 156 | 250 |
-| `wing_R_p2` | fits | 182 | 228 |
-| `wing_R_p3` | fits | 206 | 250 |
-| `wing_R_p4` | fits | 154 | 250 |
-| `wing_R_p5` | fits | 103 | 189 |
-| `wing_R_p6` | fits | 207 | 250 |
-| `wing_R_p7` | fits | 184 | 250 |
+| `vanes_front_L` | fits | 110 | 155 |
+| `vanes_front_R` | fits | 110 | 155 |
+| `vanes_rear_L` | fits | 110 | 155 |
+| `vanes_rear_R` | fits | 110 | 155 |
+| `wing_L_p1` | fits | 184 | 232 |
+| `wing_L_p2` | fits | 208 | 250 |
+| `wing_L_p3` | fits | 164 | 250 |
+| `wing_L_p4` | fits | 206 | 229 |
+| `wing_L_p5` | fits | 186 | 238 |
+| `wing_L_p6` | fits | 156 | 238 |
+| `wing_L_p7` | fits | 77 | 226 |
+| `wing_R_p1` | fits | 164 | 250 |
+| `wing_R_p2` | fits | 184 | 232 |
+| `wing_R_p3` | fits | 208 | 250 |
+| `wing_R_p4` | fits | 156 | 238 |
+| `wing_R_p5` | fits | 77 | 226 |
+| `wing_R_p6` | fits | 206 | 229 |
+| `wing_R_p7` | fits | 186 | 238 |
 
-**Masses** (model, 1,991 g): airframe 525 g, propulsion 370 g, avionics 60 g, controls 56 g, systems 50 g, gear 34 g, payload 25 g, battery 870 g.
+**Masses** (model, 1,995 g): airframe 529 g, propulsion 370 g, avionics 60 g, controls 56 g, systems 50 g, gear 34 g, payload 25 g, battery 870 g.
 
 **Parts to buy** (reference candidates; buy one lift motor and one prop first and measure them in a printed duct on the repo's thrust stand before the rest):
 
@@ -199,7 +208,7 @@ Full (kW):
 | S05 | Pushrods, clevises, horns (elevons, ruddervators, louvres, bay doors) | 1.2 mm wire set | 1 | 8-12 | [link](https://www.amazon.com/s?k=rc+pushrod+clevis+control+horn+set) |
 | C01 | Filament: LW-PLA (airframe), PETG (ducts, nozzle, mounts, stand) | V18 row C05 | 1 | 35-55 | [link](https://www.amazon.com/s?k=lw-pla+filament) |
 
-**Battery.** A 4S3P Li-ion pack of 12 21700 cells (Molicel P45B class: 4.5 Ah, 45 A continuous, about 70 g each) as two 3 x 2 blocks end to end in the nose: 13.5 Ah and 135 A, 870 g. Hover needs about 27 A; the model keeps lift fans + EDF under 1,515 W (85 % of 135 A at 13.2 V under load) everywhere in the corridor, and `Q_M_BAT_CURR_MAX` is 115 A. Lift thrust is limited by the motor and prop (lift thrust/weight 1.91).
+**Battery.** A 4S3P Li-ion pack of 12 21700 cells (Molicel P45B class: 4.5 Ah, 45 A continuous, about 70 g each) as two 3 x 2 blocks end to end in the nose: 13.5 Ah and 135 A, 870 g. Hover needs about 27 A; the model keeps lift fans + EDF under 1,515 W (85 % of 135 A at 13.2 V under load) everywhere in the corridor, and `Q_M_BAT_CURR_MAX` is 115 A. Lift thrust is limited by the motor and prop (lift thrust/weight 1.90).
 
 **Wiring.** SpeedyBee F405 WING, ArduPilot QuadPlane (quad X), bench-only port map in `config/ardupilot/skyforge_v20_mini_BENCH_ONLY.param`:
 
@@ -231,46 +240,46 @@ Full (kW):
 - Props off: motor order and direction per the port map; the ruddervators pitch together and yaw apart the right way in every mode; the payload port works.
 - Tethered hover: hover throttle 45-60 %, no oscillation; then free hover; then transitions in steps of 2 m/s.
 - Battery current: logged peak under 115 A in hover and transition.
-- Airspeeds: AIRSPEED_MIN 15 m/s and Q_ASSIST_SPEED 13 m/s come from the model's 10.5 m/s slowest wing-borne speed; confirm the real stall in a climb before lowering them.
+- Airspeeds: AIRSPEED_MIN 15 m/s and Q_ASSIST_SPEED 13 m/s come from the model's 10.6 m/s slowest wing-borne speed; confirm the real stall in a climb before lowering them.
 
 ## The full-scale aircraft (concept study)
 
 ![V20 full scale, side view: pilot, nose turbogenerator and battery, cruise fan behind the seat](../analysis/view_v20_full_side.png)
 
-**Why it is a hybrid.** With honest efficiencies (fan figure of merit 0.70, the cruise fan from momentum theory through the intakes, the wing's drag due to lift with partial leading-edge suction, a usable CL from the trimmed lattice) and the legal VFR reserve, an all-electric version does not close at today's 220 Wh/kg packs (trade study below). Hidden fans are small fans: the disk loading is 289 kg/m2 (an open-rotor eVTOL runs 50-100), so hover takes 875 kW. Jet fuel carries the cruise and the reserve for a fraction of a battery's mass, so the full scale is a **series hybrid**: a turboshaft-driven generator in the nose, where a fighter has its radar, fed from the intake ducts, its exhaust in two insulated pipes beside the cockpit into the thrust tube. The battery fills the nose bay between the turbine and the pilot's feet and trims the CG; fuel is in the outer wings ahead of the main spar.
+**Why it is a hybrid.** With honest efficiencies (fan figure of merit 0.70, the cruise fan from momentum theory through the intakes, the wing's drag due to lift with partial leading-edge suction, a usable CL from the trimmed lattice) and the legal VFR reserve, an all-electric version does not close at today's 220 Wh/kg packs (trade study below). Hidden fans are small fans: the disk loading is 289 kg/m2 (an open-rotor eVTOL runs 50-100), so hover takes 874 kW. Jet fuel carries the cruise and the reserve for a fraction of a battery's mass, so the full scale is a **series hybrid**: a turboshaft-driven generator in the nose, where a fighter has its radar, fed from the intake ducts, its exhaust in two insulated pipes beside the cockpit into the thrust tube. The battery fills the nose bay between the turbine and the pilot's feet and trims the CG; fuel is in the outer wings ahead of the main spar.
 
-Closed sizing loop (`tools/v20/sizing.py`): pilot 100 kg; generator 418 kW (cruise and reserve power + 10 %) at 1.5 kW/kg and 0.5 kg of fuel per kWh; battery 180 Wh/kg at pack level, sized by CG trim (the pack is the nose weight) at 10C; lift motors and inverters rated so that **any one of the eight rotors can fail** (the busiest healthy rotor then carries 1/6 of the weight +10 % for control, for the 60 s it takes to land); cruise fan sized to beat the drag from 1.1 x stall to 1.15 x cruise and the transition's momentum drag; structure from the wetted area of the blended body at composite areal densities; systems including triplex flight control and a ballistic parachute.
+Closed sizing loop (`tools/v20/sizing.py`): pilot 100 kg; generator 420 kW (cruise and reserve power + 10 %) at 1.5 kW/kg and 0.5 kg of fuel per kWh; battery 180 Wh/kg at pack level, sized by CG trim (the pack is the nose weight) at 10C; lift motors and inverters rated so that **any one of the eight rotors can fail** (the busiest healthy rotor then carries 1/6 of the weight +10 % for control, for the 60 s it takes to land); cruise fan sized to beat the drag from 1.1 x stall to 1.15 x cruise and the transition's momentum drag; structure from the wetted area of the blended body at composite areal densities; systems including triplex flight control and a ballistic parachute.
 
-**A modelling change to know about.** The blended body is several overlapping solids (fuselage, wings with root fillets, canopy, spine, intakes). Rev C counts their wetted area once - the outside of their union, 30 % less than the sum of the parts - for both skin mass and friction drag. Rev B summed the parts, which over-counted the wing root inside the fuselage. Much of the full-scale mass drop from rev B (2,844 kg) comes from this correction, not from the new shape.
+**A modelling change to know about.** The blended body is several overlapping solids (fuselage, wings with root fillets, canopy, spine, intakes). Rev C counts their wetted area once - the outside of their union, 31 % less than the sum of the parts - for both skin mass and friction drag. Rev B summed the parts, which over-counted the wing root inside the fuselage. Much of the full-scale mass drop from rev B (2,844 kg) comes from this correction, not from the new shape.
 
 | Group | Mass |
 |---|---:|
-| structure | 626 kg |
+| structure | 629 kg |
 | payload | 100 kg |
-| systems | 131 kg |
+| systems | 130 kg |
 | propulsion | 775 kg |
 | fuel | 92 kg |
-| battery | 515 kg |
-| **MTOW** | **2,237 kg** |
+| battery | 509 kg |
+| **MTOW** | **2,235 kg** |
 
-Mission (60 s hover + 30 s transition, 20 km at 237 km/h, transition and 60 s hover, then a 20 min reserve + 60 s hover): hover 29, transition 11, cruise 32, reserve 129 kWh at the bus; the generator supplies 174 kWh (92 kg, 115 L of Jet A; burning it all moves the CG 17 mm) and the battery 27 kWh of its 93 kWh.
+Mission (60 s hover + 30 s transition, 20 km at 236 km/h, transition and 60 s hover, then a 20 min reserve + 60 s hover): hover 29, transition 11, cruise 32, reserve 129 kWh at the bus; the generator supplies 175 kWh (92 kg, 115 L of Jet A; burning it all moves the CG 17 mm) and the battery 27 kWh of its 92 kWh.
 
-**Turbine out in a low hover.** With the turbine stopped the battery supplies 106 % of hover power - enough to land.
+**Turbine out in a low hover.** With the turbine stopped the battery supplies 105 % of hover power - enough to land.
 
-**Packaging (open).** The generated full-scale model (`cad/v20/full/checks.json`) holds the pilot, the cargo bay, the nose turbogenerator, the exhaust pipes, the intake ducts, the cruise fan, the parachute, the inverters and 280 L of wing tanks (126 L needed) without collisions; **42 %** of the 515 kg battery fits the nose bay between the turbine and the pilot's feet. The rest needs a home: the wing-root fillets beside the nose, or a denser pack.
+**Packaging (open).** The generated full-scale model (`cad/v20/full/checks.json`) holds the pilot, the cargo bay, the nose turbogenerator, the exhaust pipes, the intake ducts, the cruise fan, the parachute, the inverters and 122 L of wing tanks (126 L needed) without collisions; **42 %** of the 509 kg battery fits the nose bay between the turbine and the pilot's feet. The rest needs a home: the wing-root fillets beside the nose, or a denser pack.
 
 Trade study (every row carries the 20-minute reserve):
 
 | Case | Size | Cruise km | Powertrain | MTOW kg | Battery kg | Fuel kg | Hover kW |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| full shape | 10.8 m, 1.57 m fans | 10 | hybrid | 2,216 | 514 | 82 | 863 |
-| full shape | 10.8 m, 1.57 m fans | 20 | hybrid | 2,237 | 515 | 92 | 875 |
-| full shape | 10.8 m, 1.57 m fans | 50 | hybrid | 2,305 | 515 | 122 | 915 |
+| full shape | 10.8 m, 1.57 m fans | 10 | hybrid | 2,213 | 508 | 82 | 861 |
+| full shape | 10.8 m, 1.57 m fans | 20 | hybrid | 2,235 | 509 | 92 | 874 |
+| full shape | 10.8 m, 1.57 m fans | 50 | hybrid | 2,303 | 509 | 122 | 914 |
 | full shape, battery alone holds a 60 s hover | 10.8 m, 1.57 m fans | 20 | hybrid | does not close | - | - | - |
 | full shape | 10.8 m, 1.57 m fans | 20 | battery 220 Wh/kg | does not close | - | - | - |
-| full shape | 10.8 m, 1.57 m fans | 20 | battery 300 Wh/kg | 2,195 | 866 | - | 851 |
-| full shape, 1.2x larger | 13.0 m, 1.88 m fans | 20 | hybrid | 3,065 | 725 | 134 | 1,170 |
-| full shape, 0.9x smaller | 9.7 m, 1.41 m fans | 20 | hybrid | 1,885 | 420 | 75 | 752 |
+| full shape | 10.8 m, 1.57 m fans | 20 | battery 300 Wh/kg | 2,192 | 861 | - | 849 |
+| full shape, 1.2x larger | 13.0 m, 1.88 m fans | 20 | hybrid | 3,062 | 717 | 135 | 1,168 |
+| full shape, 0.9x smaller | 9.7 m, 1.41 m fans | 20 | hybrid | 1,883 | 415 | 75 | 751 |
 
 Read it from the top: the hybrid closes and grows slowly with distance; the strict turbine-out rule does not close; all-electric does not close at today's pack energy and only closes with a future 300 Wh/kg pack; and a bigger aircraft is heavier, not better. **It is a heavy aircraft for one person** - hidden fans cost disk loading, and disk loading costs power.
 

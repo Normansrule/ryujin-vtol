@@ -116,82 +116,82 @@
     },
     "wing_R_p1": {
      "fits": true,
-     "footprint_mm": 156.0,
+     "footprint_mm": 163.8,
      "height_mm": 250.0
     },
     "wing_R_p2": {
      "fits": true,
-     "footprint_mm": 181.7,
-     "height_mm": 228.1
+     "footprint_mm": 184.4,
+     "height_mm": 232.3
     },
     "wing_R_p3": {
      "fits": true,
-     "footprint_mm": 205.8,
+     "footprint_mm": 208.5,
      "height_mm": 250.0
     },
     "wing_R_p4": {
      "fits": true,
-     "footprint_mm": 154.5,
-     "height_mm": 250.0
+     "footprint_mm": 156.1,
+     "height_mm": 238.5
     },
     "wing_R_p5": {
      "fits": true,
-     "footprint_mm": 102.7,
-     "height_mm": 188.8
+     "footprint_mm": 76.8,
+     "height_mm": 226.0
     },
     "wing_R_p6": {
      "fits": true,
-     "footprint_mm": 206.8,
-     "height_mm": 250.0
+     "footprint_mm": 205.7,
+     "height_mm": 228.8
     },
     "wing_R_p7": {
      "fits": true,
-     "footprint_mm": 183.6,
-     "height_mm": 250.0
+     "footprint_mm": 186.3,
+     "height_mm": 238.5
     },
     "wing_L_p1": {
      "fits": true,
-     "footprint_mm": 181.7,
-     "height_mm": 228.1
+     "footprint_mm": 184.4,
+     "height_mm": 232.3
     },
     "wing_L_p2": {
      "fits": true,
-     "footprint_mm": 205.8,
+     "footprint_mm": 208.5,
      "height_mm": 250.0
     },
     "wing_L_p3": {
      "fits": true,
-     "footprint_mm": 156.0,
+     "footprint_mm": 163.8,
      "height_mm": 250.0
     },
     "wing_L_p4": {
      "fits": true,
-     "footprint_mm": 206.8,
-     "height_mm": 250.0
+     "footprint_mm": 205.7,
+     "height_mm": 228.8
     },
     "wing_L_p5": {
      "fits": true,
-     "footprint_mm": 183.6,
-     "height_mm": 250.0
+     "footprint_mm": 186.3,
+     "height_mm": 238.5
     },
     "wing_L_p6": {
      "fits": true,
-     "footprint_mm": 154.5,
-     "height_mm": 250.0
+     "footprint_mm": 156.1,
+     "height_mm": 238.5
     },
     "wing_L_p7": {
      "fits": true,
-     "footprint_mm": 102.7,
-     "height_mm": 188.8
+     "footprint_mm": 76.8,
+     "height_mm": 226.0
     },
     "elevon_R": {
      "fits": true,
-     "footprint_mm": 105.8,
+     "footprint_mm": 110.3,
      "height_mm": 185.0
     },
     "elevon_L": {
      "fits": true,
-     "footprint_mm": 105.8,
+     "footprint_mm": 110.3,
      "height_mm": 185.0
     },
     "spine_p1": {
@@ -226,33 +226,33 @@
     },
     "duct_front_R": {
      "fits": true,
-     "footprint_mm": 138.1,
+     "footprint_mm": 140.5,
      "height_mm": 168.9
     },
     "louvres_front_R": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 109.8,
+     "height_mm": 154.6
     },
     "vanes_front_R": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 109.9,
+     "height_mm": 154.6
     },
     "duct_front_L": {
      "fits": true,
-     "footprint_mm": 138.1,
+     "footprint_mm": 140.5,
      "height_mm": 168.9
     },
     "louvres_front_L": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 109.8,
+     "height_mm": 154.6
     },
     "vanes_front_L": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 109.9,
+     "height_mm": 154.6
     },
     "duct_rear_R": {
      "fits": true,
@@ -261,13 +261,13 @@
     },
     "louvres_rear_R": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 110.1,
+     "height_mm": 154.6
     },
     "vanes_rear_R": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 110.1,
+     "height_mm": 154.6
     },
     "duct_rear_L": {
      "fits": true,
@@ -276,13 +276,13 @@
     },
     "louvres_rear_L": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 110.1,
+     "height_mm": 154.6
     },
     "vanes_rear_L": {
      "fits": true,
-     "footprint_mm": 109.3,
-     "height_mm": 156.4
+     "footprint_mm": 110.1,
+     "height_mm": 154.6
     },
     "stand_base": {
      "fits": true,
@@ -369,13 +369,13 @@
     "layer": "skin",
     "note": "",
     "bbox_mm": [
-     900.0,
+     915.0,
      500.0,
-     69.9
+     69.8
     ],
     "centroid_mm": [
-     564.9,
-     125.8,
+     558.4,
+     119.8,
      -0.0
     ]
    },
@@ -384,13 +384,13 @@
     "layer": "skin",
     "note": "",
     "bbox_mm": [
-     900.0,
+     915.0,
      500.0,
-     69.9
+     69.8
     ],
     "centroid_mm": [
-     564.9,
-     -125.8,
+     558.4,
+     -119.8,
      -0.0
     ]
    },
@@ -401,11 +401,11 @@
     "bbox_mm": [
      140.8,
      185.0,
-     17.3
+     30.0
     ],
     "centroid_mm": [
-     679.0,
-     358.4,
+     693.9,
+     348.4,
      -0.0
     ]
    },
@@ -416,11 +416,11 @@
     "bbox_mm": [
      140.8,
      185.0,
-     17.3
+     30.0
     ],
     "centroid_mm": [
-     679.0,
-     -358.4,
+     693.9,
+     -348.4,
      -0.0
     ]
    },
@@ -539,8 +539,8 @@
      29.8
     ],
     "centroid_mm": [
-     260.6,
-     141.2,
+     257.5,
+     142.2,
      -0.4
     ]
    },
@@ -549,13 +549,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
-     260.1,
-     141.9,
+     256.3,
+     142.8,
      14.0
     ]
    },
@@ -564,13 +564,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
-     260.1,
-     141.9,
+     256.3,
+     142.8,
      -14.0
     ]
    },
@@ -584,8 +584,8 @@
      29.8
     ],
     "centroid_mm": [
-     260.6,
-     -141.2,
+     257.5,
+     -142.2,
      -0.4
     ]
    },
@@ -594,13 +594,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
-     260.1,
-     -141.9,
+     256.3,
+     -142.8,
      14.0
     ]
    },
@@ -609,13 +609,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
-     260.1,
-     -141.9,
+     256.3,
+     -142.8,
      -14.0
     ]
    },
@@ -630,7 +630,7 @@
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      -0.5
     ]
    },
@@ -639,13 +639,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      14.0
     ]
    },
@@ -654,13 +654,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      -14.0
     ]
    },
@@ -675,7 +675,7 @@
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      -0.5
     ]
    },
@@ -684,13 +684,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      14.0
     ]
    },
@@ -699,13 +699,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     156.4,
-     153.4,
+     154.6,
+     154.6,
      1.2
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      -14.0
     ]
    },
@@ -745,13 +745,13 @@
     "note": "",
     "bbox_mm": [
      8.0,
-     48.7,
-     49.7
+     48.6,
+     47.3
     ],
     "centroid_mm": [
-     531.0,
+     456.0,
      63.5,
-     -60.9
+     -62.2
     ]
    },
    {
@@ -764,7 +764,7 @@
      36.0
     ],
     "centroid_mm": [
-     531.0,
+     456.0,
      85.0,
      -82.9
     ]
@@ -775,13 +775,13 @@
     "note": "",
     "bbox_mm": [
      8.0,
-     48.7,
-     49.7
+     48.6,
+     47.3
     ],
     "centroid_mm": [
-     531.0,
+     456.0,
      -63.5,
-     -60.9
+     -62.2
     ]
    },
    {
@@ -794,7 +794,7 @@
      36.0
     ],
     "centroid_mm": [
-     531.0,
+     456.0,
      -85.0,
      -82.9
     ]
@@ -900,7 +900,7 @@
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      -1.0
     ]
    },
@@ -915,7 +915,7 @@
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      -7.5
     ]
    },
@@ -930,7 +930,7 @@
     ],
     "centroid_mm": [
      436.0,
-     143.0,
+     233.0,
      2.0
     ]
    },
@@ -945,7 +945,7 @@
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      -1.0
     ]
    },
@@ -960,7 +960,7 @@
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      -7.5
     ]
    },
@@ -975,7 +975,7 @@
     ],
     "centroid_mm": [
      436.0,
-     -143.0,
+     -233.0,
      2.0
     ]
    },
@@ -989,7 +989,7 @@
      42.2
     ],
     "centroid_mm": [
-     195.9,
+     198.0,
      0.0,
      -0.9
     ]
@@ -1184,8 +1184,8 @@
      10.0
     ],
     "centroid_mm": [
-     375.0,
-     238.0,
+     436.0,
+     102.0,
      0.0
     ]
    },
@@ -1199,8 +1199,8 @@
      10.0
     ],
     "centroid_mm": [
-     375.0,
-     -238.0,
+     436.0,
+     -102.0,
      0.0
     ]
    },
@@ -1306,12 +1306,12 @@
    "battery_pack": {
     "battery_centroid_m": 2.131,
     "battery_x_sizing_m": 1.95,
-    "battery_volume_fill": 0.415,
-    "fuel_capacity_l": 279.7,
-    "fuel_needed_l": 126.1,
-    "fuel_centroid_x_m": 4.029
+    "battery_volume_fill": 0.42,
+    "fuel_capacity_l": 121.7,
+    "fuel_needed_l": 126.5,
+    "fuel_centroid_x_m": 4.729
    },
-   "prop_tip_gap_mm": 21.02,
+   "prop_tip_gap_mm": 20.78,
    "watertight": {
     "bay_door_R": true,
     "bay_door_L": true,
@@ -1441,13 +1441,13 @@
     "layer": "skin",
     "note": "",
     "bbox_mm": [
-     9000.0,
+     9150.0,
      5000.0,
-     699.3
+     698.0
     ],
     "centroid_mm": [
-     5647.5,
-     1259.7,
+     5582.9,
+     1199.8,
      -0.0
     ]
    },
@@ -1456,13 +1456,13 @@
     "layer": "skin",
     "note": "",
     "bbox_mm": [
-     9000.0,
+     9150.0,
      5000.0,
-     699.3
+     698.0
     ],
     "centroid_mm": [
-     5647.5,
-     -1259.7,
+     5582.9,
+     -1199.8,
      -0.0
     ]
    },
@@ -1473,11 +1473,11 @@
     "bbox_mm": [
      1408.0,
      1850.0,
-     172.6
+     299.9
     ],
     "centroid_mm": [
-     6790.0,
-     3584.4,
+     6938.8,
+     3484.0,
      -0.0
     ]
    },
@@ -1488,11 +1488,11 @@
     "bbox_mm": [
      1408.0,
      1850.0,
-     172.6
+     299.9
     ],
     "centroid_mm": [
-     6790.0,
-     -3584.4,
+     6938.8,
+     -3484.0,
      -0.0
     ]
    },
@@ -1611,9 +1611,9 @@
      298.0
     ],
     "centroid_mm": [
-     2606.0,
-     1411.8,
-     -3.8
+     2574.9,
+     1421.9,
+     -4.2
     ]
    },
    {
@@ -1621,13 +1621,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1545.9,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
-     2601.0,
-     1418.6,
+     2563.2,
+     1428.3,
      140.0
     ]
    },
@@ -1636,13 +1636,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1546.0,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
-     2601.0,
-     1418.6,
+     2563.2,
+     1428.3,
      -140.0
     ]
    },
@@ -1656,9 +1656,9 @@
      298.0
     ],
     "centroid_mm": [
-     2606.0,
-     -1411.8,
-     -3.8
+     2574.9,
+     -1421.9,
+     -4.2
     ]
    },
    {
@@ -1666,13 +1666,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1545.9,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
-     2601.0,
-     -1418.6,
+     2563.2,
+     -1428.3,
      140.0
     ]
    },
@@ -1681,13 +1681,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1546.0,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
-     2601.0,
-     -1418.6,
+     2563.2,
+     -1428.3,
      -140.0
     ]
    },
@@ -1702,7 +1702,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      -4.5
     ]
    },
@@ -1711,13 +1711,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1545.9,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      140.0
     ]
    },
@@ -1726,13 +1726,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1546.0,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      -140.0
     ]
    },
@@ -1747,7 +1747,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      -4.5
     ]
    },
@@ -1756,13 +1756,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1545.9,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      140.0
     ]
    },
@@ -1771,13 +1771,13 @@
     "layer": "controls",
     "note": "",
     "bbox_mm": [
-     1564.0,
-     1533.7,
+     1546.0,
+     1545.9,
      12.0
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      -140.0
     ]
    },
@@ -1882,7 +1882,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      -10.0
     ]
    },
@@ -1897,7 +1897,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      -75.0
     ]
    },
@@ -1912,7 +1912,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     1430.0,
+     2330.0,
      7.5
     ]
    },
@@ -1927,7 +1927,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      -10.0
     ]
    },
@@ -1942,7 +1942,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      -75.0
     ]
    },
@@ -1957,7 +1957,7 @@
     ],
     "centroid_mm": [
      4360.0,
-     -1430.0,
+     -2330.0,
      7.5
     ]
    },
@@ -2039,7 +2039,7 @@
    {
     "name": "battery_pack_nose",
     "layer": "systems",
-    "note": "93 kWh pack: conformal modules ahead of the pilot's feet (x 1.80-2.45 m, 41 % of the volume asked for at 2.0 kg/L)",
+    "note": "92 kWh pack: conformal modules ahead of the pilot's feet (x 1.80-2.45 m, 42 % of the volume asked for at 2.0 kg/L)",
     "bbox_mm": [
      650.0,
      440.0,
@@ -2084,7 +2084,7 @@
    {
     "name": "turbogenerator",
     "layer": "propulsion",
-    "note": "418 kW turboshaft + generator in the nose (where a fighter has its radar), fed from the intake ducts; it is the heaviest thing that can go forward of the tail-heavy airframe",
+    "note": "420 kW turboshaft + generator in the nose (where a fighter has its radar), fed from the intake ducts; it is the heaviest thing that can go forward of the tail-heavy airframe",
     "bbox_mm": [
      750.0,
      400.0,
@@ -2129,31 +2129,31 @@
    {
     "name": "fuel_tank_R",
     "layer": "systems",
-    "note": "wing tank ahead of the main spar (140 L; needs 57 L)",
+    "note": "wing tank ahead of the main spar (61 L; needs 58 L)",
     "bbox_mm": [
-     2906.0,
+     1508.9,
      500.0,
      120.0
     ],
     "centroid_mm": [
-     4029.2,
-     2787.7,
-     0.0
+     4728.9,
+     3619.2,
+     -0.0
     ]
    },
    {
     "name": "fuel_tank_L",
     "layer": "systems",
-    "note": "wing tank ahead of the main spar (140 L; needs 57 L)",
+    "note": "wing tank ahead of the main spar (61 L; needs 58 L)",
     "bbox_mm": [
-     2906.0,
+     1508.9,
      500.0,
      120.0
     ],
     "centroid_mm": [
-     4029.2,
-     -2787.7,
-     0.0
+     4728.9,
+     -3619.2,
+     -0.0
     ]
    },
    {
@@ -2257,7 +2257,7 @@
     ],
     "centroid_mm": [
      5705.0,
-     1650.0,
+     2100.0,
      0.0
     ]
    },
@@ -2272,7 +2272,7 @@
     ],
     "centroid_mm": [
      5705.0,
-     -1650.0,
+     -2100.0,
      0.0
     ]
    },
@@ -2282,12 +2282,12 @@
     "note": "carbon box-spar line (schematic); a frame carries it round the cockpit",
     "bbox_mm": [
      90.0,
-     3330.0,
+     4180.0,
      90.0
     ],
     "centroid_mm": [
      5405.0,
-     2185.0,
+     2610.0,
      0.0
     ]
    },
@@ -2297,12 +2297,12 @@
     "note": "carbon box-spar line (schematic); a frame carries it round the cockpit",
     "bbox_mm": [
      90.0,
-     3330.0,
+     4180.0,
      90.0
     ],
     "centroid_mm": [
      5405.0,
-     -2185.0,
+     -2610.0,
      0.0
     ]
    },
@@ -2312,12 +2312,12 @@
     "note": "carbon box-spar line (schematic); a frame carries it round the cockpit",
     "bbox_mm": [
      100.0,
-     1880.0,
+     2730.0,
      100.0
     ],
     "centroid_mm": [
      3460.0,
-     1460.0,
+     1885.0,
      -0.0
     ]
    },
@@ -2327,12 +2327,12 @@
     "note": "carbon box-spar line (schematic); a frame carries it round the cockpit",
     "bbox_mm": [
      100.0,
-     1880.0,
+     2730.0,
      100.0
     ],
     "centroid_mm": [
      3460.0,
-     -1460.0,
+     -1885.0,
      -0.0
     ]
    },
@@ -2372,13 +2372,13 @@
     "note": "",
     "bbox_mm": [
      80.0,
-     487.3,
-     497.1
+     485.6,
+     472.6
     ],
     "centroid_mm": [
-     5310.0,
+     4560.0,
      635.0,
-     -608.8
+     -621.9
     ]
    },
    {
@@ -2391,7 +2391,7 @@
      360.0
     ],
     "centroid_mm": [
-     5310.0,
+     4560.0,
      850.0,
      -829.5
     ]
@@ -2402,13 +2402,13 @@
     "note": "",
     "bbox_mm": [
      80.0,
-     487.3,
-     497.1
+     485.6,
+     472.6
     ],
     "centroid_mm": [
-     5310.0,
+     4560.0,
      -635.0,
-     -608.8
+     -621.9
     ]
    },
    {
@@ -2421,7 +2421,7 @@
      360.0
     ],
     "centroid_mm": [
-     5310.0,
+     4560.0,
      -850.0,
      -829.5
     ]

@@ -58,7 +58,7 @@ def refresh() -> None:
     R_OUT = R_ID + P.DUCT_LIP
     LE_X, TE_X, Y_TIP = _outline_fn()
     SPAR_CENTRE_X = P.duct_centre_x()
-    SPAR_MAIN_X = P.DUCT_X["rear"] + R_OUT + 0.20
+    SPAR_MAIN_X = max(P.DUCT_X.values()) + R_OUT + 0.20
 
 
 def set_variant(variant: str) -> None:
@@ -71,7 +71,7 @@ def wing_half_thickness(x, y, chord, u):
     section that holds the ducts and louvres and fairs into the fuselage sides (the F-35 look)."""
     h = naca_t(u, P.T_C) * chord
     le, te = x - u * chord, x + (1 - u) * chord
-    body = P.BODY_HALF_T * smoothstep(0.0, 0.9, x - le) * smoothstep(0.0, 0.9, te - x)
+    body = P.BODY_HALF_T * smoothstep(0.0, 0.5, x - le) * smoothstep(0.0, 0.9, te - x)
     blend = 1 - smoothstep(P.BODY_Y - 0.35, P.BODY_Y + 0.15, y)
     h = np.maximum(h, body * blend)
     fair = np.zeros_like(h)
@@ -87,8 +87,8 @@ def wing_half_thickness(x, y, chord, u):
     fx = np.array([f[0] for f in P.FUS])
     w_b = np.interp(x, fx, [f[1] for f in P.FUS])
     h_b = np.minimum(np.interp(x, fx, [f[3] for f in P.FUS]), -np.interp(x, fx, [f[2] for f in P.FUS])) - 0.03
-    band = smoothstep(P.DUCT_X["front"] - R_OUT - 0.6, P.DUCT_X["front"] - R_OUT - 0.1, x) * \
-        (1 - smoothstep(P.DUCT_X["rear"] + R_OUT + 0.1, P.DUCT_X["rear"] + R_OUT + 0.9, x))
+    xf_, xr_ = min(P.DUCT_X.values()), max(P.DUCT_X.values())
+    band = smoothstep(xf_ - R_OUT - 0.6, xf_ - R_OUT - 0.1, x) * (1 - smoothstep(xr_ + R_OUT + 0.1, xr_ + R_OUT + 0.9, x))
     reach = 0.9 - 0.75 * band
     fil = h_b * (1 - smoothstep(w_b - 0.05, w_b + reach, y)) ** 1.6
     h = np.maximum(h, fil * smoothstep(0.0, 0.5, x - le) * smoothstep(0.0, 0.5, te - x))
@@ -146,18 +146,28 @@ def duct_ring():
     return revolve(prof, 128)
 
 
-def louvres(z0: float, z1: float, n: int = 8):
-    """A louvre cascade across one duct opening (centred at the origin): n flat slats hinged spanwise (about y). Shown
-    closed, as in cruise. On top they open by the fan's own suction; underneath they are the exit vanes, driven by a
-    servo per side to close the duct in cruise, open it for hover and turn the efflux aft in transition."""
+def louvres(z0: float, z1: float, n: int = 8, angle_deg: float = 0.0):
+    """A louvre cascade across one duct opening (centred at the origin): n flat slats, shown closed as in cruise,
+    turned by angle_deg about z (0: slats spanwise, hinged about y). Underneath they are the exit vanes - spanwise, so
+    they turn the efflux aft in transition, driven by one servo per side; on top they open by the fan's own suction and
+    run parallel to the outer leading edge, so each grille follows the planform's sweep."""
     out = []
     pitch = 2 * R_ID / n
     for k in range(n):
         x = -R_ID + pitch * (k + 0.5)
         half = math.sqrt(max(R_ID ** 2 - x ** 2, 0.0)) - 0.012
         if half > 0.05:
-            out.append(box(x - pitch / 2 + 0.003, x + pitch / 2 - 0.003, -half, half, z0, z1))
-    return union(*out)
+            out.append(box(x - pitch / 2 + 0.003, x + pitch / 2 - 0.003, -R_ID, R_ID, z0, z1))
+    m = inter(union(*out), cyl([0, 0, z0 - 0.01], [0, 0, z1 + 0.01], R_ID - 0.012, 128))   # round ends, no steps
+    if angle_deg:
+        m.apply_transform(trimesh.transformations.rotation_matrix(math.radians(angle_deg), [0, 0, 1]))
+    return m
+
+
+def le_sweep_deg() -> float:
+    """Sweep of the outer leading edge (shoulder corner to tip), from the y axis."""
+    a, b = P.OUTLINE[2], P.OUTLINE[3]
+    return math.degrees(math.atan2(b[0] - a[0], b[1] - a[1]))
 
 
 def fan(coax: bool, blades: int, r_tip: float):
@@ -393,7 +403,8 @@ def build_oml(main_x: float):
     parts += [("nozzle", nz, "propulsion"), ("nozzle_cone", cone, "propulsion")]
     ring = duct_ring()
     d2 = P.DUCT_DEPTH / 2
-    top = louvres(d2 + 0.0, d2 + 0.012)
+    sw = le_sweep_deg()
+    top = {1: louvres(d2 + 0.0, d2 + 0.012, 9, -sw), -1: louvres(d2 + 0.0, d2 + 0.012, 9, sw)}
     bot = louvres(-d2 - 0.012, -d2)
     env_R = WING_ENVELOPE
     env_L = mirror_y(env_R)
@@ -402,7 +413,7 @@ def build_oml(main_x: float):
         r = ring.copy()
         r.apply_translation([dx, dy, 0])
         parts.append((f"duct_{n}", inter(r, env), "propulsion"))      # never proud of the skin near the edges
-        for nm, m in ((f"louvres_{n}", top), (f"vanes_{n}", bot)):
+        for nm, m in ((f"louvres_{n}", top[1 if dy > 0 else -1]), (f"vanes_{n}", bot)):
             v = m.copy()
             v.apply_translation([dx, dy, -0.004 if nm.startswith("louvres") else 0.004])
             parts.append((nm, inter(v, env), "controls"))
@@ -422,8 +433,8 @@ SPAR_MAIN_Y = 4.40          # the main spar halves reach to here (the tip sectio
 PACK_CHECK: dict = {}       # filled by inside_parts (full scale): where the battery really ended up
 PACK_KG_PER_M3 = 2000.0     # battery pack density (cylindrical-cell modules with structure and cooling, about 2 kg/L)
 WING_MOUNTED = ("servo_", "fuel_tank_", "inverter_")     # checked against fuselage + wings, not the fuselage alone
-SERVOS_MINI = [("servo_elevon_R", 6.10, 3.90), ("servo_elevon_L", 6.10, -3.90), ("servo_vanes_R", 3.75, 2.38),
-               ("servo_vanes_L", 3.75, -2.38)]
+SERVOS_MINI = [("servo_elevon_R", 6.10, 3.90), ("servo_elevon_L", 6.10, -3.90), ("servo_vanes_R", 4.36, 1.02),
+               ("servo_vanes_L", 4.36, -1.02)]   # vane servos inboard of the rear fans, a short linkage to each pair
 # ruddervator servos: on the centreline in the dorsal spine, fore and aft of each other, above the thrust tube
 SERVOS_SPINE = [("servo_ruddervator_R", 7.60, 7.83), ("servo_ruddervator_L", 7.90, 8.13)]
 
@@ -538,7 +549,7 @@ def inside_parts(scale_key: str, sizing: dict):
         ]
         for n, dx, dy in P.duct_centres():
             sg = np.sign(dy)
-            yy = 0.85 if n.startswith("front") else 1.65
+            yy = 0.85 if n.startswith("front") else 2.10
             out.append((f"inverter_{n}", box(SPAR_MAIN_X + 0.15, SPAR_MAIN_X + 0.45, sg * yy - 0.15, sg * yy + 0.15, -0.06, 0.06),
                         "systems", "two inverters (one per rotor) in the aft body behind the main spar"))
         for nm, p0, p1, r in (("spar_main_R", [SPAR_MAIN_X, 0.52, 0], [SPAR_MAIN_X, P.BODY_Y + 1.4, 0], 0.045),

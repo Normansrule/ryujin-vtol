@@ -275,13 +275,13 @@ def mini_components(payload_kg: float | None = None):
         ("airspeed sensor + pitot", 0.6, 0.0, 0.0, 0.006, "avionics"),
         ("servo x2 elevons (5 g digital)", 6.10, 0.0, 0.0, 0.011, "controls"),
         ("servo x2 ruddervators (5 g digital, in the dorsal spine)", 7.865, 0.0, 0.32, 0.011, "controls"),
-        ("servo x2 bottom louvres / exit vanes (5 g, one per side, front + rear linked)", 3.75, 0.0, 0.0, 0.011, "controls"),
+        ("servo x2 bottom louvres / exit vanes (5 g, one per side, front + rear linked)", 4.36, 0.0, 0.0, 0.011, "controls"),
         ("servo x1 payload-bay doors (5 g)", pb["x1"] + 0.10, 0.0, -0.30, 0.0055, "controls"),
         ("top louvre hinge wires + elastic closers (suction-opened)", xc, 0.0, 0.14, 0.006, "controls"),
         ("linkages, horns, hinges, 2 mm ruddervator pivot rods", 6.8, 0.0, 0.0, 0.012, "controls"),
         ("wiring, XT60, connectors", xc, 0.0, -0.1, 0.030, "systems"),
         ("carbon tubes: 6 mm main spar (2 halves), 4 mm centre spar", 4.9, 0.0, 0.0, 0.018, "airframe"),
-        ("fixed tricycle gear (wire legs, foam wheels)", 4.2, 0.0, -0.6, 0.034, "gear"),
+        ("fixed tricycle gear (wire legs, foam wheels)", 3.75, 0.0, -0.6, 0.034, "gear"),
         ("glue, screws, magnets", 5.0, 0.0, 0.0, 0.020, "systems"),
     ]
     name, kg = PAYLOAD_DEFAULT

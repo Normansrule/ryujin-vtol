@@ -36,8 +36,8 @@ BATT_CRT_VOLT,12.4
 # lift motors back off above this total current (hover ~27 A); the EDF runs to full throttle
 Q_M_BAT_CURR_MAX,115
 THR_MAX,100
-# --- speeds from the model (calibrate in flight test): wing-borne minimum ~10.5 m/s
-# (trimmed CL 0.51 at 14 deg, no vortex lift credited). ArduPlane 4.5+ names; older: ARSPD_FBW_MIN/MAX
+# --- speeds from the model (calibrate in flight test): wing-borne minimum ~10.6 m/s
+# (trimmed CL 0.50 at 14 deg, no vortex lift credited). ArduPlane 4.5+ names; older: ARSPD_FBW_MIN/MAX
 AIRSPEED_MIN,15
 AIRSPEED_CRUISE,18
 AIRSPEED_MAX,22

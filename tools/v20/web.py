@@ -82,7 +82,7 @@ def _entry(key: str, sz: dict, geo: dict) -> dict:
     return {
         "label": label, "short": "V20 Mini" if not full else "V20 Full", "summary": summ, "standalone": True, "family": "v20",
         "display_scale": 1.0 if not full else 10.0, "unit": "mm" if not full else "m",
-        "eye_mm": [v * k for v in eye], "motor_y_mm": P.DUCT_Y * k,
+        "eye_mm": [v * k for v in eye], "motor_y_mm": [P.DUCT_Y["front"] * k, P.DUCT_Y["rear"] * k],
         "eval": {"all_up_g": mass_g, "cg_mm": cg, "rotor_front_x_mm": xf, "rotor_rear_x_mm": xr, "rotor_centroid_x_mm": (xf + xr) / 2,
                  # the viewer's band runs from louvres shut (cruise, the gate) to louvres open
                  "np_closed_x_mm": a["x_np_closed_m"] * 1000 * to_disp, "np_open_x_mm": a["x_np_open_m"] * 1000 * to_disp, "mac_mm": a["mac_m"] * 1000 * to_disp,

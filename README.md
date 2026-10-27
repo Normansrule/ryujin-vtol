@@ -12,12 +12,13 @@ installers on the Releases page (same app, works offline). Steps: [docs/PUBLISHI
 > **Status: mechanical fitting / development prototype - not flight-ready.** Nothing here has been flown,
 > bench-tested or slicer-validated. Named parts are reference candidates until fitted and measured.
 
-## New: V20 "Falcon Jet" (rev C) - one blended body, hidden fans, a V-tail and a payload bay
+## New: V20 "Falcon Jet" (rev C.2) - one blended body, staggered hidden fans, a V-tail and a payload bay
 
 ![V20 rev C mini in the web workbench: chined blended body, four lift fans under louvres, V-tail](analysis/view_v20_mini.png)
 
 A lift + cruise VTOL in the Anduril Fury / CCA family ([docs/V20_FALCON_JET.md](docs/V20_FALCON_JET.md)): a chined
-forebody that runs straight into the wing, four lift fans hidden under louvres in the body shoulders, a V-tail of two
+forebody that runs straight into the wing, four lift fans hidden under louvres in a staggered chevron that follows the
+wing's sweep (rear pair further out: out of the front fans' wake, longer roll and yaw arms, room for the main gear), a V-tail of two
 all-moving ruddervators, side intakes feeding one jet near the CG, and a payload bay in the belly at the CG. One shape at
 both scales: the mini is an exact 1:10 model of the single-seat aircraft.
 
@@ -26,14 +27,14 @@ both scales: the mini is an exact 1:10 model of the single-seat aircraft.
 | Size | 1,080 mm long, 1,000 mm span | 10.8 m long, 10.0 m span |
 | Lift | 4 x 6-inch props in 157 mm ducts, louvres top and bottom | 4 x 1.57 m ducts, 2 contra-rotating fans each (any one of 8 can fail) |
 | Jet | the 64 mm EDF, fed by both side intakes | 0.64 m electric ducted fan |
-| Power | 4S3P Li-ion, 13.5 Ah, 135 A | series hybrid: 418 kW nose turbogenerator + 93 kWh battery |
-| Mass | 1,991 g | 2,237 kg |
-| Payload | up to 269 g in the bay (camera, mapping, drop, sensor modules) | 55 L cargo bay; uncrewed cargo version 122 kg |
+| Power | 4S3P Li-ion, 13.5 Ah, 135 A | series hybrid: 420 kW nose turbogenerator + 92 kWh battery |
+| Mass | 1,995 g | 2,235 kg |
+| Payload | up to 265 g in the bay (camera, mapping, drop, sensor modules) | 55 L cargo bay; uncrewed cargo version 122 kg |
 | Endurance | 27 min hover or 36 min / 38 km cruise | 20 km hop + 20 min VFR reserve |
 | CG from the centre of the 4 fans | +0.0 mm | +0 mm |
-| Static margin, louvres shut | 5.5 % (gate 5 %) | 5.5 % (gate 5 %) |
+| Static margin, louvres shut | 5.9 % (gate 5 %) | 5.9 % (gate 5 %) |
 | Hover / fly forward at every speed (quasi-steady model) | yes, 0-23 m/s | yes, 0-76 m/s |
-| Status | 45 watertight print pieces (with a balance stand) that fit the P1S, foam template, parts list, port map; not yet built | engineering concept with open items (battery packaging, yaw after a rotor failure); **not** a build package |
+| Status | 45 watertight print pieces (with a balance stand) that fit the P1S, foam template, parts list, port map; not yet built | engineering concept with open items (battery packaging, turbine-out margin); **not** a build package |
 
 On the ground the mini perches and watches (about 16 h on half the pack) or works as a
 156 Wh power bank; the full scale's turbogenerator can export about 100 kW

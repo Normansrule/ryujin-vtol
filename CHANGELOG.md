@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.0 - 2026-10-27
+
+V20 rev C.2: the lift fans placed for physics as well as looks.
+
+- **Staggered chevron:** the rear fan pair moved 0.9 m outboard (full scale), so the four fans follow the wing's sweep.
+  The rear fans leave the front fans' wake in transition (disk overlap 43 % instead of 100 %), their roll and yaw arm
+  grows 1.6x, and the fan centroid - the hover balance point - and the pitch arm do not move.
+- **Landing gear:** with the bay inboard of the rear fans free, the mains move forward from 1.85 to 1.10 m behind the
+  CG and out of the rear fans' efflux; the mini's louvre servos sit there too.
+- **Leading edge:** the leading-edge extension reaches further forward, so even the front fans have skin ahead of their
+  lips (better inflow in transition, no duct showing at the edge); the outer wing moved aft to keep the stability
+  margin (5.9 % mini, 5.9 % full, gate 5 %).
+- **Grilles:** the top louvres run parallel to the outer leading edge and are cut round (no stepped ends); the bottom
+  ones stay spanwise to turn the efflux aft. The body shoulders now ramp up faster behind the leading edge.
+- Mini 1,995 g, 27 min hover, 36 min / 38 km cruise, payload up to
+  265 g; full scale 2,235 kg. The hover-frame overlay draws the staggered layout.
+
 ## 0.9.0 - 2026-10-26
 
 V20 rev C: a professional Fury / CCA-style shape, a payload bay, longer endurance, uses on the ground, a cleaner app.

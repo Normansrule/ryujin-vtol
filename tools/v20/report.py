@@ -80,7 +80,7 @@ def main() -> int:
     pl, gr = m["payload"], m["ground"]
     H = F["hybrid"]
     cor_ok = lambda r: all(c["forward_ok"] and c["hover_ok"] for c in r["corridor"]) and r["corridor"]   # noqa: E731
-    w("# V20 \"Falcon Jet\" (rev C): one blended body, hidden fans, a V-tail and a payload bay\n")
+    w("# V20 \"Falcon Jet\" (rev C.2): one blended body, staggered hidden fans, a V-tail and a payload bay\n")
     w("> **Status.** The mini is a buildable, 3D-printable experimental RC model: generated parts, a print set that fits "
       "the P1S (with a balance stand), a foam template, a parts list and a bench port map - not yet printed, bench-tested "
       "or flown. The full-scale aircraft is an **engineering concept study** of the same shape carrying one person: "
@@ -93,7 +93,7 @@ def main() -> int:
     rows = [
         ["Scale", "1 : 10 of the full-scale shape (exactly)", "1 : 1"],
         ["Length x span", f"{f(LEN * 100)} x {f(a_m['span_m'] * 1000)} mm", f"{LEN:.1f} x {a_f['span_m']:.1f} m"],
-        ["Lift fans (hidden under louvres)", f"4 x {f(D * 100)} mm ducts, one 6-inch 3-blade prop each",
+        ["Lift fans (hidden under louvres, staggered chevron)", f"4 x {f(D * 100)} mm ducts, one 6-inch 3-blade prop each",
          f"4 x {D:.2f} m ducts, two contra-rotating 5-blade fans each"],
         ["Tail", "V-tail: two all-moving ruddervators (3 mm Depron)", "V-tail: two all-moving ruddervators"],
         ["Jet", "64 mm EDF (Freewing E7206), fed by both side intakes",
@@ -122,7 +122,7 @@ def main() -> int:
     w(table(rows, ["", "V20 mini (printable RC)", "V20 full (single-seat concept)"]))
     w("")
     rb = REV_B_MINI
-    w("**Rev B to rev C, the mini** (rev B is v0.8.0):\n")
+    w("**Rev B to rev C.2, the mini** (rev B is v0.8.0):\n")
     w(table([["Span", f"{rb['span_mm']} mm", f"{f(a_m['span_m'] * 1000)} mm"],
              ["Aspect ratio", f"{rb['AR']:.2f}", f"{a_m['AR']:.2f}"],
              ["Mass", f"{f(rb['mass_g'])} g", f"{f(m['mass_kg'] * 1000)} g"],
@@ -132,7 +132,8 @@ def main() -> int:
              ["Payload", "none", f"up to {f(pl['max_kg'] * 1000)} g"],
              ["Lift thrust / weight", f"{rb['tw']:.2f}", f"{m['thrust_to_weight_lift']:.2f}"],
              ["Static margin (louvres shut)", f"{rb['sm']:.1f} %", f"{a_m['sm_closed_pct']:.1f} %"],
-             ["Tail surfaces / servos", "4 surfaces, 3 servos", "2 surfaces, 2 servos"]], ["", "Rev B", "Rev C"]))
+             ["Fan layout", "2 x 2 square", "staggered chevron (rear pair 0.9 m further out at full scale)"],
+             ["Tail surfaces / servos", "4 surfaces, 3 servos", "2 surfaces, 2 servos"]], ["", "Rev B", "Rev C.2"]))
     w("")
     w("Bigger 6-inch fans (they hover on less power per kilogram) and a 50 % bigger pack, which the chined nose now holds "
       "and which is also the nose weight that puts the CG on the fan centre. Cruise gains are modest: the 64 mm EDF's "
@@ -146,12 +147,38 @@ def main() -> int:
       "and the wing root thickens into the body ahead of and behind the fans, so nose, body, wing and aft body read as one "
       "lifting shape, the way the Anduril Fury and the other collaborative combat aircraft (CCA) designs do. A low "
       "frameless canopy fairs into a dorsal spine that runs back to the tail.\n")
-    w("**Hover first.** Four lift fans in a square; the CG goes where their diagonals cross, so each fan lifts a quarter "
-      "of the weight and every fan keeps the same control headroom. The fans live in the shoulders of the body beside the "
+    w("**Hover first.** Four equal lift fans; the CG goes on their centroid, so each fan lifts a quarter of the weight "
+      "and every fan keeps the same control headroom. The fans live in the shoulders of the body beside the "
       "cockpit, under louvres that shut in cruise: on top they open by the fan's own suction and close with a light "
       "elastic; underneath they are servo-driven and double as **exit vanes**, turning the efflux aft in transition (as "
       "on the 1960s XV-5 fan-in-wing). The battery is the trim weight: the mini's pack sits in the nose (centre x "
       f"{m['battery_x_m'] * 1000:.0f} mm), the full-scale pack in the nose bay (centroid x {F['battery_x_m']:.2f} m).\n")
+    yf, yr = P.DUCT_Y["front"], P.DUCT_Y["rear"]
+    overlap = max(0.0, (D - abs(yr - yf)) / D)
+    w("**Where the fans go (rev C.2).** The four fans form a staggered chevron that follows the wing's sweep: the front "
+      f"pair tucked against the body beside the cockpit (y = +/-{yf:.2f} m full scale), the rear pair {yr - yf:.1f} m "
+      f"further out (y = +/-{yr:.2f} m). Rev C had them in a square. The stagger is there for physical reasons, not just "
+      "the look:\n")
+    for t in (f"**Wake.** In transition a fan in line behind another ingests its disturbed inflow and the open louvres' "
+              f"wake. Staggered, the rear fan's disk overlaps the front fan's track by {100 * overlap:.0f} % of its "
+              "width instead of 100 %.",
+              f"**Control arms.** Roll from differential fan thrust and yaw from differential exit vanes both scale with "
+              f"lateral distance: the rear pair's arm grows from {yf:.2f} to {yr:.2f} m (x{yr / yf:.1f}). The fore-aft "
+              f"spacing - the pitch arm - stays {P.DUCT_X['rear'] - P.DUCT_X['front']:.2f} m, and the fan centroid, which "
+              "is the hover balance point, does not move.",
+              "**Room underneath.** The bay between the rear fans and the fuselage is free, so the main landing gear "
+              f"moves forward to {P.GEAR['main_dx_behind_cg']:.1f} m behind the CG (rev C: {1.85:.2f} m, behind the whole fan "
+              "band), the rear fans' efflux no longer blasts the wheels and belly, and the mini's louvre servos sit "
+              "there on a short linkage.",
+              "**Clean leading edge.** The leading-edge extension now reaches further forward, so even the front fans "
+              "have skin ahead of their lips: a better inflow at the front lip in transition (where fan-in-wing designs "
+              "first separate) and no duct showing at the edge. That area is ahead of the CG, so the outer wing moved "
+              "aft to keep the stability margin.",
+              "**Grilles that follow the planform.** The top louvres run parallel to the outer leading edge (they open "
+              "by the fan's suction, so their direction is free); the bottom louvres stay spanwise, because they turn "
+              "the efflux aft in transition."):
+        w(f"- {t}")
+    w("")
     w("**A V-tail.** Two all-moving ruddervators replace rev B's two stabilators and two fins: they pitch together and "
       "yaw apart. The vortex lattice is now non-planar - each panel has its own normal - so the tail's pitch "
       "authority (cos^2 of the dihedral) and yaw authority (sin^2) come out of the solver, not a rule of thumb. At "

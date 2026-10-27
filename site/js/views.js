@@ -274,7 +274,7 @@ export function v20(ctx, el, sub) {
   const sect = (title, rows) => `<tbody class="spec-sect"><tr><th colspan="2" class="spec-h">${title}</th></tr>${rows.join('')}</tbody>`;
   const spec = full ? [
     sect('Airframe', [row('Length × span', `${len} × ${span}`), row('Wing area', area, `aspect ratio ${fmt(a.AR, 2)}`),
-      row('Lift fans', `4 ducts × ${fmt(G.duct_id_m, 2)} m`, 'two contra-rotating fans each, under louvres'), row('Tail', 'V-tail, two all-moving ruddervators')]),
+      row('Lift fans', `4 ducts × ${fmt(G.duct_id_m, 2)} m`, 'two contra-rotating fans each, staggered chevron, under louvres'), row('Tail', 'V-tail, two all-moving ruddervators')]),
     sect('Weights', [row('Take-off mass', `${fmt(s.mtow_kg)} kg`, `pilot 100, battery ${fmt(s.battery_kg)}, fuel ${fmt(s.hybrid.fuel_kg)}`),
       row('Cargo bay', `${fmt(s.cargo?.bay_l)} L, ${fmt(s.cargo?.bay_kg)} kg`, 'belly, at the CG'), row('Uncrewed cargo version', `${fmt(s.cargo?.uncrewed_cargo_kg)} kg`, 'in place of pilot and seat')]),
     sect('Power', [row('Powertrain', `series hybrid: ${fmt(s.hybrid.generator_kw)} kW turbogenerator + ${fmt(s.battery_kwh)} kWh battery`),
@@ -285,7 +285,7 @@ export function v20(ctx, el, sub) {
       row('Weathercock (Cnβ)', `${fmt(a.Cnb, 3)} /rad`, 'V-tail less fuselage, positive = stable'), row('CG from fan centre', `${s.cg_offset_mm >= 0 ? '+' : ''}${fmt(s.cg_offset_mm)} mm`)]),
   ] : [
     sect('Airframe', [row('Length × span', `${len} × ${span}`), row('Wing area', area, `aspect ratio ${fmt(a.AR, 2)}`),
-      row('Lift fans', `4 ducts × ${fmt(G.duct_id_m * 100)} mm`, '6-inch 3-blade props under louvres'), row('Tail', 'V-tail, two all-moving ruddervators (Depron)')]),
+      row('Lift fans', `4 ducts × ${fmt(G.duct_id_m * 100)} mm`, '6-inch 3-blade props, staggered chevron, under louvres'), row('Tail', 'V-tail, two all-moving ruddervators (Depron)')]),
     sect('Weights', [row('All-up mass', `${fmt(s.mass_kg * 1000)} g`, `battery ${fmt(s.battery_kg * 1000)} g`),
       row('Payload', `up to ${fmt(s.payload.max_kg * 1000)} g`, `bay ${s.payload.bay_mm.join(' × ')} mm at the CG`)]),
     sect('Power', [row('Battery', `4S${s.battery.ah / 4.5}P Li-ion, ${fmt(s.battery.ah, 1)} Ah`, `${fmt(s.battery_wh_usable)} Wh usable, ${fmt(s.battery.max_a)} A`),
@@ -314,8 +314,8 @@ export function v20(ctx, el, sub) {
     </ul>`;
   const pieces = Object.entries(s.checks.P1S || {});
   html(el, `
-    <h2>V20 Falcon Jet <span class="muted small">rev C</span></h2>
-    <p class="lede-s">A lift + cruise VTOL in the Anduril Fury / CCA family: one blended, chined body with four lift fans hidden under louvres, a V-tail, and one jet fed by side intakes. The ${fmt(G.length_m * 100)} mm mini is an exact 1:10 model of the single-seat aircraft.</p>
+    <h2>V20 Falcon Jet <span class="muted small">rev C.2</span></h2>
+    <p class="lede-s">A lift + cruise VTOL in the Anduril Fury / CCA family: one blended, chined body with four lift fans hidden under louvres in a staggered chevron that follows the wing's sweep, a V-tail, and one jet fed by side intakes. The ${fmt(G.length_m * 100)} mm mini is an exact 1:10 model of the single-seat aircraft.</p>
     <div class="seg" role="group" aria-label="Scale">
       <button data-scale="mini" aria-pressed="${!full}">Mini 1:10 (build)</button><button data-scale="full" aria-pressed="${full}">Full scale (concept)</button>
     </div>

@@ -6,8 +6,9 @@ The mini is exactly this shape at SCALE["mini"] = 0.1 (6-inch props in 157 mm li
 person-carrying aircraft. What changes between the scales is what sits inside (structure, motors, battery, payload).
 
 Layout logic (lift + cruise), and why it looks the way it does (rev C: the Anduril Fury / CCA family look):
-  * Four ducted lift fans in a 2 x 2 square, hidden in the shoulders of a wide blended lifting body beside the
-    cockpit, under louvres that shut in cruise. Their centre is the hover balance point, so the CG goes there.
+  * Four ducted lift fans in a staggered chevron, hidden in the shoulders of a wide blended lifting body under louvres
+    that shut in cruise: the front pair beside the cockpit, the rear pair further out along the wing's sweep. Their
+    centroid is the hover balance point, so the CG goes there.
   * A chined forebody: the nose's widest line is a sharp chine that runs straight into the wing leading edge, so the
     body, strakes and wing read as one shape. A low canopy fairs into a dorsal spine that runs back to the tail.
   * A V-tail of two all-moving ruddervators replaces the four tail surfaces of rev B (two stabilators, two fins):
@@ -29,16 +30,24 @@ SCALE = {"mini": 0.1, "full": 1.0}
 DUCT_ID = 1.57                 # mini: 157 mm, a 6-inch (152.4 mm) prop with a 2.2 mm tip gap
 DUCT_LIP = 0.06                # radial width of the bell-mouth lip (outer mould line)
 DUCT_DEPTH = 0.276             # duct depth (mini 27.6 mm): the full depth of the body shoulder, louvre to louvre
-BODY_Y = 2.45                  # the blended body's shoulders reach out to here; the outer wing starts outboard
+BODY_Y = 3.30                  # the blended body's shoulders reach out to here (past the rear fans); outer wing outboard
 BODY_HALF_T = 0.15             # shoulder half-thickness (full scale m): holds the ducts and louvres
-DUCT_Y = 1.43                  # duct centres at y = +/-1.43 (inner lip clear of the fuselage side)
-DUCT_X = {"front": 2.56, "rear": 4.36}   # 1.80 m apart; the centre spar runs through the strip between the lips
+# fan rows, fore to aft: each row is a pair of ducts at +/- y. Staggered (rev C.2): the front pair tucked against the
+# body beside the cockpit, the rear pair 0.9 m further out, so the four fans form a chevron that follows the wing's sweep.
+#  * the rear fans sit out of the front fans' disturbed inflow and louvre wake in transition (tandem fans in line ingest
+#    each other's wake);
+#  * their roll and yaw arm grows from 1.43 to 2.33 m (yaw comes from differential exit vanes: arm x vane force);
+#  * the bay between the rear fans and the fuselage is free: the main landing gear moves forward to just behind the
+#    CG instead of behind the whole fan band, and the rear fans' efflux no longer hits the gear and the belly;
+#  * the fore-aft spacing (pitch arm) and the fan centroid - the hover balance point - are unchanged.
+DUCT_X = {"front": 2.56, "rear": 4.36}
+DUCT_Y = {"front": 1.43, "rear": 2.33}
 DUCT_MARGIN = 0.10             # minimum skin between the duct lip and any planform edge
 
 # ---------------------------------------------------------------------------------------------------
 # planform (half, starboard, absolute x): chine, body shoulder, outer-wing leading edge to the tip, tip trailing edge,
 # trailing edge back to the body, then the wide aft body ('beavertail': it carries the V-tail and the nozzle)
-OUTLINE = [(1.30, 0.34), (1.45, 1.30), (1.95, 2.45), (5.75, 5.00), (7.00, 5.00), (7.90, 2.45), (8.70, 1.55), (10.00, 0.70),
+OUTLINE = [(1.15, 0.34), (1.25, 1.30), (1.95, 2.45), (6.10, 5.00), (7.35, 5.00), (7.90, 2.45), (8.70, 1.55), (10.00, 0.70),
            (10.30, 0.55)]
 ELEVON = {"y0": 2.95, "y1": 4.80, "chord_frac": 0.28}
 T_C = 0.06                     # outer-wing section thickness (fraction of chord), round leading edge
@@ -83,8 +92,8 @@ INTAKE = {"x0": 1.40, "x_cheek": 1.95, "x1": 3.90, "y_out": 0.88, "y_cheek": 0.6
 PAYLOAD_BAY = {"x0": 2.90, "x1": 3.80, "half_width": 0.27, "z_top": -0.29, "door_t": 0.03}
 
 # ---------------------------------------------------------------------------------------------------
-# landing gear (tricycle). The mains sit just behind the rear ducts (the duct band is no place for a wheel)
-GEAR = {"nose_x": 1.60, "main_dx_behind_cg": 1.85, "main_y": 0.85, "height": 0.62, "wheel_d": 0.36,
+# landing gear (tricycle). The mains sit 1.1 m behind the CG, in the bay between the rear fans and the fuselage
+GEAR = {"nose_x": 1.60, "main_dx_behind_cg": 1.10, "main_y": 0.85, "height": 0.62, "wheel_d": 0.36,
         "nose_wheel_d": 0.28}
 
 # ---------------------------------------------------------------------------------------------------
@@ -106,13 +115,23 @@ def use(variant: str) -> None:
     VARIANT = "full" if variant == "full" else "mini"
 
 
+def rows():
+    """Fan rows, fore to aft."""
+    return sorted(DUCT_X, key=lambda r: DUCT_X[r])
+
+
 def duct_centres():
-    """[(name, x, y)] for the four lift ducts, full scale."""
-    return [(f"{pos}_{side}", DUCT_X[pos], s * DUCT_Y) for pos in ("front", "rear") for side, s in (("R", 1), ("L", -1))]
+    """[(name, x, y)] for every lift duct, full scale."""
+    return [(f"{pos}_{side}", DUCT_X[pos], s * DUCT_Y[pos]) for pos in rows() for side, s in (("R", 1), ("L", -1))]
+
+
+def n_fans():
+    return 2 * len(DUCT_X)
 
 
 def duct_centre_x():
-    return (DUCT_X["front"] + DUCT_X["rear"]) / 2
+    """The hover balance point: the centroid of the fans (equal fans share the weight equally there)."""
+    return sum(DUCT_X.values()) / len(DUCT_X)
 
 
 def half_planform():

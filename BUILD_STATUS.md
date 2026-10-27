@@ -31,15 +31,14 @@ measurements replace the model assumptions V19 rests on.
 ## V20 Falcon Jet (rev C)
 
 - **Mini (1:10):** EXPERIMENTAL, ready for Stage 0-2 (print coupons, thrust stand with a printed duct, EDF through the
-  printed intakes). 1,991 g model mass, CG on the fan centre, static margin 5.5 % with the
-  louvres shut, lift thrust/weight 1.91 (flag: want 2.0+; assumes 0.95 kg per ducted 6-inch
+  printed intakes). 1,995 g model mass, CG on the fan centre, static margin 5.9 % with the
+  louvres shut, lift thrust/weight 1.90 (flag: want 2.0+; assumes 0.95 kg per ducted 6-inch
   prop - measure it first). The bottom-louvre mixing script is not written yet; the top louvres' suction opening must
   be shown on the bench.
-- **Full scale:** concept study only (2,237 kg series hybrid, 875 kW hover). Not a build package; a
+- **Full scale:** concept study only (2,235 kg series hybrid, 874 kW hover). Not a build package; a
   person-carrying aircraft needs licensed engineering, testing and FAA approval. Open items: 42 % of the battery
-  fits the nose bay; yaw after a rotor failure; a rotor failure mid-transition. With the turbine out, the battery
-  (the nose weight, so heavier than the energy needs) gives 106 % of hover power at its 10C peak - enough to land,
-  without the 20 % control headroom a hover wants.
+  fits the nose bay; turbine out in a low hover (105 % of hover power from the
+  battery); yaw after a rotor failure; a rotor failure mid-transition.
 
 ## Deliverables
 

@@ -22,12 +22,12 @@
  "battery_pack": {
   "battery_centroid_m": 2.131,
   "battery_x_sizing_m": 1.95,
-  "battery_volume_fill": 0.415,
-  "fuel_capacity_l": 279.7,
-  "fuel_needed_l": 126.1,
-  "fuel_centroid_x_m": 4.029
+  "battery_volume_fill": 0.42,
+  "fuel_capacity_l": 121.7,
+  "fuel_needed_l": 126.5,
+  "fuel_centroid_x_m": 4.729
  },
- "prop_tip_gap_mm": 21.02,
+ "prop_tip_gap_mm": 20.78,
  "watertight": {
   "bay_door_R": true,
   "bay_door_L": true,
