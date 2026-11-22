@@ -12,4 +12,5 @@ cadquery>=2.4
 # V19 geometry (tools/v19/geometry.py): booleans and surface interpolation
 manifold3d>=3.0
 scipy>=1.11
+networkx>=3.0          # trimesh needs it to split print pieces (split_to_fit)
 # Optional: doc screenshots (tools/web/screenshots.py) - pip install playwright && playwright install chromium

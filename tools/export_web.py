@@ -278,7 +278,7 @@ def main() -> int:
 
     docs = SITE / "docs"
     docs.mkdir(exist_ok=True)
-    order = [("README.md", "Overview"), ("BUILD_STATUS.md", "Build status"), ("docs/V20_FALCON_JET.md", "V20 Falcon Jet"), ("docs/V19_VARIANTS.md", "V19 variants"),
+    order = [("README.md", "Overview"), ("BUILD_STATUS.md", "Build status"), ("docs/V21_G8_PROTECTIONS.md", "V21 pilot-error protections"), ("docs/V20_FALCON_JET.md", "V20 Falcon Jet"), ("docs/V19_VARIANTS.md", "V19 variants"),
              ("docs/BALANCE_AND_STABILITY.md", "Balance and stability"),
              ("docs/V18_CHECKS.md", "V18 geometry checks"), ("docs/TEST_GATES.md", "Build stages and gates"),
              ("docs/BUDGET.md", "Budget"), ("docs/BOM.md", "Bill of materials"), ("docs/WIRING.md", "Wiring"),
@@ -316,6 +316,14 @@ def main() -> int:
     pd = v20web.page_data()
     if pd:
         dump("v20.json", pd)
+    # V21 digital twin data (tools/v21/web.py; loaded by path because tools/v20 also has a web.py)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("v21web", ROOT / "tools" / "v21" / "web.py")
+    v21web = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(v21web)
+    pd21 = v21web.page_data()
+    if pd21:
+        dump("v21.json", pd21)
     build_glb()
     write_sw_manifest()
     print("site data written:", sorted(p.name for p in DATA.iterdir()))

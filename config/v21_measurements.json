@@ -1,0 +1,55 @@
+{
+ "_note": "V21 G7 measurements (docs/V21_G7_TEST_PROCEDURES.md). null = not measured. Then: python3 tools/v21/g7.py",
+ "W0": {
+  "pack_fits": null,
+  "pods_interchangeable": null,
+  "tip_gap_mm_min": null,
+  "bay_drains_s": null
+ },
+ "W1": {
+  "lift_fan_thrust_g_min": null,
+  "edf_static_thrust_g": null,
+  "pack_v_at_hover": null,
+  "scarfed_pod_thrust_g": null,
+  "plain_pod_thrust_g": null
+ },
+ "W2": {
+  "all_up_mass_g": null,
+  "cg_x_mm": null
+ },
+ "W3": {
+  "leak_ingress_g_30min": null,
+  "leak_sensor_trips": null,
+  "leak_sensor_dry_v": null,
+  "leak_sensor_open_trips": null,
+  "float_trim_deg": null,
+  "freeboard_fan_mm": null,
+  "freeboard_intake_mm": null,
+  "freeboard_nozzle_mm": null,
+  "heel_fan_wet_deg": null,
+  "rights_from_20deg": null
+ },
+ "W4": {
+  "bench_scripts_load": null,
+  "bench_arming_refused": null,
+  "bench_taxi_cap": null,
+  "bench_vtol_refused": null,
+  "bench_vanes": null,
+  "bench_likely_flying_false": null
+ },
+ "W5": {
+  "spray_hull_water_g": null,
+  "spray_motor_events": null,
+  "spray_plume_height_m": null
+ },
+ "W6": {
+  "bollard_pull_g": null,
+  "taxi_max_speed_m_s": null,
+  "taxi_turn_ok": null,
+  "taxi_hull_water_g": null
+ },
+ "W7": {
+  "water_takeoffs_ok": null,
+  "water_takeoff_peak_a": null
+ }
+}

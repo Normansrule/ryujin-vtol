@@ -7,7 +7,7 @@ import * as views from './views.js';
 
 const files = ['parts', 'bom', 'mass_model', 'mass_cg', 'aero', 'geom_checks', 'harness', 'balance_study', 'power', 'materials',
   'measurements', 'pinmap', 'carbon_cut_list', 'interface_parts', 'docs_index', 'stages', 'synthetic_measurements'];
-const optional = ['variants', 'v20'];
+const optional = ['variants', 'v20', 'v21'];
 
 async function getData() {
   const get = async (f, must) => {
@@ -116,7 +116,7 @@ let currentSub = null;
 function render(force = false) {
   const parts = location.hash.replace('#', '').split('/');
   const tab = parts[0] || 'aircraft';
-  const TABS = ['aircraft', 'v19', 'v20', 'balance', 'budget', 'bom', 'bench', 'wiring', 'stages', 'docs'];
+  const TABS = ['aircraft', 'v19', 'v20', 'v21', 'balance', 'budget', 'bom', 'bench', 'wiring', 'stages', 'docs'];
   const name = TABS.includes(tab) ? tab : 'aircraft';
   const sub = parts.slice(1).join('/');
   for (const a of $$(document, '.tabs a')) { if (a.dataset.tab === name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }

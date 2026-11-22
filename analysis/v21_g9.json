@@ -1,0 +1,185 @@
+{
+ "basis": "ESTIMATE: tools/v21/g9.py on the G5 model; nothing floated or tested",
+ "heel": {
+  "rows": [
+   {
+    "heel_deg": 1,
+    "gz_mm": 14.107486536434475,
+    "lowest_fan_exit_mm": 19.31475396964348
+   },
+   {
+    "heel_deg": 2,
+    "gz_mm": 27.609216936067927,
+    "lowest_fan_exit_mm": 13.75389164630831
+   },
+   {
+    "heel_deg": 3,
+    "gz_mm": 39.73251672122562,
+    "lowest_fan_exit_mm": 8.084904104419333
+   },
+   {
+    "heel_deg": 4,
+    "gz_mm": 48.441749368165475,
+    "lowest_fan_exit_mm": 2.1892488937497845
+   },
+   {
+    "heel_deg": 5,
+    "gz_mm": 54.707533696407175,
+    "lowest_fan_exit_mm": -3.827737413445581
+   },
+   {
+    "heel_deg": 6,
+    "gz_mm": 60.66595602094698,
+    "lowest_fan_exit_mm": -9.779959417653462
+   },
+   {
+    "heel_deg": 8,
+    "gz_mm": 70.6445327013525,
+    "lowest_fan_exit_mm": -21.416755574995143
+   },
+   {
+    "heel_deg": 10,
+    "gz_mm": 73.25447269765095,
+    "lowest_fan_exit_mm": -32.40675204489369
+   },
+   {
+    "heel_deg": 15,
+    "gz_mm": 69.67059704850463,
+    "lowest_fan_exit_mm": -58.938406409427415
+   },
+   {
+    "heel_deg": 20,
+    "gz_mm": 65.50111688276009,
+    "lowest_fan_exit_mm": -84.8860351870871
+   },
+   {
+    "heel_deg": 30,
+    "gz_mm": 56.14048116878656,
+    "lowest_fan_exit_mm": -133.87575332420633
+   }
+  ],
+  "flood_heel_deg": 4.363844752502061,
+  "side_area_m2": 0.1153983063051473,
+  "wind_lever_m": 0.09678776637134673,
+  "wind_force_n": 1.9437402218273254,
+  "cases": {
+   "beam wind at RYW_WIND_MAX": {
+    "moment_nm": 0.18813027447681283,
+    "heel_deg": 0.6817040104539897
+   },
+   "taxi turn 1.5 m/s, 3 m radius": {
+    "moment_nm": 0.08523508565320309,
+    "heel_deg": 0.308855658042105
+   },
+   "both together": {
+    "moment_nm": 0.2733653601300159,
+    "heel_deg": 0.9905596684960947
+   }
+  },
+  "wave_max_slope_deg": 5.3840959173935685,
+  "wave_crest_mm": 15.0,
+  "fan_exit_freeboard_mm": 22.722836510530502
+ },
+ "float_sweep": [
+  {
+   "float_drop_mm_mini": 0.0,
+   "strut_mm_mini": 6.0,
+   "flood_heel_deg": 4.363844752502061,
+   "gz_2deg_mm": 27.609216936067927,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 22.722836510530502,
+    "EDF side intakes (lower lip)": 22.347077426938228,
+    "EDF nozzle (lower lip)": 26.765318928354677
+   },
+   "trim_deg": -0.574127197265625,
+   "taxi_1p5_n": 2.5287557680307544,
+   "sm_pct": 7.30798198000568,
+   "mass_g": 1994.087395317057
+  },
+  {
+   "float_drop_mm_mini": 5.0,
+   "strut_mm_mini": 11.0,
+   "flood_heel_deg": 4.473805864339644,
+   "gz_2deg_mm": 25.144854687270083,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 25.257774820122727,
+    "EDF side intakes (lower lip)": 25.131281566124752,
+    "EDF nozzle (lower lip)": 23.633413728618837
+   },
+   "trim_deg": -0.19326782226562503,
+   "taxi_1p5_n": 2.5169983353795944,
+   "sm_pct": 7.30798198000568,
+   "mass_g": 1994.087395317057
+  },
+  {
+   "float_drop_mm_mini": 10.0,
+   "strut_mm_mini": 16.0,
+   "flood_heel_deg": 4.588322423413457,
+   "gz_2deg_mm": 21.37462687322791,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 26.689550277691716,
+    "EDF side intakes (lower lip)": 27.908513507511714,
+    "EDF nozzle (lower lip)": 20.338694025889904
+   },
+   "trim_deg": 0.205718994140625,
+   "taxi_1p5_n": 2.5141616954974166,
+   "sm_pct": 7.30798198000568,
+   "mass_g": 1994.087395317057
+  },
+  {
+   "float_drop_mm_mini": 15.0,
+   "strut_mm_mini": 21.0,
+   "flood_heel_deg": 4.7062349746192345,
+   "gz_2deg_mm": 15.067124686173063,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 27.00591475506488,
+    "EDF side intakes (lower lip)": 30.642128312134798,
+    "EDF nozzle (lower lip)": 16.984911931977482
+   },
+   "trim_deg": 0.613677978515625,
+   "taxi_1p5_n": 2.5215445129464586,
+   "sm_pct": 7.30798198000568,
+   "mass_g": 1994.087395317057
+  }
+ ],
+ "pitch": {
+  "with_everything_pct": 7.30798198000568,
+  "without_floats_pct": 7.667912604794599,
+  "floats_cost_pct": 0.3599306247889187,
+  "nose_stretch_m_full": 0.5
+ },
+ "taxi": {
+  "edf_static_n": 11.76798,
+  "taxi_pwm": 1450.0,
+  "throttle_at_cap": 0.45,
+  "thrust_at_cap_n": 2.38301595,
+  "speed_at_cap_m_s": 1.46227087435086,
+  "rows": [
+   {
+    "V": 0.5,
+    "drag_n": 0.13217029106945566,
+    "full_margin": 89.0364990859853,
+    "cap_margin": 18.02989106491202
+   },
+   {
+    "V": 1.0,
+    "drag_n": 0.5973590615969232,
+    "full_margin": 19.700010858696267,
+    "cap_margin": 3.989252198885994
+   },
+   {
+    "V": 1.5,
+    "drag_n": 2.5287557680307544,
+    "full_margin": 4.653664125564885,
+    "cap_margin": 0.9423669854268891
+   },
+   {
+    "V": 2.0,
+    "drag_n": 10.08532196463522,
+    "full_margin": 1.1668422724891798,
+    "cap_margin": 0.2362855601790589
+   }
+  ],
+  "thr_slewrate": 50.0
+ }
+}

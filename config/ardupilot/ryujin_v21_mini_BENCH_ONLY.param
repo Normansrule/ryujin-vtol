@@ -1,0 +1,117 @@
+# RYUJIN V21 MINI - BENCH-ONLY PORT MAP for ArduPilot Plane (target SpeedyBeeF405WING). NOT FLIGHT OR WATER TESTED.
+#
+# NOT A FLIGHT TUNE, FAILSAFE PACKAGE, SERVO CALIBRATION OR MODE-SWITCH CONFIG. It assigns ports, the motor
+# protocol, the 4S2P pack's current limits and the two V21 Lua scripts so props-off bring-up can start. Reboot after
+# Q_ENABLE and after SCR_ENABLE, then re-load (the RYW_ / RYV_ script parameters only appear once the scripts run).
+# Copy config/ardupilot/scripts/ryujin_*.lua to APM/scripts/ on the SD card. Values from analysis/v21_g5.json
+# (tools/v21/g5.py); every number is an ESTIMATE.
+Q_ENABLE,1
+Q_FRAME_CLASS,1
+Q_FRAME_TYPE,1
+# DShot300 to the 4-in-1 ESC (BLHeli_32)
+Q_M_PWM_TYPE,5
+SERVO1_FUNCTION,33
+SERVO2_FUNCTION,34
+SERVO3_FUNCTION,35
+SERVO4_FUNCTION,36
+SERVO5_FUNCTION,77
+SERVO6_FUNCTION,78
+SERVO7_FUNCTION,79
+SERVO8_FUNCTION,80
+# payload port: 28 Gripper for the drop / bay-door modules, 7 Mount tilt for the camera module
+SERVO9_FUNCTION,28
+# bottom louvres / exit vanes, one servo per side: driven by scripts/ryujin_vanes.lua (Script1 left, Script2 right).
+# Calibrate on the bench: MIN = shut flush, TRIM = open straight down, MAX = full aft (RYV_RANGE degrees from TRIM).
+# With the script stopped the outputs hold TRIM (open), the safe position for a hover.
+SERVO10_FUNCTION,94
+SERVO11_FUNCTION,70
+SERVO12_FUNCTION,95
+SERIAL1_PROTOCOL,23
+SERIAL3_PROTOCOL,5
+ARSPD_TYPE,1
+# --- scripting: water mode + gate (ryujin_water.lua) and the vane mixer (ryujin_vanes.lua) ---
+SCR_ENABLE,1
+# water-mode switch: Scripting1 on RC7 (choose any free 3-position channel; high = water mode)
+RC7_OPTION,300
+# --- battery: 4S2P 21700 Li-ion, 4.5 Ah / 45 A class cells (cell class from the V20 sizing; no part chosen) ---
+BATT_MONITOR,4
+BATT_CAPACITY,9000
+BATT_ARM_VOLT,14.8
+BATT_LOW_VOLT,13.2
+BATT_CRT_VOLT,12.4
+# lift motors back off above this total current: 85 % of the pack's 90 A (hover about 24 A: 351 W at 14.8 V)
+Q_M_BAT_CURR_MAX,76
+THR_MAX,100
+# --- speeds from the V21 sizing (calibrate in flight test). ArduPlane 4.5+ names; older: ARSPD_FBW_MIN/MAX
+AIRSPEED_MIN,15
+AIRSPEED_CRUISE,17
+AIRSPEED_MAX,22
+Q_ASSIST_SPEED,13
+#
+# ===== G8: PILOT-ERROR PROTECTIONS (BENCH ONLY, every value an ESTIMATE; names, units and ranges checked against the
+# ===== ArduPilot Plane-4.8 parameter reference). A conservative "first flights" envelope: relax each one only after
+# ===== the log shows margin. The browser digital twin (site/js/twin.js) runs the same structure so you can see what
+# ===== each one does before the bench. It is a model, not ArduPilot.
+#
+# -- 1. Command shaping (the stick is a request, not a command) --
+# Q_A_INPUT_TC: first-order time constant on the attitude target. 0.2 = "Soft" in the reference table. A stick slam
+# becomes an exponential with 63 % reached after 0.2 s, so a twitch cannot become an attitude step.
+Q_A_INPUT_TC,0.2
+# Rate and acceleration limits on the shaped target (a jerk-limited trajectory, in deg/s and deg/s/s).
+Q_A_RATE_R_MAX,120
+Q_A_RATE_P_MAX,120
+Q_A_RATE_Y_MAX,60
+Q_A_ACC_R_MAX,720
+Q_A_ACC_P_MAX,720
+Q_A_ACC_Y_MAX,180
+# Yaw: pilot rate limit and its own input time constant
+Q_PLT_Y_RATE,60
+Q_PLT_Y_RATE_TC,0.3
+# Vertical: velocity and acceleration limits on the throttle stick in QHOVER / QLOITER (m/s, m/s/s)
+Q_PILOT_SPD_UP,1.5
+Q_PILOT_SPD_DN,1.0
+Q_PILOT_ACCEL_Z,1.5
+#
+# -- 2. Envelope protection (hard limits the pilot cannot command past) --
+# VTOL lean limit in all modes, and the lean the position controller may use (QLOITER, QRTL)
+Q_A_ANGLE_MAX,25
+Q_P_ANGLE_MAX,20
+# Fixed wing: bank and pitch limits in the stabilised modes (FBWA, FBWB, CRUISE), and the load-factor roll limit at
+# low airspeed (needs AIRSPEED_MIN to be right)
+ROLL_LIMIT_DEG,45
+PTCH_LIM_MAX_DEG,20
+PTCH_LIM_MIN_DEG,-20
+STALL_PREVENTION,1
+# Cruise EDF: throttle slew limit in %/s (a slammed throttle ramps over 2 s)
+THR_SLEWRATE,50
+#
+# -- 3. Assist (the lift fans catch a fixed-wing upset) --
+# Q_ASSIST_SPEED (above, 13 m/s) plus: attitude error over 30 deg, or under 5 m AGL, for 0.5 s -> lift fans help
+Q_ASSIST_ANGLE,30
+Q_ASSIST_ALT,5
+Q_ASSIST_DELAY,0.5
+# A forward transition that has not finished in 15 s is abandoned: QRTL
+Q_TRANS_FAIL,15
+Q_TRANS_FAIL_ACT,1
+#
+# -- 4. Fences and failsafes (the aircraft protects itself when the pilot cannot) --
+# Max altitude + circle around home. RTL on breach; RTL goes to QRTL near home (Q_RTL_MODE 1). Armed = enabled.
+FENCE_ENABLE,1
+FENCE_TYPE,3
+FENCE_ALT_MAX,60
+FENCE_RADIUS,150
+FENCE_MARGIN,5
+FENCE_ACTION,1
+FENCE_AUTOENABLE,3
+Q_RTL_MODE,1
+# RC loss: short = CIRCLE, long = RTL
+THR_FAILSAFE,1
+FS_SHORT_ACTN,1
+FS_LONG_ACTN,1
+# Battery: low (30 % of 9000 mAh) -> RTL, critical (20 %) -> QLand
+BATT_LOW_MAH,2700
+BATT_CRT_MAH,1800
+BATT_FS_LOW_ACT,1
+BATT_FS_CRT_ACT,4
+# UNCONFIRMED and deliberately NOT set: Q_M_SLEW_UP_TIME / Q_M_SLEW_DN_TIME (slowing the lift motors also slows the
+# attitude loop's own corrections), INS_HNTCH_* (needs a measured FFT of this airframe first, G7 W5 log).

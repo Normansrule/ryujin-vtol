@@ -1,0 +1,1296 @@
+{
+ "basis": "ESTIMATE: tools/v21/g10.py on the G5 model; nothing built or floated",
+ "baseline": {
+  "label": "G5 baseline",
+  "mass_g": 1994.087395317057,
+  "tw": 1.905633629159872,
+  "tw_ok": true,
+  "sm_pct": 7.30798198000568,
+  "hover_min": 17.724808966753514,
+  "trim_deg": -0.574127197265625,
+  "freeboard_mm": {
+   "lift-fan exits (bottom louvres)": 22.722836510530502,
+   "EDF side intakes (lower lip)": 22.347077426938228,
+   "EDF nozzle (lower lip)": 26.765318928354677
+  },
+  "taxi_1p5_n": 2.5287557680307544,
+  "wind_moment_nm": 0.18813027447681283,
+  "turn_moment_nm": 0.08523508565320309,
+  "flood_heel_deg": 4.363844752502061,
+  "steady_heel_deg": 0.9905572709418666,
+  "wave_limit_mm": 15.0,
+  "gz_2deg_mm": 27.609216936067927,
+  "gz_max_mm": 73.25447269765095,
+  "first_exit_to_wet": "rear",
+  "float_y_mm": 275.0,
+  "float_kg": 0.03894024843372229,
+  "float_buoyancy_n": 5.5315956053320114,
+  "root_moment_full_immersion_nm": 1.5211887914663034,
+  "floats_ixx_kg_m2": 0.005889712575600497,
+  "rows": [
+   {
+    "heel_deg": 0,
+    "gz_mm": 0.0035819585401516804,
+    "lowest_fan_exit_mm": 24.79116529220054,
+    "lowest_front_mm": 24.79116529220054,
+    "lowest_rear_mm": 24.79116529220054
+   },
+   {
+    "heel_deg": 1,
+    "gz_mm": 14.107486536434475,
+    "lowest_fan_exit_mm": 19.31475396964348,
+    "lowest_front_mm": 20.885470548998995,
+    "lowest_rear_mm": 19.31475396964348
+   },
+   {
+    "heel_deg": 2,
+    "gz_mm": 27.609216936067927,
+    "lowest_fan_exit_mm": 13.75389164630831,
+    "lowest_front_mm": 16.8948463495334,
+    "lowest_rear_mm": 13.75389164630831
+   },
+   {
+    "heel_deg": 3,
+    "gz_mm": 39.73251672122562,
+    "lowest_fan_exit_mm": 8.084904104419333,
+    "lowest_front_mm": 12.795140166284282,
+    "lowest_rear_mm": 8.084904104419333
+   },
+   {
+    "heel_deg": 4,
+    "gz_mm": 48.441749368165475,
+    "lowest_fan_exit_mm": 2.1892488937497845,
+    "lowest_front_mm": 8.467331530721067,
+    "lowest_rear_mm": 2.1892488937497845
+   },
+   {
+    "heel_deg": 5,
+    "gz_mm": 54.707533696407175,
+    "lowest_fan_exit_mm": -3.827737413445581,
+    "lowest_front_mm": 4.016279433843656,
+    "lowest_rear_mm": -3.827737413445581
+   },
+   {
+    "heel_deg": 6,
+    "gz_mm": 60.66595602094698,
+    "lowest_fan_exit_mm": -9.779959417653462,
+    "lowest_front_mm": -0.3723977235646436,
+    "lowest_rear_mm": -9.779959417653462
+   },
+   {
+    "heel_deg": 8,
+    "gz_mm": 70.6445327013525,
+    "lowest_fan_exit_mm": -21.416755574995143,
+    "lowest_front_mm": -8.891176488589252,
+    "lowest_rear_mm": -21.416755574995143
+   },
+   {
+    "heel_deg": 10,
+    "gz_mm": 73.25447269765095,
+    "lowest_fan_exit_mm": -32.40675204489369,
+    "lowest_front_mm": -16.778416054869957,
+    "lowest_rear_mm": -32.40675204489369
+   },
+   {
+    "heel_deg": 15,
+    "gz_mm": 69.67059704850463,
+    "lowest_fan_exit_mm": -58.938406409427415,
+    "lowest_front_mm": -35.64469235020055,
+    "lowest_rear_mm": -58.938406409427415
+   }
+  ],
+  "secs": 56.836660861968994
+ },
+ "A_track": [
+  {
+   "label": "A floats y 300 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -0.574127197265625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 22.722836510530502,
+    "EDF side intakes (lower lip)": 22.347077426938228,
+    "EDF nozzle (lower lip)": 26.765318928354677
+   },
+   "taxi_1p5_n": 2.5287557680307544,
+   "wind_moment_nm": 0.18813027447681283,
+   "turn_moment_nm": 0.08523508565320309,
+   "strut_extra_mm": 0.23595094680786133,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.323904302063045,
+   "steady_heel_deg": 0.8291433589330882,
+   "wave_limit_mm": 15.0,
+   "gz_2deg_mm": 32.84137104823594,
+   "gz_max_mm": 80.26801986111101,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 300.00000000000006,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.6594786815996037,
+   "floats_ixx_kg_m2": 0.0070092447180700145,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.003581958540162815,
+     "lowest_fan_exit_mm": 24.79116529220054,
+     "lowest_front_mm": 24.79116529220054,
+     "lowest_rear_mm": 24.79116529220054
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 16.853171450857285,
+     "lowest_fan_exit_mm": 19.306850393816696,
+     "lowest_front_mm": 20.87756697317221,
+     "lowest_rear_mm": 19.306850393816696
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 32.84137104823594,
+     "lowest_fan_exit_mm": 13.719434201219899,
+     "lowest_front_mm": 16.860388904444992,
+     "lowest_rear_mm": 13.719434201219899
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 46.758268936226756,
+     "lowest_fan_exit_mm": 7.989804893676256,
+     "lowest_front_mm": 12.700040955541205,
+     "lowest_rear_mm": 7.989804893676256
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 55.665409527889594,
+     "lowest_fan_exit_mm": 1.9603193741479785,
+     "lowest_front_mm": 8.238402011119263,
+     "lowest_rear_mm": 1.9603193741479785
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 63.05788159522603,
+     "lowest_fan_exit_mm": -4.091836653611169,
+     "lowest_front_mm": 3.7521801936780674,
+     "lowest_rear_mm": -4.091836653611169
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 69.9279829814205,
+     "lowest_fan_exit_mm": -10.062801338532573,
+     "lowest_front_mm": -0.6552396444437559,
+     "lowest_rear_mm": -10.062801338532573
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 80.26801986111101,
+     "lowest_fan_exit_mm": -21.6407945334878,
+     "lowest_front_mm": -9.115215447081908,
+     "lowest_rear_mm": -21.6407945334878
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 80.21638719994401,
+     "lowest_fan_exit_mm": -32.40675204487007,
+     "lowest_front_mm": -16.778416054846335,
+     "lowest_rear_mm": -32.40675204487007
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 76.49902941800313,
+     "lowest_fan_exit_mm": -58.93840640925912,
+     "lowest_front_mm": -35.64469235003226,
+     "lowest_rear_mm": -58.93840640925912
+    }
+   ],
+   "secs": 56.638744831085205,
+   "float_y_full": 3.0,
+   "float_x_full": null,
+   "float_drop_mm": 0.0
+  },
+  {
+   "label": "A floats y 325 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -0.574127197265625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 22.722836510530502,
+    "EDF side intakes (lower lip)": 22.347077426938228,
+    "EDF nozzle (lower lip)": 26.765318928354677
+   },
+   "taxi_1p5_n": 2.5287557680307544,
+   "wind_moment_nm": 0.18813027447681283,
+   "turn_moment_nm": 0.08523508565320309,
+   "strut_extra_mm": 5.577738583087921,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.285560345733402,
+   "steady_heel_deg": 0.7046739964737765,
+   "wave_limit_mm": 15.0,
+   "gz_2deg_mm": 38.454011322037665,
+   "gz_max_mm": 88.41166924555472,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.7977685717329037,
+   "floats_ixx_kg_m2": 0.008226127481623834,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.003581958540162815,
+     "lowest_fan_exit_mm": 24.79116529220054,
+     "lowest_front_mm": 24.79116529220054,
+     "lowest_rear_mm": 24.79116529220054
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 19.829381261783492,
+     "lowest_fan_exit_mm": 19.29823156206545,
+     "lowest_front_mm": 20.868948141420965,
+     "lowest_rear_mm": 19.29823156206545
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 38.454011322037665,
+     "lowest_fan_exit_mm": 13.68103092853546,
+     "lowest_front_mm": 16.82198563176055,
+     "lowest_rear_mm": 13.68103092853546
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 53.978516319468596,
+     "lowest_fan_exit_mm": 7.874520569975008,
+     "lowest_front_mm": 12.584756631839957,
+     "lowest_rear_mm": 7.874520569975008
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 63.29635261846528,
+     "lowest_fan_exit_mm": 1.736646984179946,
+     "lowest_front_mm": 8.014729621151229,
+     "lowest_rear_mm": 1.736646984179946
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 71.83332212632025,
+     "lowest_fan_exit_mm": -4.3448941335818,
+     "lowest_front_mm": 3.499122713707437,
+     "lowest_rear_mm": -4.3448941335818
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 79.53350117933705,
+     "lowest_fan_exit_mm": -10.324531294211921,
+     "lowest_front_mm": -0.916969600123102,
+     "lowest_rear_mm": -10.324531294211921
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 88.41166924555472,
+     "lowest_fan_exit_mm": -21.727310675404286,
+     "lowest_front_mm": -9.201731588998395,
+     "lowest_rear_mm": -21.727310675404286
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 87.17830170223696,
+     "lowest_fan_exit_mm": -32.406752044977154,
+     "lowest_front_mm": -16.778416054953418,
+     "lowest_rear_mm": -32.406752044977154
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 83.32746178750172,
+     "lowest_fan_exit_mm": -58.938406409378224,
+     "lowest_front_mm": -35.64469235015135,
+     "lowest_rear_mm": -58.938406409378224
+    }
+   ],
+   "secs": 56.7465763092041,
+   "float_y_full": 3.25,
+   "float_x_full": null,
+   "float_drop_mm": 0.0
+  },
+  {
+   "label": "A floats y 375 mm, x 400-600 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 6.826726090364538,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -5.560821533203124,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 3.274399491753977,
+    "EDF side intakes (lower lip)": -0.35943852932441295,
+    "EDF nozzle (lower lip)": 81.4048279820202
+   },
+   "taxi_1p5_n": 2.77081233628835,
+   "wind_moment_nm": 0.17965795510475915,
+   "turn_moment_nm": 0.0787162572576202,
+   "strut_extra_mm": 3.9529427886009216,
+   "cg_offset_mm": 5.3648795113774295,
+   "flood_heel_deg": 4.213720619834856,
+   "steady_heel_deg": 0.498966771876368,
+   "wave_limit_mm": 0.0,
+   "gz_2deg_mm": 50.72544015383577,
+   "gz_max_mm": 102.41269932122992,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 375.0,
+   "float_kg": 0.03894024843372228,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 2.0743483519995043,
+   "floats_ixx_kg_m2": 0.01095194487198439,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0035819584111305538,
+     "lowest_fan_exit_mm": 24.79116529220054,
+     "lowest_front_mm": 24.79116529220054,
+     "lowest_rear_mm": 24.79116529220054
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 26.467037300854116,
+     "lowest_fan_exit_mm": 19.278836210672193,
+     "lowest_front_mm": 20.84955279002771,
+     "lowest_rear_mm": 19.278836210672193
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 50.72544015383577,
+     "lowest_fan_exit_mm": 13.591015993999612,
+     "lowest_front_mm": 16.731970697224703,
+     "lowest_rear_mm": 13.591015993999612
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 67.90869877904791,
+     "lowest_fan_exit_mm": 7.544248253114472,
+     "lowest_front_mm": 12.25448431497942,
+     "lowest_rear_mm": 7.544248253114472
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 79.69577889754139,
+     "lowest_fan_exit_mm": 1.3080627661212818,
+     "lowest_front_mm": 7.586145403092566,
+     "lowest_rear_mm": 1.3080627661212818
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 90.45790959664015,
+     "lowest_fan_exit_mm": -4.812370382219933,
+     "lowest_front_mm": 3.0316464650693047,
+     "lowest_rear_mm": -4.812370382219933
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 99.22405055754872,
+     "lowest_fan_exit_mm": -10.76718816885744,
+     "lowest_front_mm": -1.3596264747686215,
+     "lowest_rear_mm": -10.76718816885744
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 102.41269932122992,
+     "lowest_fan_exit_mm": -21.72731067536711,
+     "lowest_front_mm": -9.201731588961216,
+     "lowest_rear_mm": -21.72731067536711
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 101.10213070682289,
+     "lowest_fan_exit_mm": -32.40675204484743,
+     "lowest_front_mm": -16.77841605482369,
+     "lowest_rear_mm": -32.40675204484743
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 96.9843265264988,
+     "lowest_fan_exit_mm": -58.938406409418086,
+     "lowest_front_mm": -35.64469235019122,
+     "lowest_rear_mm": -58.938406409418086
+    }
+   ],
+   "secs": 57.98366928100586,
+   "float_y_full": 3.75,
+   "float_x_full": [
+    4.0,
+    6.0
+   ],
+   "float_drop_mm": 0.0
+  },
+  {
+   "label": "A floats y 425 mm, x 480-640 mm",
+   "mass_g": 1983.3225634708094,
+   "tw": 1.915976790658807,
+   "tw_ok": true,
+   "sm_pct": 6.6541228257359855,
+   "hover_min": 17.869311377137123,
+   "trim_deg": -5.439422607421875,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 0.9732176910324686,
+    "EDF side intakes (lower lip)": -2.5815307468942508,
+    "EDF nozzle (lower lip)": 77.3047624486275
+   },
+   "taxi_1p5_n": 2.803482625553962,
+   "wind_moment_nm": 0.17470368840825237,
+   "turn_moment_nm": 0.07483353140855184,
+   "strut_extra_mm": 6.96612149477005,
+   "cg_offset_mm": 6.588537159136898,
+   "flood_heel_deg": 3.933268321741274,
+   "steady_heel_deg": 0.48365081440665036,
+   "wave_limit_mm": 0.0,
+   "gz_2deg_mm": 49.54012693087989,
+   "gz_max_mm": 94.04223931731393,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 425.00000000000006,
+   "float_kg": 0.03355783251059845,
+   "float_buoyancy_n": 4.425276484265613,
+   "root_moment_full_immersion_nm": 1.8807425058128855,
+   "floats_ixx_kg_m2": 0.012122766994453691,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0037471167853859824,
+     "lowest_fan_exit_mm": 23.12031894921619,
+     "lowest_front_mm": 23.12031894921619,
+     "lowest_rear_mm": 23.12031894921619
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 26.514016792566327,
+     "lowest_fan_exit_mm": 17.59356095607879,
+     "lowest_front_mm": 19.164277535434305,
+     "lowest_rear_mm": 17.59356095607879
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 49.54012693087989,
+     "lowest_fan_exit_mm": 11.839431700044805,
+     "lowest_front_mm": 14.980386403269897,
+     "lowest_rear_mm": 11.839431700044805
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 63.52643184564054,
+     "lowest_fan_exit_mm": 5.694558546059204,
+     "lowest_front_mm": 10.404794607924151,
+     "lowest_rear_mm": 5.694558546059204
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 76.00660756349373,
+     "lowest_fan_exit_mm": -0.40717920009551994,
+     "lowest_front_mm": 5.870903436875763,
+     "lowest_rear_mm": -0.40717920009551994
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 86.82168340404444,
+     "lowest_fan_exit_mm": -6.384125964093168,
+     "lowest_front_mm": 1.4598908831960689,
+     "lowest_rear_mm": -6.384125964093168
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 94.04223931731393,
+     "lowest_fan_exit_mm": -12.147100612504603,
+     "lowest_front_mm": -2.739538918415785,
+     "lowest_rear_mm": -12.147100612504603
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 93.45658068755142,
+     "lowest_fan_exit_mm": -22.90460877346528,
+     "lowest_front_mm": -10.379029687059388,
+     "lowest_rear_mm": -22.90460877346528
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 92.18242319814765,
+     "lowest_fan_exit_mm": -33.64596482887057,
+     "lowest_front_mm": -18.017628838846832,
+     "lowest_rear_mm": -33.64596482887057
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 88.3451835373409,
+     "lowest_fan_exit_mm": -60.25903070140829,
+     "lowest_front_mm": -36.96531664218143,
+     "lowest_rear_mm": -60.25903070140829
+    }
+   ],
+   "secs": 57.728338956832886,
+   "float_y_full": 4.25,
+   "float_x_full": [
+    4.8,
+    6.4
+   ],
+   "float_drop_mm": 0.0
+  },
+  {
+   "label": "A floats y 325 mm, lowered 5 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -0.19326782226562503,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 25.257774820122727,
+    "EDF side intakes (lower lip)": 25.131281566124752,
+    "EDF nozzle (lower lip)": 23.633413728618837
+   },
+   "taxi_1p5_n": 2.5169983353795944,
+   "wind_moment_nm": 0.19088177787517602,
+   "turn_moment_nm": 0.08706011385930609,
+   "strut_extra_mm": 10.577738583087921,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.389270387565623,
+   "steady_heel_deg": 0.7772624078811025,
+   "wave_limit_mm": 15.0,
+   "gz_2deg_mm": 34.83747620653757,
+   "gz_max_mm": 86.96669008812935,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.7977685717329037,
+   "floats_ixx_kg_m2": 0.008226127481623834,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0034926380990701485,
+     "lowest_fan_exit_mm": 25.967120230193842,
+     "lowest_front_mm": 25.967120230193842,
+     "lowest_rear_mm": 25.967120230193842
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 18.27887109917167,
+     "lowest_fan_exit_mm": 20.44245006743505,
+     "lowest_front_mm": 22.013166646790566,
+     "lowest_rear_mm": 20.44245006743505
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 34.83747620653757,
+     "lowest_fan_exit_mm": 14.712933611869172,
+     "lowest_front_mm": 17.853888315094267,
+     "lowest_rear_mm": 14.712933611869172
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 45.81822839615075,
+     "lowest_fan_exit_mm": 8.59423831345949,
+     "lowest_front_mm": 13.304474375324439,
+     "lowest_rear_mm": 8.59423831345949
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 54.932381956469115,
+     "lowest_fan_exit_mm": 2.390412738150105,
+     "lowest_front_mm": 8.668495375121388,
+     "lowest_rear_mm": 2.390412738150105
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 63.87605251363754,
+     "lowest_fan_exit_mm": -3.7503388178544816,
+     "lowest_front_mm": 4.093678029434756,
+     "lowest_rear_mm": -3.7503388178544816
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 72.33606449341482,
+     "lowest_fan_exit_mm": -9.808283397842361,
+     "lowest_front_mm": -0.40072170375354266,
+     "lowest_rear_mm": -9.808283397842361
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 85.7924644165413,
+     "lowest_fan_exit_mm": -21.5562116115556,
+     "lowest_front_mm": -9.030632525149702,
+     "lowest_rear_mm": -21.5562116115556
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 86.96669008812935,
+     "lowest_fan_exit_mm": -32.406753433787564,
+     "lowest_front_mm": -16.77841744376383,
+     "lowest_rear_mm": -32.406753433787564
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 83.01206207427208,
+     "lowest_fan_exit_mm": -58.93840848602549,
+     "lowest_front_mm": -35.64469442679862,
+     "lowest_rear_mm": -58.93840848602549
+    }
+   ],
+   "secs": 54.319220542907715,
+   "float_y_full": 3.25,
+   "float_x_full": null,
+   "float_drop_mm": 5.0
+  },
+  {
+   "label": "A floats y 325 mm, lowered 10 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": 0.205718994140625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 26.689550277691716,
+    "EDF side intakes (lower lip)": 27.908513507511714,
+    "EDF nozzle (lower lip)": 20.338694025889904
+   },
+   "taxi_1p5_n": 2.5141616954974166,
+   "wind_moment_nm": 0.19373592964093017,
+   "turn_moment_nm": 0.08896412245586931,
+   "strut_extra_mm": 15.577738583087921,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.498171989230527,
+   "steady_heel_deg": 0.8994688105865908,
+   "wave_limit_mm": 15.0,
+   "gz_2deg_mm": 28.555093206732664,
+   "gz_max_mm": 86.75509401043061,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.7977685717329037,
+   "floats_ixx_kg_m2": 0.008226127481623834,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0033812911301777633,
+     "lowest_fan_exit_mm": 27.12571531531174,
+     "lowest_front_mm": 27.12571531531174,
+     "lowest_rear_mm": 27.12571531531174
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 16.066318370290457,
+     "lowest_fan_exit_mm": 21.553137979679384,
+     "lowest_front_mm": 23.1238545590349,
+     "lowest_rear_mm": 21.553137979679384
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 28.555093206732664,
+     "lowest_fan_exit_mm": 15.587271416668125,
+     "lowest_front_mm": 18.72822611989321,
+     "lowest_rear_mm": 15.587271416668125
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 37.32490291240109,
+     "lowest_fan_exit_mm": 9.319242988841498,
+     "lowest_front_mm": 14.029479050706446,
+     "lowest_rear_mm": 9.319242988841498
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 46.3886652717488,
+     "lowest_fan_exit_mm": 3.0823850693053214,
+     "lowest_front_mm": 9.360467706276603,
+     "lowest_rear_mm": 3.0823850693053214
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 55.50991499889105,
+     "lowest_fan_exit_mm": -3.105006305441288,
+     "lowest_front_mm": 4.739010541847949,
+     "lowest_rear_mm": -3.105006305441288
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 64.42129217527297,
+     "lowest_fan_exit_mm": -9.224566023782387,
+     "lowest_front_mm": 0.18299567030642952,
+     "lowest_rear_mm": -9.224566023782387
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 80.17868653700901,
+     "lowest_fan_exit_mm": -21.173662090208758,
+     "lowest_front_mm": -8.64808300380286,
+     "lowest_rear_mm": -21.173662090208758
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 86.75509401043061,
+     "lowest_fan_exit_mm": -32.406751842347745,
+     "lowest_front_mm": -16.77841585232401,
+     "lowest_rear_mm": -32.406751842347745
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 82.69667392592314,
+     "lowest_fan_exit_mm": -58.938407582628166,
+     "lowest_front_mm": -35.6446935234013,
+     "lowest_rear_mm": -58.938407582628166
+    }
+   ],
+   "secs": 55.14415740966797,
+   "float_y_full": 3.25,
+   "float_x_full": null,
+   "float_drop_mm": 10.0
+  },
+  {
+   "label": "A floats y 325 mm, lowered 15 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": 0.613677978515625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 27.00591475506488,
+    "EDF side intakes (lower lip)": 30.642128312134798,
+    "EDF nozzle (lower lip)": 16.984911931977482
+   },
+   "taxi_1p5_n": 2.5215445129464586,
+   "wind_moment_nm": 0.1966813295496099,
+   "turn_moment_nm": 0.09093833980626082,
+   "strut_extra_mm": 20.57773858308792,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.611096345073931,
+   "steady_heel_deg": 1.2526180399170221,
+   "wave_limit_mm": 15.0,
+   "gz_2deg_mm": 20.662841749521608,
+   "gz_max_mm": 85.43218604153552,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.7977685717329037,
+   "floats_ixx_kg_m2": 0.008226127481623834,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0032614931424168043,
+     "lowest_fan_exit_mm": 28.222431838499396,
+     "lowest_front_mm": 28.222431838499396,
+     "lowest_rear_mm": 28.222431838499396
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 12.688524234172048,
+     "lowest_fan_exit_mm": 22.556749128061856,
+     "lowest_front_mm": 24.127465707417375,
+     "lowest_rear_mm": 22.556749128061856
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 20.662841749521608,
+     "lowest_fan_exit_mm": 16.332740999264157,
+     "lowest_front_mm": 19.473695702489245,
+     "lowest_rear_mm": 16.332740999264157
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 28.994220881342482,
+     "lowest_fan_exit_mm": 10.060674704293083,
+     "lowest_front_mm": 14.770910766158032,
+     "lowest_rear_mm": 10.060674704293083
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 37.82889412517102,
+     "lowest_fan_exit_mm": 3.8026457649955105,
+     "lowest_front_mm": 10.080728401966795,
+     "lowest_rear_mm": 3.8026457649955105
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 46.93246397632954,
+     "lowest_fan_exit_mm": -2.420015842537854,
+     "lowest_front_mm": 5.424001004751384,
+     "lowest_rear_mm": -2.420015842537854
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 56.05937230729296,
+     "lowest_fan_exit_mm": -8.588474048417472,
+     "lowest_front_mm": 0.8190876456713458,
+     "lowest_rear_mm": -8.588474048417472
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 73.22082454861669,
+     "lowest_fan_exit_mm": -20.687540557634957,
+     "lowest_front_mm": -8.161961471229052,
+     "lowest_rear_mm": -20.687540557634957
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 85.43218604153552,
+     "lowest_fan_exit_mm": -32.32452564335552,
+     "lowest_front_mm": -16.696189653331786,
+     "lowest_rear_mm": -32.32452564335552
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 82.38128304404508,
+     "lowest_fan_exit_mm": -58.93840667904751,
+     "lowest_front_mm": -35.64469261982064,
+     "lowest_rear_mm": -58.93840667904751
+    }
+   ],
+   "secs": 54.60081434249878,
+   "float_y_full": 3.25,
+   "float_x_full": null,
+   "float_drop_mm": 15.0
+  },
+  {
+   "label": "A floats y 325 mm, r 35 mm, lowered 5 mm",
+   "mass_g": 2005.9673215575601,
+   "tw": 1.8943479084442107,
+   "tw_ok": false,
+   "sm_pct": 7.178007032165237,
+   "hover_min": 17.56758505610524,
+   "trim_deg": 0.28500366210937506,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 26.67109010828638,
+    "EDF side intakes (lower lip)": 28.359841794518466,
+    "EDF nozzle (lower lip)": 19.60692930242314
+   },
+   "taxi_1p5_n": 2.461888004272404,
+   "wind_moment_nm": 0.1941530863511576,
+   "turn_moment_nm": 0.09003646505744994,
+   "strut_extra_mm": 10.577738583087921,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 4.78469626412828,
+   "steady_heel_deg": 0.5971767039310157,
+   "wave_limit_mm": 20.0,
+   "gz_2deg_mm": 47.517787539569625,
+   "gz_max_mm": 119.07207279894921,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.0448802115539738,
+   "float_buoyancy_n": 7.529116240590792,
+   "root_moment_full_immersion_nm": 2.4469627781920074,
+   "floats_ixx_kg_m2": 0.009480944690776967,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0033367346356305127,
+     "lowest_fan_exit_mm": 27.33684688796715,
+     "lowest_front_mm": 27.33684688796715,
+     "lowest_rear_mm": 27.33684688796715
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 24.180872391265204,
+     "lowest_fan_exit_mm": 21.861974840348832,
+     "lowest_front_mm": 23.432691419704348,
+     "lowest_rear_mm": 21.861974840348832
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 47.517787539569625,
+     "lowest_fan_exit_mm": 16.306403885452525,
+     "lowest_front_mm": 19.447358588677613,
+     "lowest_rear_mm": 16.306403885452525
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 69.04604415330708,
+     "lowest_fan_exit_mm": 10.652342818126083,
+     "lowest_front_mm": 15.36257887999103,
+     "lowest_rear_mm": 10.652342818126083
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 87.27430093564891,
+     "lowest_fan_exit_mm": 4.845690806531783,
+     "lowest_front_mm": 11.123773443503065,
+     "lowest_rear_mm": 4.845690806531783
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 98.32819923456584,
+     "lowest_fan_exit_mm": -1.3295530783296594,
+     "lowest_front_mm": 6.514463768959578,
+     "lowest_rear_mm": -1.3295530783296594
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 106.82580545505714,
+     "lowest_fan_exit_mm": -7.506935640501884,
+     "lowest_front_mm": 1.9006260535869346,
+     "lowest_rear_mm": -7.506935640501884
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 119.07207279894921,
+     "lowest_fan_exit_mm": -19.3334571443198,
+     "lowest_front_mm": -6.807878057913896,
+     "lowest_rear_mm": -19.3334571443198
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 118.30759165251226,
+     "lowest_fan_exit_mm": -30.021250083466324,
+     "lowest_front_mm": -14.392914093442588,
+     "lowest_rear_mm": -30.021250083466324
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 113.78311196014977,
+     "lowest_fan_exit_mm": -56.34007804499159,
+     "lowest_front_mm": -33.04636398576473,
+     "lowest_rear_mm": -56.34007804499159
+    }
+   ],
+   "secs": 57.06213402748108,
+   "float_y_full": 3.25,
+   "float_x_full": {
+    "r": 0.35
+   },
+   "float_drop_mm": 5.0
+  },
+  {
+   "label": "A floats y 325 mm, r 40 mm, lowered 5 mm",
+   "mass_g": 2018.2948221111858,
+   "tw": 1.8827774606413084,
+   "tw_ok": false,
+   "sm_pct": 7.028035938503182,
+   "hover_min": 17.406880048526595,
+   "trim_deg": 0.637115478515625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 26.900092164494403,
+    "EDF side intakes (lower lip)": 30.675173841649002,
+    "EDF nozzle (lower lip)": 16.66825077105989
+   },
+   "taxi_1p5_n": 2.445354112031503,
+   "wind_moment_nm": 0.1966094756922395,
+   "turn_moment_nm": 0.09250581935599235,
+   "strut_extra_mm": 10.577738583087921,
+   "cg_offset_mm": 0.0,
+   "flood_heel_deg": 5.17198175242364,
+   "steady_heel_deg": 0.5124531589411672,
+   "wave_limit_mm": 20.0,
+   "gz_2deg_mm": 56.34645937170579,
+   "gz_max_mm": 156.01027218358104,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 325.0,
+   "float_kg": 0.051043961830786605,
+   "float_buoyancy_n": 9.833947742812462,
+   "root_moment_full_immersion_nm": 3.1960330164140505,
+   "floats_ixx_kg_m2": 0.010783036936753672,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0032023411949933813,
+     "lowest_fan_exit_mm": 28.440459668501607,
+     "lowest_front_mm": 28.440459668501607,
+     "lowest_rear_mm": 28.440459668501607
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 28.491600202363816,
+     "lowest_fan_exit_mm": 22.993619996046345,
+     "lowest_front_mm": 24.564336575401857,
+     "lowest_rear_mm": 22.993619996046345
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 56.34645937170579,
+     "lowest_fan_exit_mm": 17.52671486225394,
+     "lowest_front_mm": 20.667669565479027,
+     "lowest_rear_mm": 17.52671486225394
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 82.88961816048496,
+     "lowest_fan_exit_mm": 12.038067177722384,
+     "lowest_front_mm": 16.748303239587333,
+     "lowest_rear_mm": 12.038067177722384
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 107.34727316370983,
+     "lowest_fan_exit_mm": 6.52305094525057,
+     "lowest_front_mm": 12.801133582221853,
+     "lowest_rear_mm": 6.52305094525057
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 128.7542698745639,
+     "lowest_fan_exit_mm": 0.9691316507856818,
+     "lowest_front_mm": 8.81314849807492,
+     "lowest_rear_mm": 0.9691316507856818
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 145.5689850788203,
+     "lowest_fan_exit_mm": -4.665952520228195,
+     "lowest_front_mm": 4.741609173860623,
+     "lowest_rear_mm": -4.665952520228195
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 156.01027218358104,
+     "lowest_fan_exit_mm": -16.23619815775713,
+     "lowest_front_mm": -3.7106190713512346,
+     "lowest_rear_mm": -16.23619815775713
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 154.1946813260807,
+     "lowest_fan_exit_mm": -26.8908397773365,
+     "lowest_front_mm": -11.262503787312767,
+     "lowest_rear_mm": -26.8908397773365
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 148.90175675602555,
+     "lowest_fan_exit_mm": -53.12939243367426,
+     "lowest_front_mm": -29.835678374447394,
+     "lowest_rear_mm": -53.12939243367426
+    }
+   ],
+   "secs": 54.7817325592041,
+   "float_y_full": 3.25,
+   "float_x_full": {
+    "r": 0.4
+   },
+   "float_drop_mm": 5.0
+  }
+ ],
+ "B_exits": [
+  {
+   "label": "B rear exits raised 5 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -0.574127197265625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 22.722836510530506,
+    "EDF side intakes (lower lip)": 22.347077426938228,
+    "EDF nozzle (lower lip)": 26.765318928354677
+   },
+   "taxi_1p5_n": 2.5287557680307544,
+   "wind_moment_nm": 0.18813027447681283,
+   "turn_moment_nm": 0.08523508565320309,
+   "flood_heel_deg": 5.193476962426911,
+   "steady_heel_deg": 0.9905572709418666,
+   "wave_limit_mm": 20.0,
+   "gz_2deg_mm": 27.609216936067927,
+   "gz_max_mm": 73.25447269765095,
+   "first_exit_to_wet": "rear",
+   "float_y_mm": 275.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.5211887914663034,
+   "floats_ixx_kg_m2": 0.005889712575600497,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0035819585401516804,
+     "lowest_fan_exit_mm": 24.79116529220054,
+     "lowest_front_mm": 24.79116529220054,
+     "lowest_rear_mm": 29.79116529220054
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 14.107486536434475,
+     "lowest_fan_exit_mm": 20.885470548998995,
+     "lowest_front_mm": 20.885470548998995,
+     "lowest_rear_mm": 24.313992445425434
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 27.609216936067927,
+     "lowest_fan_exit_mm": 16.8948463495334,
+     "lowest_front_mm": 16.8948463495334,
+     "lowest_rear_mm": 18.75084578140379
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 39.73251672122562,
+     "lowest_fan_exit_mm": 12.795140166284282,
+     "lowest_front_mm": 12.795140166284282,
+     "lowest_rear_mm": 13.078051778192203
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 48.441749368165475,
+     "lowest_fan_exit_mm": 7.177069145048909,
+     "lowest_front_mm": 8.467331530721067,
+     "lowest_rear_mm": 7.177069145048909
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 54.707533696407175,
+     "lowest_fan_exit_mm": 1.1532360770131478,
+     "lowest_front_mm": 4.016279433843656,
+     "lowest_rear_mm": 1.1532360770131478
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 60.66595602094698,
+     "lowest_fan_exit_mm": -4.807349940812094,
+     "lowest_front_mm": -0.3723977235646436,
+     "lowest_rear_mm": -4.807349940812094
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 70.6445327013525,
+     "lowest_fan_exit_mm": -16.465415231287288,
+     "lowest_front_mm": -8.891176488589252,
+     "lowest_rear_mm": -16.465415231287288
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 73.25447269765095,
+     "lowest_fan_exit_mm": -27.482713279832645,
+     "lowest_front_mm": -16.778416054869957,
+     "lowest_rear_mm": -27.482713279832645
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 69.67059704850463,
+     "lowest_fan_exit_mm": -54.10877727798207,
+     "lowest_front_mm": -35.64469235020055,
+     "lowest_rear_mm": -54.10877727798207
+    }
+   ],
+   "secs": 57.88672852516174,
+   "rear_exit_raise_mm": 5.0,
+   "rear_duct_depth_mm": 22.600000000000005
+  },
+  {
+   "label": "B rear exits raised 10 mm",
+   "mass_g": 1994.087395317057,
+   "tw": 1.905633629159872,
+   "tw_ok": true,
+   "sm_pct": 7.30798198000568,
+   "hover_min": 17.724808966753514,
+   "trim_deg": -0.574127197265625,
+   "freeboard_mm": {
+    "lift-fan exits (bottom louvres)": 22.722836510530506,
+    "EDF side intakes (lower lip)": 22.347077426938228,
+    "EDF nozzle (lower lip)": 26.765318928354677
+   },
+   "taxi_1p5_n": 2.5287557680307544,
+   "wind_moment_nm": 0.18813027447681283,
+   "turn_moment_nm": 0.08523508565320309,
+   "flood_heel_deg": 5.915145792181132,
+   "steady_heel_deg": 0.9905572709418666,
+   "wave_limit_mm": 20.0,
+   "gz_2deg_mm": 27.609216936067927,
+   "gz_max_mm": 73.25447269765095,
+   "first_exit_to_wet": "front",
+   "float_y_mm": 275.0,
+   "float_kg": 0.03894024843372229,
+   "float_buoyancy_n": 5.5315956053320114,
+   "root_moment_full_immersion_nm": 1.5211887914663034,
+   "floats_ixx_kg_m2": 0.005889712575600497,
+   "rows": [
+    {
+     "heel_deg": 0,
+     "gz_mm": 0.0035819585401516804,
+     "lowest_fan_exit_mm": 24.79116529220054,
+     "lowest_front_mm": 24.79116529220054,
+     "lowest_rear_mm": 34.79116529220054
+    },
+    {
+     "heel_deg": 1,
+     "gz_mm": 14.107486536434475,
+     "lowest_fan_exit_mm": 20.885470548998995,
+     "lowest_front_mm": 20.885470548998995,
+     "lowest_rear_mm": 29.313230921207392
+    },
+    {
+     "heel_deg": 2,
+     "gz_mm": 27.609216936067927,
+     "lowest_fan_exit_mm": 16.8948463495334,
+     "lowest_front_mm": 16.8948463495334,
+     "lowest_rear_mm": 23.747799916499268
+    },
+    {
+     "heel_deg": 3,
+     "gz_mm": 39.73251672122562,
+     "lowest_fan_exit_mm": 12.795140166284282,
+     "lowest_front_mm": 12.795140166284282,
+     "lowest_rear_mm": 18.071199451965068
+    },
+    {
+     "heel_deg": 4,
+     "gz_mm": 48.441749368165475,
+     "lowest_fan_exit_mm": 8.467331530721067,
+     "lowest_front_mm": 8.467331530721067,
+     "lowest_rear_mm": 12.164889396348029
+    },
+    {
+     "heel_deg": 5,
+     "gz_mm": 54.707533696407175,
+     "lowest_fan_exit_mm": 4.016279433843656,
+     "lowest_front_mm": 4.016279433843656,
+     "lowest_rear_mm": 6.1342095674718715
+    },
+    {
+     "heel_deg": 6,
+     "gz_mm": 60.66595602094698,
+     "lowest_fan_exit_mm": -0.3723977235646436,
+     "lowest_front_mm": -0.3723977235646436,
+     "lowest_rear_mm": 0.16525953602927193
+    },
+    {
+     "heel_deg": 8,
+     "gz_mm": 70.6445327013525,
+     "lowest_fan_exit_mm": -11.514074887579447,
+     "lowest_front_mm": -8.891176488589252,
+     "lowest_rear_mm": -11.514074887579447
+    },
+    {
+     "heel_deg": 10,
+     "gz_mm": 73.25447269765095,
+     "lowest_fan_exit_mm": -22.5586745147716,
+     "lowest_front_mm": -16.778416054869957,
+     "lowest_rear_mm": -22.5586745147716
+    },
+    {
+     "heel_deg": 15,
+     "gz_mm": 69.67059704850463,
+     "lowest_fan_exit_mm": -49.279148146536734,
+     "lowest_front_mm": -35.64469235020055,
+     "lowest_rear_mm": -49.279148146536734
+    }
+   ],
+   "secs": 57.52054715156555,
+   "rear_exit_raise_mm": 10.0,
+   "rear_duct_depth_mm": 17.6
+  }
+ ],
+ "mass_budget": {
+  "mass_g": 1994.087395317057,
+  "limit_g": 2000.0,
+  "headroom_g": 5.912604682943083,
+  "groups_g": {
+   "airframe": 767.0321184928027,
+   "propulsion": 408.5552768242545,
+   "avionics": 60.00000000000001,
+   "controls": 56.49999999999999,
+   "systems": 82.0,
+   "payload": 25.0,
+   "gear": 15.0,
+   "battery": 580.0
+  },
+  "tw": 1.905633629159872,
+  "hover_min": 17.724808966753514,
+  "payload_max_g": 266.206722330002
+ }
+}
