@@ -1,4 +1,4 @@
-# SKYFORGE Falcon workbench - common tasks. `make` lists them.
+# Ryujin VTOL workbench (formerly SKYFORGE Falcon) - common tasks. `make` lists them.
 SHELL := /bin/bash
 PY    ?= $(if $(wildcard .venv/bin/python3),.venv/bin/python3,python3)
 PORT  ?= 8080
@@ -71,11 +71,11 @@ desktop: ## run the desktop app in development mode
 desktop-build: ## build desktop installers for this OS (desktop/src-tauri/target/release/bundle)
 	cd desktop && npm install && npx tauri build
 
-publish: ## create/push the GitHub repo, enable Pages; TAG=v0.10.0 also builds the desktop release
+publish: ## create/push the GitHub repo, enable Pages; TAG=v0.11.0 also builds the desktop release
 	./scripts/publish_github.sh $(if $(TAG),--tag $(TAG),)
 
 bundle: ## one-file git bundle of the whole history (for moving the repo without GitHub)
-	git bundle create ../skyforge-v18-falcon.bundle --all && ls -lh ../skyforge-v18-falcon.bundle
+	git bundle create ../ryujin-vtol.bundle --all && ls -lh ../ryujin-vtol.bundle
 
 clean: ## remove caches and build outputs that are not committed
 	rm -rf .cache site/models/raw desktop/src-tauri/target __pycache__ tools/__pycache__ tools/v19/__pycache__

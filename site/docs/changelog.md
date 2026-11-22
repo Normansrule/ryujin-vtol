@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.0 - 2026-11-15
+
+Renamed: **SKYFORGE Falcon is now Ryujin** (repo `Normansrule/ryujin-vtol`). Names only - no geometry, sizing or
+numbers changed. V21 "Ryujin" (amphibious electric VTOL) is the next design; V18, V19 and V20 stay as frozen history.
+
+- README, web app (title, brand, meta description, new Open Graph tags), web manifest, desktop window title and
+  productName "Ryujin", release names, publishing script and guide now say Ryujin, with "formerly SKYFORGE Falcon".
+- New Pages address: https://normansrule.github.io/ryujin-vtol/ (GitHub does not forward the old Pages address).
+- Kept on purpose (see "Legacy names" in docs/PUBLISHING.md): the Tauri identifier, Cargo crate names, localStorage
+  keys, the V18/V20 ArduPilot param files and all V18/V19/V20 file names.
+- The offline cache prefix is now `ryujin-`; the service worker drops the old caches on first load.
+
 ## 0.10.0 - 2026-10-27
 
 V20 rev C.2: the lift fans placed for physics as well as looks.

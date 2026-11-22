@@ -1,8 +1,8 @@
 {
-  "name": "skyforge-v18-falcon",
-  "version": "0.10.0",
+  "name": "ryujin-vtol",
+  "version": "0.11.0",
   "private": true,
-  "description": "SKYFORGE V18 Falcon - educational hybrid-VTOL build workbench (web + desktop)",
+  "description": "Ryujin (formerly SKYFORGE Falcon) - amphibious electric VTOL build workbench (web + desktop)",
   "author": "Aleksander Norman",
   "type": "module",
   "scripts": {

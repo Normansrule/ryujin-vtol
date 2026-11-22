@@ -1,5 +1,24 @@
 # Publishing: GitHub repo, web version (Pages) and app version (desktop installers)
 
+The repo is `Normansrule/ryujin-vtol` (renamed from `skyforge-v18-falcon` in v0.11.0). GitHub forwards the old repo URL
+and git remotes, but **not** the old Pages address `normansrule.github.io/skyforge-v18-falcon/`. Never create a new
+repo named `skyforge-v18-falcon`: that would break the forwarding.
+
+### Legacy names (kept on purpose)
+
+| Kept | Why |
+|---|---|
+| Tauri `identifier` `io.github.normansrule.skyforgev18` | the app's data folder and saved settings are keyed by it, so installed apps keep their data |
+| Cargo package `skyforge-v18`, lib `skyforge_v18_lib` | internal crate names; renaming changes nothing users see and churns Cargo.lock |
+| `localStorage` keys `skyforge-v18:` and `skyforge-intro-v4` | saved workbench state and the "intro seen" flag carry over |
+| `config/ardupilot/skyforge_v18_BENCH_ONLY.param`, `skyforge_v20_mini_BENCH_ONLY.param` | frozen V18 / V20 history |
+| V18 / V19 / V20 file names, `firmware/thrust_stand` strings, V18 archive names, CHANGELOG history | frozen history |
+
+Desktop app on Windows: the installer is branded by `productName` (now "Ryujin"). Tauri's installers detect an existing
+install by product name, so v0.11.0 may install **beside** "SKYFORGE Falcon" instead of over it (UNCONFIRMED - check
+after the first v0.11.0 install, then uninstall "SKYFORGE Falcon" from Settings → Apps). Saved data is kept either way
+because the identifier is unchanged.
+
 Written for an Ubuntu (WSL2) terminal and the `Normansrule` GitHub account through the SSH host alias
 `github-normansrule`. Workflow files are pushed over SSH because an HTTPS gh token without the `workflow`
 scope cannot push them. For another account pass `--user` / `--host` to the script (for example
@@ -12,17 +31,17 @@ The repo ships as a git bundle (one file with the full history), saved to your D
 **First time** (no copy yet):
 
 ```bash
-mkdir -p ~/src && cd ~/src
-git clone /mnt/c/Users/aleks/Downloads/skyforge-v18-falcon.bundle skyforge-v18-falcon
-cd ~/src/skyforge-v18-falcon
+mkdir -p ~/projects && cd ~/projects
+git clone /mnt/c/Users/aleks/Downloads/ryujin-vtol.bundle ryujin-vtol
+cd ~/projects/ryujin-vtol
 git log --oneline | head -3
 ```
 
-**Already have an earlier version** in `~/src/skyforge-v18-falcon` (pushed or not) - the bundle continues the same history:
+**Already have an earlier version** in `~/projects/ryujin-vtol` (pushed or not) - the bundle continues the same history:
 
 ```bash
-cd ~/src/skyforge-v18-falcon
-git pull /mnt/c/Users/aleks/Downloads/skyforge-v18-falcon.bundle main
+cd ~/projects/ryujin-vtol
+git pull /mnt/c/Users/aleks/Downloads/ryujin-vtol.bundle main
 git log --oneline | head -3
 ```
 
@@ -38,13 +57,13 @@ make serve                              # check it locally: http://localhost:808
 
 ```bash
 ./scripts/publish_github.sh                  # create the repo if needed, push main, turn on Pages, deploy
-./scripts/publish_github.sh --tag v0.10.0     # same, plus a tagged release: CI builds the desktop installers
+./scripts/publish_github.sh --tag v0.11.0     # same, plus a tagged release: CI builds the desktop installers
 ```
 
 The script refuses to run in your home folder or with uncommitted changes, checks SSH access first, and
-prints the web address and the release page at the end. `make publish TAG=v0.10.0` does the same.
+prints the web address and the release page at the end. `make publish TAG=v0.11.0` does the same.
 
-- **Web version:** `https://normansrule.github.io/skyforge-v18-falcon/`. In Chrome or Edge, the install icon in
+- **Web version:** `https://normansrule.github.io/ryujin-vtol/`. In Chrome or Edge, the install icon in
   the address bar installs it as an offline app.
 - **App version:** the release gets a Windows `.msi`/`-setup.exe`, macOS `.dmg` (Apple silicon and Intel) and
   Linux `.AppImage`/`.deb`/`.rpm`. They are not code-signed; on Windows, SmartScreen needs **More info → Run anyway**.
@@ -52,9 +71,9 @@ prints the web address and the release page at the end. `make publish TAG=v0.10.
 ## 4. The same by hand
 
 ```bash
-GH_USER=Normansrule; GH_HOST=github-normansrule; REPO=skyforge-v18-falcon
+GH_USER=Normansrule; GH_HOST=github-normansrule; REPO=ryujin-vtol
 gh repo view "$GH_USER/$REPO" >/dev/null 2>&1 || gh repo create "$GH_USER/$REPO" --public \
-  --description "SKYFORGE Falcon hybrid-VTOL build workbench: V18 analysis, V19 variants, BOM, wiring, web + desktop app"
+  --description "Build workbench for Ryujin (formerly SKYFORGE Falcon), a 3D-printable amphibious electric VTOL: V18 analysis, V19 variants, V20 Falcon Jet, sizing, CAD, BOM, wiring"
 git remote add origin "git@$GH_HOST:$GH_USER/$REPO.git" 2>/dev/null || git remote set-url origin "git@$GH_HOST:$GH_USER/$REPO.git"
 git push -u origin main
 
@@ -64,7 +83,7 @@ gh api -X POST "repos/$GH_USER/$REPO/pages" -f build_type=workflow 2>/dev/null \
 gh workflow run pages.yml --repo "$GH_USER/$REPO"
 
 # app version
-git tag -a v0.10.0 -m "SKYFORGE Falcon workbench v0.10.0" && git push origin v0.10.0
+git tag -a v0.11.0 -m "Ryujin VTOL workbench v0.11.0" && git push origin v0.11.0
 gh run watch --repo "$GH_USER/$REPO" $(gh run list --repo "$GH_USER/$REPO" --workflow desktop.yml --limit 1 --json databaseId -q '.[0].databaseId')
 ```
 
@@ -74,7 +93,7 @@ then **Settings → Pages → Source: GitHub Actions** and **Actions → Deploy 
 ## 5. Later updates
 
 ```bash
-cd ~/src/skyforge-v18-falcon
+cd ~/projects/ryujin-vtol
 make budget && make check                  # after editing the BOM or measurements
 git add -A && git commit -m "Describe the change" && git push
 ```

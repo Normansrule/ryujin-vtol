@@ -223,7 +223,7 @@ def write_sw_manifest():
         h.update(p.read_bytes())
     (SITE / "sw-manifest.json").write_text(json.dumps(["./", *files]))
     sw = (SITE / "sw.js").read_text()
-    sw = re.sub(r"skyforge-v18-[0-9a-f_A-Z]+'", f"skyforge-v18-{h.hexdigest()[:10]}'", sw)
+    sw = re.sub(r"(?:skyforge-v18|ryujin)-[0-9a-f_A-Z]+'", f"ryujin-{h.hexdigest()[:10]}'", sw)
     (SITE / "sw.js").write_text(sw)
 
 

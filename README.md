@@ -1,4 +1,8 @@
-# SKYFORGE Falcon: V18 workbench, V19 variants and the V20 Falcon Jet
+# Ryujin: amphibious electric VTOL workbench (formerly SKYFORGE Falcon)
+
+> **Ryujin** is the new name of **SKYFORGE Falcon** (renamed in v0.11.0). V18, V19 and V20 keep their original
+> names and files as project history; V21 "Ryujin" (amphibious) is the next design. Some internal identifiers keep the
+> old name on purpose so installed apps and saved settings carry over - see "Legacy names" in [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 An educational hybrid-VTOL RC aircraft with falcon / blended-wing styling: four 5-inch lift rotors, a rear 64 mm
 electric ducted fan (EDF), flaps and elevons, a steerable tricycle gear, one 4S system, ArduPilot QuadPlane on a
@@ -6,7 +10,7 @@ SpeedyBee F405 WING, printed on a Bambu Lab P1S. This repo is the build workbenc
 the V18 assembly is the source of truth, every number is computed from it, and the V19 variants are built
 from its parts.
 
-**Web version:** https://normansrule.github.io/skyforge-v18-falcon/ · **App version:** Windows / macOS / Linux
+**Web version:** https://normansrule.github.io/ryujin-vtol/ · **App version:** Windows / macOS / Linux
 installers on the Releases page (same app, works offline). Steps: [docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 > **Status: mechanical fitting / development prototype - not flight-ready.** Nothing here has been flown,
@@ -91,8 +95,8 @@ V19-S (shorter stoop, bigger crest) has the same file set; V19-G is a concept lo
 ## Quick start (Ubuntu / WSL2)
 
 ```bash
-mkdir -p ~/src && cd ~/src && git clone git@github-normansrule:Normansrule/skyforge-v18-falcon.git
-cd skyforge-v18-falcon
+mkdir -p ~/src && cd ~/src && git clone git@github-normansrule:Normansrule/ryujin-vtol.git
+cd ryujin-vtol
 ./scripts/setup_ubuntu.sh        # once: apt packages, .venv, Node packages (add --desktop for the app)
 make serve                       # web app at http://localhost:8080
 make help                        # everything else: check, budget, v18, v19, web, desktop, publish

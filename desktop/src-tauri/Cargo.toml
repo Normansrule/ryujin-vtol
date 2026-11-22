@@ -1,7 +1,7 @@
 [package]
 name = "skyforge-v18"
-version = "0.10.0"
-description = "SKYFORGE V18 Falcon build workbench (desktop shell around site/)"
+version = "0.11.0"
+description = "Ryujin VTOL build workbench, formerly SKYFORGE Falcon (desktop shell around site/)"
 authors = ["Aleksander Norman"]
 edition = "2021"
 

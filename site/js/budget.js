@@ -1,4 +1,4 @@
-// SKYFORGE V18 budget arithmetic for the browser - a line-for-line port of tools/budget.py `compute`.
+// Ryujin workbench: V18 budget arithmetic for the browser - a line-for-line port of tools/budget.py `compute`.
 // tests/test_budget_parity.mjs runs both on the same inputs and fails CI if they disagree.
 // Pure module: no DOM access, so it runs in Node too.
 

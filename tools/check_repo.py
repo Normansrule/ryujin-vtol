@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Consistency checks for the SKYFORGE V18 repo. Exit code 1 on any FAIL; FLAGs are printed.
+"""Consistency checks for the Ryujin VTOL repo (formerly SKYFORGE Falcon). Exit code 1 on any FAIL; FLAGs are printed.
 
     python3 tools/check_repo.py
 

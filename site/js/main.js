@@ -149,7 +149,7 @@ function intro() {
   const rec = V.variants[V.recommended];
   host.innerHTML = `
     <div class="intro-card" role="dialog" aria-modal="true" aria-labelledby="intro-h">
-      <p class="eyebrow">SKYFORGE Falcon · build workbench</p>
+      <p class="eyebrow">Ryujin VTOL · build workbench</p>
       <h2 id="intro-h">Your V18, measured. And a V19 that balances.</h2>
       <p>V18 as designed sits ${Math.round(V.v18.cg_mm[0] - V.v18.rotor_centroid_x_mm)} mm tail-heavy of its rotors and behind its neutral point. <strong>${esc(rec.label)}</strong> (${esc(rec.summary.toLowerCase())}) passes every model gate with the parts as modelled.</p>
       <div class="row"><button class="btn primary" data-go="#v19/${esc(V.recommended)}">See ${esc(rec.short)}</button><button class="btn" data-go="#aircraft">Explore V18</button><button class="btn ghost" data-go="#docs/v19-variants">Read the plan</button></div>

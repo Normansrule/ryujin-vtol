@@ -1,7 +1,7 @@
 {
-  "name": "SKYFORGE Falcon workbench",
-  "short_name": "SKYFORGE",
-  "description": "3D model with the V19 variants, balance study, budget, bench data, wiring and build stages for the SKYFORGE Falcon hybrid-VTOL.",
+  "name": "Ryujin VTOL workbench",
+  "short_name": "Ryujin",
+  "description": "3D model with the V19 variants, balance study, budget, bench data, wiring and build stages for Ryujin (formerly SKYFORGE Falcon), a 3D-printable amphibious electric VTOL.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

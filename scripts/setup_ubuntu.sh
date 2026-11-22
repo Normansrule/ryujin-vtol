@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time setup on Ubuntu / WSL2 Ubuntu for the SKYFORGE Falcon workbench.
+# One-time setup on Ubuntu / WSL2 Ubuntu for the Ryujin VTOL workbench (formerly SKYFORGE Falcon).
 #
 #   ./scripts/setup_ubuntu.sh             # apt packages, Python venv (.venv), Node packages, vendored web libraries
 #   ./scripts/setup_ubuntu.sh --desktop   # ...plus Rust and the Tauri libraries for the desktop app

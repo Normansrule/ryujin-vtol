@@ -4,5 +4,5 @@
 pub fn run() {
     tauri::Builder::default()
         .run(tauri::generate_context!())
-        .expect("error while running the SKYFORGE V18 desktop app");
+        .expect("error while running the Ryujin desktop app");
 }

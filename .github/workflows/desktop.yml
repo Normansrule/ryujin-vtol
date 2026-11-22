@@ -47,9 +47,9 @@ jobs:
         with:
           projectPath: desktop
           tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'desktop-v__VERSION__' }}
-          releaseName: 'SKYFORGE V18 ${{ github.ref_type == ''tag'' && github.ref_name || ''v__VERSION__'' }}'
+          releaseName: 'Ryujin ${{ github.ref_type == ''tag'' && github.ref_name || ''v__VERSION__'' }}'
           releaseBody: |
-            Desktop builds of the SKYFORGE V18 Falcon workbench (the same app as the GitHub Pages site, offline).
+            Desktop builds of the Ryujin VTOL workbench, formerly SKYFORGE Falcon (the same app as the GitHub Pages site, offline).
             Windows: .msi or -setup.exe. macOS: .dmg (aarch64 = Apple silicon, x64 = Intel). Linux: .AppImage, .deb or .rpm.
             The apps are not code-signed: Windows SmartScreen -> More info -> Run anyway; macOS -> right-click -> Open.
           releaseDraft: false

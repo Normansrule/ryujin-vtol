@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SKYFORGE V18 running cost + mass + CG + hover-reserve + stability budget.
+"""Ryujin workbench (formerly SKYFORGE) - V18 running cost + mass + CG + hover-reserve + stability budget.
 
     python3 tools/budget.py [--measurements config/measurements.json] [--out docs]
 

@@ -2,15 +2,15 @@
 # Put this repo on GitHub with the web version (GitHub Pages) and, with --tag, the desktop installers.
 #
 #   ./scripts/publish_github.sh                        # create the repo if needed, push main, enable Pages
-#   ./scripts/publish_github.sh --tag v0.10.0           # ...and tag a release: GitHub Actions builds the installers
+#   ./scripts/publish_github.sh --tag v0.11.0           # ...and tag a release: GitHub Actions builds the installers
 #   ./scripts/publish_github.sh --user N0rmansrule --host github.com --private
 #
-# Defaults: --user Normansrule --host github-normansrule (an SSH host alias in ~/.ssh/config) --repo skyforge-v18-falcon.
+# Defaults: --user Normansrule --host github-normansrule (an SSH host alias in ~/.ssh/config) --repo ryujin-vtol.
 # Pushes over SSH so the workflow files go up even if your gh token lacks the 'workflow' scope.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
-GH_USER=Normansrule; GH_HOST=github-normansrule; REPO=skyforge-v18-falcon; VIS=--public; TAG=""; PAGES=1
+GH_USER=Normansrule; GH_HOST=github-normansrule; REPO=ryujin-vtol; VIS=--public; TAG=""; PAGES=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --user) GH_USER="$2"; shift ;; --host) GH_HOST="$2"; shift ;; --repo) REPO="$2"; shift ;;
@@ -23,7 +23,7 @@ done
 say() { printf '\n\033[1;33m==> %s\033[0m\n' "$*"; }
 die() { printf '\033[1;31m%s\033[0m\n' "$*"; exit 1; }
 
-[[ "$ROOT" != "$HOME" ]] || die "This is your home folder. Clone the repo into ~/src/skyforge-v18-falcon and run it there."
+[[ "$ROOT" != "$HOME" ]] || die "This is your home folder. Clone the repo into ~/projects/ryujin-vtol and run it there."
 [[ "$(git rev-parse --show-toplevel 2>/dev/null)" == "$ROOT" ]] || die "$ROOT is not the top of a git repository."
 [[ "$(git branch --show-current)" == "main" ]] || die "Switch to the main branch first (git switch main)."
 if [[ -n "$(git status --porcelain)" ]]; then
@@ -49,7 +49,7 @@ if [[ $HAVE_GH == 1 ]]; then
   if gh repo view "$GH_USER/$REPO" >/dev/null 2>&1; then echo "exists"
   else
     gh repo create "$GH_USER/$REPO" "$VIS" \
-      --description "SKYFORGE Falcon hybrid-VTOL build workbench: V18 analysis, V19 variants, BOM, wiring, web + desktop app"
+      --description "Build workbench for Ryujin (formerly SKYFORGE Falcon), a 3D-printable amphibious electric VTOL: V18 analysis, V19 variants, V20 Falcon Jet, sizing, CAD, BOM, wiring"
   fi
 else
   echo "GitHub CLI not available or not logged in (gh auth login). Create an EMPTY repository named '$REPO' at"
@@ -90,7 +90,7 @@ if [[ -n "$TAG" ]]; then
   if git rev-parse "$TAG" >/dev/null 2>&1; then
     [[ "$(git rev-parse "$TAG^{commit}")" == "$(git rev-parse HEAD)" ]] || die "Tag $TAG already exists on another commit. Bump the version for a new release."
   else
-    git tag -a "$TAG" -m "SKYFORGE Falcon workbench $TAG"
+    git tag -a "$TAG" -m "Ryujin VTOL workbench $TAG"
   fi
   git push origin "$TAG"
   if [[ $HAVE_GH == 1 ]]; then
